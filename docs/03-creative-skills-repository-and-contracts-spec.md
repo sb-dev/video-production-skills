@@ -1216,7 +1216,7 @@ Canonical distribution uses the open `skills` CLI.
 The public repository must support:
 
 ```bash
-npx skills add <org>/video-production-skills --list
+npx skills add sb-dev/video-production-skills --list
 ```
 
 and expose exactly the initial core skills:
@@ -1233,7 +1233,7 @@ Project-local installation is the default recommendation.
 Install one skill:
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --agent claude-code
 ```
@@ -1241,7 +1241,7 @@ npx skills add <org>/video-production-skills \
 Install both core skills:
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --skill video-evaluate \
   --agent claude-code
@@ -1250,7 +1250,7 @@ npx skills add <org>/video-production-skills \
 Codex is also an explicitly supported target:
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --skill video-evaluate \
   --agent codex

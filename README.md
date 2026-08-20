@@ -56,7 +56,7 @@ The project uses the open `skills` CLI. Project-local installation is the defaul
 ### Inspect available skills
 
 ```bash
-npx skills add <org>/video-production-skills --list
+npx skills add sb-dev/video-production-skills --list
 ```
 
 The repository exposes:
@@ -71,7 +71,7 @@ video-evaluate
 Install one skill:
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --agent claude-code
 ```
@@ -79,7 +79,7 @@ npx skills add <org>/video-production-skills \
 Install both:
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --skill video-evaluate \
   --agent claude-code
@@ -88,7 +88,7 @@ npx skills add <org>/video-production-skills \
 ### Install for Codex
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --skill video-evaluate \
   --agent codex
@@ -97,7 +97,7 @@ npx skills add <org>/video-production-skills \
 Use `--copy --yes` for non-interactive or CI installs where real copied files are preferable to symlinks:
 
 ```bash
-npx skills add <org>/video-production-skills \
+npx skills add sb-dev/video-production-skills \
   --skill video-production \
   --agent claude-code \
   --copy \
