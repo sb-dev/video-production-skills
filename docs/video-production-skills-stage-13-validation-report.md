@@ -170,4 +170,78 @@ None.
 
 ## Verdict
 
-**Stage 13: PASS.** The repository is cleared for Stage 14 (publication and external GitHub install smoke test). Stage 14 was not started and nothing was pushed.
+**Stage 13: PASS.** The repository was cleared for Stage 14 (publication and external GitHub install smoke test). Stage 14 results follow.
+
+---
+
+# Stage 14 — Publication and External GitHub Install Smoke Test
+
+Date: 2026-08-20
+
+## Result
+
+**Status: PASS.**
+
+## Publication
+
+- Repository: <https://github.com/sb-dev/video-production-skills>
+- Visibility: public
+- Licence: Apache License 2.0
+- Default branch: `main`
+- Description: "Domain-native Agent Skills for AI-assisted video production and evaluation (Claude Code, Codex)"
+- Topics: `agent-skills`, `ai-video`, `claude-code`, `codex`, `ffmpeg`, `typescript`, `video-production`
+- Issues: enabled. Discussions: enabled. Wiki: disabled.
+
+Commands:
+
+```bash
+gh repo create sb-dev/video-production-skills --public --source=. --remote=origin --push \
+  --description "Domain-native Agent Skills for AI-assisted video production and evaluation (Claude Code, Codex)"
+gh repo edit sb-dev/video-production-skills --enable-issues --enable-discussions --enable-wiki=false \
+  --add-topic agent-skills --add-topic claude-code --add-topic codex --add-topic video-production \
+  --add-topic ai-video --add-topic ffmpeg --add-topic typescript
+```
+
+Pre-publication change: `<org>/video-production-skills` placeholders in `README.md` and `docs/03-creative-skills-repository-and-contracts-spec.md` were replaced with `sb-dev/video-production-skills` (commit `718dc43`).
+
+## GitHub Actions CI
+
+Both pushes to `main` (`718dc43`, `ea93b4a`) ran the CI workflow. All six jobs succeeded:
+
+| Job | Result |
+|---|---|
+| validate | success |
+| skill-discovery | success |
+| skill-install (claude-code, video-production) | success |
+| skill-install (claude-code, video-evaluate) | success |
+| skill-install (codex, video-production) | success |
+| skill-install (codex, video-evaluate) | success |
+
+## External discovery
+
+```bash
+npx -y skills@1.5.22 add sb-dev/video-production-skills --list
+```
+
+Output listed `video-evaluate` and `video-production`.
+
+## External install matrix
+
+Each install used a fresh temporary directory initialised with `git init`, then:
+
+```bash
+npx -y skills@1.5.22 add sb-dev/video-production-skills --skill <skill> --agent <agent> --copy --yes
+```
+
+| Skill | Agent | Exit | Installed path | Files | Sibling skill present |
+|---|---|---|---|---|---|
+| video-production | claude-code | 0 | `.claude/skills/video-production/` | 10 | no |
+| video-evaluate | claude-code | 0 | `.claude/skills/video-evaluate/` | 7 | no |
+| video-production | codex | 0 | `.agents/skills/video-production/` | 10 | no |
+| video-evaluate | codex | 0 | `.agents/skills/video-evaluate/` | 7 | no |
+
+Every installed `scripts/*.ts --help` exited 0 under Node v26.2.0. `skills-lock.json` recorded `sourceType: "github"`, `skillPath: "skills/<skill>/SKILL.md"`, and the same content hash as the local Stage 13 installs (`00c7026d…`).
+
+## Verdict
+
+**Stage 14: PASS.** The repository is published and both skills install independently from GitHub into clean Claude Code and Codex projects.
