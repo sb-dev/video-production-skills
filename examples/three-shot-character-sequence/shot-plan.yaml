@@ -1,0 +1,29 @@
+id: shot-plan-01
+workflowState: final
+decisionState: approved
+shots:
+  - id: shot-01
+    purpose: establish arrival
+    durationTarget: 3.5
+    framing: medium
+    camera: restrained handheld, slight forward settle
+    subject: courier-01
+    continuity:
+      - olive-green-cycling-jacket
+      - black-messenger-bag
+  - id: shot-02
+    purpose: reveal handwritten note
+    durationTarget: 3.0
+    framing: close-up on hand, note and partial face
+    camera: mostly static handheld
+    subject: courier-01
+    continuity:
+      - same door and morning light
+  - id: shot-03
+    purpose: show relief
+    durationTarget: 3.5
+    framing: close-up
+    camera: restrained handheld
+    subject: courier-01
+    continuity:
+      - same identity, jacket and lighting

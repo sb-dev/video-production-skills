@@ -1,0 +1,10 @@
+artifact: edit-timeline-01
+status: example-only
+criteria:
+  sequenceClarity: pass
+  identityContinuity: pass
+  pacing: review
+failureLayer: editorial
+recommendation: refine-current
+notes:
+  - Tighten the pause before shot 03 only if the live render feels slow.

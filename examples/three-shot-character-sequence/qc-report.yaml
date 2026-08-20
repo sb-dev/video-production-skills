@@ -1,0 +1,8 @@
+artifact: video-master-01
+status: pending-live-render
+checks:
+  readable: pending
+  duration: pending
+  resolution: 1280x720
+  frameRate: 24
+  audioRequired: false

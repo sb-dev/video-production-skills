@@ -1,0 +1,20 @@
+artifacts:
+  - id: storyboard-frame-03
+    type: storyboard_frame
+    parent: storyboard-01
+  - id: reference-frame-03-b
+    type: reference_frame
+    parent: storyboard-frame-03
+    decisionState: approved
+    references:
+      - courier-01
+  - id: shot-03-c
+    type: video_shot
+    parent: reference-frame-03-b
+    decisionState: selected
+  - id: edit-timeline-01
+    type: edit_timeline
+    sources:
+      - shot-01-b
+      - shot-02-a
+      - shot-03-c

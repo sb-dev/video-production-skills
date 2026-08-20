@@ -1,0 +1,21 @@
+name: Bug report
+description: Report incorrect Video Production Skills behaviour
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Production problem
+      description: What did the skill do, and what should it have done instead?
+    validations:
+      required: true
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Relevant artifacts and lifecycle state
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include enough information to reproduce without sharing credentials.

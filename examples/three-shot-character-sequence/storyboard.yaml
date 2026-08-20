@@ -1,0 +1,16 @@
+id: storyboard-01
+workflowState: draft
+decisionState: selected
+frames:
+  - id: storyboard-frame-01
+    purpose: establish arrival
+    framing: medium
+    action: courier stops at apartment door and reaches toward the handle
+  - id: storyboard-frame-02
+    purpose: reveal new information
+    framing: close-up
+    action: courier notices and reads handwritten note beside handle
+  - id: storyboard-frame-03
+    purpose: emotional resolution
+    framing: close-up
+    action: courier exhales and relaxes with a small relieved expression

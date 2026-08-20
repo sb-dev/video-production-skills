@@ -1,0 +1,30 @@
+{
+  "id": "edit-timeline-01",
+  "workflowState": "refine",
+  "decisionState": "selected",
+  "shots": [
+    {
+      "id": "shot-01",
+      "source": "shots/shot-01-b.mp4",
+      "in": 0.0,
+      "duration": 3.2
+    },
+    {
+      "id": "shot-02",
+      "source": "shots/shot-02-a.mp4",
+      "in": 0.2,
+      "duration": 2.8
+    },
+    {
+      "id": "shot-03",
+      "source": "shots/shot-03-c.mp4",
+      "in": 0.0,
+      "duration": 3.4
+    }
+  ],
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24
+  }
+}

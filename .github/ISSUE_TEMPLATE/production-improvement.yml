@@ -1,0 +1,27 @@
+name: Production improvement
+description: Propose a workflow, artifact, evaluation or specialist-skill improvement
+title: "[Production]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Production problem
+      description: What repeated real workflow problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Smallest useful change
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / example / eval
+  - type: textarea
+    id: overlap
+    attributes:
+      label: Cross-project or provider overlap
+      description: Could an existing provider skill or another production project already own this?

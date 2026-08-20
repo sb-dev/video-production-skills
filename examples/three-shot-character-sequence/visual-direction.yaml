@@ -1,0 +1,14 @@
+intent: intimate observational realism
+visualStyle:
+  palette: warm-neutral
+  contrast: soft
+  texture: naturalistic
+camera:
+  style: restrained-handheld
+  framing: close-and-medium
+lighting:
+  source: soft-morning-window-light
+avoid:
+  - glossy-commercial-lighting
+  - extreme-wide-angle-distortion
+  - exaggerated-reaction

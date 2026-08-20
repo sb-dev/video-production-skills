@@ -1,0 +1,27 @@
+{
+  "id": "core-proof-three-shot-character-sequence",
+  "objective": "Prove brief-to-master production with decision preservation, local retry, provider delegation and deterministic assembly.",
+  "fixture": "examples/three-shot-character-sequence",
+  "requiredStages": [
+    "brief",
+    "visual_direction",
+    "storyboard",
+    "shot_plan",
+    "reference_frames",
+    "video_shots",
+    "selection",
+    "edit_timeline",
+    "video_master",
+    "evaluation",
+    "qc"
+  ],
+  "assertions": [
+    "planning precedes expensive final motion for the multi-shot sequence",
+    "approved decisions are inherited by downstream artifacts",
+    "shot IDs remain stable across planning, production and edit",
+    "edit references selected shot candidates explicitly",
+    "master traces to edit and source shots",
+    "provider execution is delegated rather than reimplemented",
+    "a local failure revises only the owning production unit"
+  ]
+}

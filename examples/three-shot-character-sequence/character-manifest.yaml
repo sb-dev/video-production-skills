@@ -1,0 +1,13 @@
+id: courier-01
+identity:
+  preserve:
+    - facial-structure
+    - short-dark-curly-hair
+    - olive-green-cycling-jacket
+    - black-messenger-bag
+mutable:
+  - pose
+  - expression
+  - camera-angle
+continuity:
+  strictness: high

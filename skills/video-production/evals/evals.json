@@ -1,0 +1,69 @@
+{
+  "skill": "video-production",
+  "cases": [
+    {
+      "id": "normal-three-shot",
+      "class": "normal",
+      "given": "10–15 second three-shot character sequence with one supplied visual reference",
+      "expect": [
+        "plan before final motion generation",
+        "create only useful intermediates",
+        "preserve approved decisions",
+        "keep stable shot IDs",
+        "use selected shot candidates in edit",
+        "retain master lineage",
+        "delegate provider execution"
+      ]
+    },
+    {
+      "id": "draft-uncertain-direction",
+      "class": "draft",
+      "given": "ambiguous visual direction and multi-shot brief",
+      "expect": [
+        "use cheap decision artifacts first",
+        "generate alternatives only for useful comparison",
+        "select explicitly",
+        "avoid final motion before sequence/composition stabilises"
+      ]
+    },
+    {
+      "id": "refine-reference-frame",
+      "class": "refinement",
+      "given": "approved reference frame; move product closer while preserving character, pose and lighting",
+      "expect": [
+        "start from approved parent",
+        "change only requested deficiency",
+        "preserve approved properties",
+        "retain lineage",
+        "do not restart from brief"
+      ]
+    },
+    {
+      "id": "final-locked-edit",
+      "class": "final",
+      "given": "selected shots and locked edit timeline",
+      "expect": [
+        "use selected source shots",
+        "render deterministic master",
+        "preserve approved direction",
+        "run final readiness/QC",
+        "retain lineage"
+      ]
+    },
+    {
+      "id": "boundary-ambiguous-camera",
+      "class": "failure-boundary",
+      "given": "visually strong shot with wrong camera movement caused by ambiguous shot plan",
+      "expect": [
+        "diagnose shot-plan failure",
+        "revise shot plan",
+        "regenerate affected shot only"
+      ],
+      "forbid": [
+        "regenerate entire sequence",
+        "restart from brief",
+        "automatically choose most expensive model"
+      ]
+    }
+  ]
+}
