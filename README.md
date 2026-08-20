@@ -199,7 +199,7 @@ See [`examples/three-shot-character-sequence`](examples/three-shot-character-seq
 
 ## Project status
 
-Stages 1–12 of the Creative Production Skills bootstrap process are complete. Stage 12 configures repository discovery, project-local Claude Code/Codex installation, peer execution skills, and reproducible CI install checks. Stage 13 performs clean local installation validation before publication.
+Stages 1–14 of the Creative Production Skills bootstrap process are complete. The repository is published at [github.com/sb-dev/video-production-skills](https://github.com/sb-dev/video-production-skills), local installation validation (Stage 13) passed, and both skills install from GitHub into clean Claude Code and Codex projects (Stage 14).
 
 The initial proof deliberately excludes full character-design, product-video, UGC, advanced sound post, advanced finishing, multi-platform delivery, provider optimisation and shared creative-production infrastructure.
 
