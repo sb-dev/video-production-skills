@@ -1,6 +1,8 @@
 ---
 name: video-evaluate
 description: Evaluate video-production artifacts for creative readiness, continuity, identity or product fidelity, motion quality, editorial quality, pacing, technical validity, and the smallest appropriate corrective action. Use for storyboard review, reference-frame review, shot review, edit review, final video evaluation, technical QC, or diagnosing why a production artifact failed.
+license: Apache-2.0
+compatibility: Requires Node.js 24.12+ for bundled TypeScript scripts and FFmpeg/ffprobe for deterministic media inspection; network access is required only for semantic/provider-backed evaluation.
 ---
 
 # Video Evaluate

@@ -1,6 +1,8 @@
 ---
 name: video-production
 description: Plan, produce, refine, edit, and finish AI-assisted video through a domain-native production workflow. Use for single-shot or multi-shot video, brief-to-video production, storyboarding as part of production, shot planning, reference-frame development, shot generation through upstream provider skills, editorial assembly, mastering, or continuing production from approved artifacts.
+license: Apache-2.0
+compatibility: Requires Node.js 24.12+ for bundled TypeScript scripts; FFmpeg/ffprobe and ImageMagick for deterministic media workflows; network access and provider credentials only when provider execution is used.
 ---
 
 # Video Production

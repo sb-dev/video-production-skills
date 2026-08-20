@@ -266,6 +266,8 @@ Do not duplicate entire canonical specs inside skill references.
 ---
 name: video-production
 description: Plan, produce, refine, edit, and finish AI-assisted video through a domain-native production workflow. Use for single-shot or multi-shot video, brief-to-video production, storyboarding as part of production, shot planning, reference-frame development, shot generation through upstream provider skills, editorial assembly, mastering, or continuing production from approved artifacts.
+license: Apache-2.0
+compatibility: Requires Node.js 24.12+ for bundled TypeScript scripts; FFmpeg/ffprobe and ImageMagick for deterministic media workflows; network access and provider credentials only when provider execution is used.
 ---
 
 # Video Production
@@ -567,6 +569,8 @@ Do not:
 ---
 name: video-evaluate
 description: Evaluate video-production artifacts for creative readiness, continuity, identity or product fidelity, motion quality, editorial quality, pacing, technical validity, and the smallest appropriate corrective action. Use for storyboard review, reference-frame review, shot review, edit review, final video evaluation, technical QC, or diagnosing why a production artifact failed.
+license: Apache-2.0
+compatibility: Requires Node.js 24.12+ for bundled TypeScript scripts and FFmpeg/ffprobe for deterministic media inspection; network access is required only for semantic/provider-backed evaluation.
 ---
 
 # Video Evaluate
@@ -1205,36 +1209,148 @@ Avoid examples that demonstrate only one provider call.
 
 ## 19. Installation Expectations
 
-Canonical installation uses the open Agent Skills CLI.
+Canonical distribution uses the open `skills` CLI.
 
-The repository must support:
+### 19.1 Repository discovery
 
-```text
+The public repository must support:
+
+```bash
 npx skills add <org>/video-production-skills --list
 ```
 
-and installation of individual skills, for example:
+and expose exactly the initial core skills:
 
 ```text
-npx skills add <org>/video-production-skills --skill video-production
+video-production
+video-evaluate
 ```
+
+### 19.2 Project-local installation
+
+Project-local installation is the default recommendation.
+
+Install one skill:
+
+```bash
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --agent claude-code
+```
+
+Install both core skills:
+
+```bash
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --skill video-evaluate \
+  --agent claude-code
+```
+
+Codex is also an explicitly supported target:
+
+```bash
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --skill video-evaluate \
+  --agent codex
+```
+
+### 19.3 Non-interactive validation mode
+
+CI and smoke tests must use:
 
 ```text
-npx skills add <org>/video-production-skills --skill video-evaluate
+--copy --yes
 ```
 
-Exact CLI flags should be verified against the installed CLI during repository validation rather than assumed if the interface changes.
+so validation inspects real installed files without relying on interactive prompts or symlink behaviour.
+
+CI pins the validated CLI version. Stage 12 is configured against `skills@1.5.22`. User-facing installation commands remain unpinned.
+
+### 19.4 Default Replicate peer skills
+
+The core image/video execution path expects the current Replicate equivalents of:
+
+```text
+find-models
+compare-models
+prompt-images
+prompt-videos
+run-models
+```
+
+Recommended installation:
+
+```bash
+npx skills add replicate/skills \
+  --skill find-models \
+  --skill compare-models \
+  --skill prompt-images \
+  --skill prompt-videos \
+  --skill run-models \
+  --agent claude-code
+```
+
+Use `REPLICATE_API_TOKEN` only when Replicate execution is required.
+
+These are peer Agent Skills, not package/runtime dependencies of this repository.
+
+### 19.5 Optional ElevenLabs peer skills
+
+When speech, transcription, or generated sound effects are required, install only the needed ElevenLabs skills. The initial capability set is:
+
+```text
+text-to-speech
+speech-to-text
+sound-effects
+```
+
+Recommended installation:
+
+```bash
+npx skills add elevenlabs/skills \
+  --skill text-to-speech \
+  --skill speech-to-text \
+  --skill sound-effects \
+  --agent claude-code
+```
+
+Use `ELEVENLABS_API_KEY` only when ElevenLabs capabilities are required.
+
+### 19.6 Optional fal.ai execution
+
+fal.ai/genmedia is not part of the default install. Configure it only for a concrete capability gap or explicit user selection.
+
+### 19.7 Installed-skill completeness
+
+An installed skill is valid only when its own runtime resources are present with it.
+
+For each core skill verify:
+
+```text
+SKILL.md
+references/
+scripts/
+evals/
+```
+
+The installed skill must not require repository-level `docs/`, `examples/`, or another skill's private files.
+
+### 19.8 README contract
 
 The README must document:
 
-- skill discovery;
-- individual skill installation;
-- peer provider skills;
-- required deterministic binaries;
-- environment variables only for providers actually used;
-- optional specialist/secondary execution.
-
----
+- repository discovery;
+- individual and combined skill installation;
+- Claude Code and Codex targets;
+- non-interactive `--copy --yes` mode;
+- default Replicate peer skills;
+- optional ElevenLabs peer skills;
+- provider credentials only when used;
+- Node.js and deterministic media-tool requirements;
+- optional fal.ai fallback;
+- the CLI version pinned in CI.
 
 ## 20. Local Validation
 
@@ -1259,19 +1375,24 @@ Before publication, verify:
 Initial CI should validate:
 
 ```text
-frontmatter / skill structure
+frontmatter / Agent Skills compatibility metadata
+skill structure
+strict TypeScript checks
 deterministic scripts
 skill eval fixtures
 end-to-end fixture eval
-npx skills add . --list
-local install of video-production
-local install of video-evaluate
+skills CLI discovery using pinned skills@1.5.22
+local copied install of video-production for Claude Code
+local copied install of video-evaluate for Claude Code
+local copied install of video-production for Codex
+local copied install of video-evaluate for Codex
+installed references/scripts presence
 broken file/reference checks
 ```
 
-Live provider generation should be optional, explicitly gated, or run on a controlled schedule rather than every pull request.
+Installation smoke tests must run in clean temporary consumer projects and use `--copy --yes`.
 
----
+Live provider generation remains optional, explicitly gated, or scheduled separately because it incurs external cost and credentials.
 
 ## 22. Extraction Candidate Register
 
@@ -1415,4 +1536,4 @@ The repository contract is correct when:
 
 ---
 
-**Video Production Skills — Creative Skills Repository and Contracts Specification v5**
+**Video Production Skills — Creative Skills Repository and Contracts Specification v6**

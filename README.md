@@ -51,20 +51,118 @@ The repository does not implement provider SDKs, static model catalogues, a gene
 
 ## Install
 
-List the skills exposed by this repository:
+The project uses the open `skills` CLI. Project-local installation is the default.
+
+### Inspect available skills
 
 ```bash
 npx skills add <org>/video-production-skills --list
 ```
 
+The repository exposes:
+
+```text
+video-production
+video-evaluate
+```
+
+### Install for Claude Code
+
 Install one skill:
 
 ```bash
-npx skills add <org>/video-production-skills --skill video-production
-npx skills add <org>/video-production-skills --skill video-evaluate
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --agent claude-code
 ```
 
-Stage 12 of the project bootstrap validates and finalises these installation commands against the current Agent Skills CLI.
+Install both:
+
+```bash
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --skill video-evaluate \
+  --agent claude-code
+```
+
+### Install for Codex
+
+```bash
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --skill video-evaluate \
+  --agent codex
+```
+
+Use `--copy --yes` for non-interactive or CI installs where real copied files are preferable to symlinks:
+
+```bash
+npx skills add <org>/video-production-skills \
+  --skill video-production \
+  --agent claude-code \
+  --copy \
+  --yes
+```
+
+### Default image/video execution skills
+
+`video-production` delegates image/video model discovery and execution to Replicate's Agent Skills. Install the five peer skills used by the core workflow into the same target agent:
+
+```bash
+npx skills add replicate/skills \
+  --skill find-models \
+  --skill compare-models \
+  --skill prompt-images \
+  --skill prompt-videos \
+  --skill run-models \
+  --agent claude-code
+```
+
+Set the Replicate credential only when provider execution is required:
+
+```bash
+export REPLICATE_API_TOKEN=...
+```
+
+For Codex, replace `--agent claude-code` with `--agent codex`.
+
+### Optional ElevenLabs audio skills
+
+Install only the specialist capabilities the production needs. The core audio set is:
+
+```bash
+npx skills add elevenlabs/skills \
+  --skill text-to-speech \
+  --skill speech-to-text \
+  --skill sound-effects \
+  --agent claude-code
+```
+
+When used:
+
+```bash
+export ELEVENLABS_API_KEY=...
+```
+
+ElevenLabs is optional. Silent productions and productions with supplied audio do not require it.
+
+### Optional secondary image/video execution
+
+fal.ai/genmedia remains a capability fallback, not a default dependency. Do not install or configure it unless a concrete workflow requires a capability unavailable through the default execution path or the user explicitly selects fal.ai.
+
+### Installation validation contract
+
+Repository CI is configured against `skills` CLI **1.5.22** for reproducibility. User-facing commands intentionally remain unpinned so normal installs use the current CLI.
+
+CI validates:
+
+- repository discovery with `--list`;
+- individual installation of both skills;
+- Claude Code and Codex target paths;
+- copied `SKILL.md`, `references/`, and `scripts/` contents;
+- non-interactive installation with `--copy --yes`.
+
+Stage 13 performs the same installation checks locally in clean temporary consumer projects before publication.
 
 ### TypeScript runtime and development
 
@@ -101,7 +199,7 @@ See [`examples/three-shot-character-sequence`](examples/three-shot-character-seq
 
 ## Project status
 
-The project has completed the first ten stages of the Creative Production Skills bootstrap process. This scaffold is Stage 11: the first source repository that encodes the approved architecture.
+Stages 1–12 of the Creative Production Skills bootstrap process are complete. Stage 12 configures repository discovery, project-local Claude Code/Codex installation, peer execution skills, and reproducible CI install checks. Stage 13 performs clean local installation validation before publication.
 
 The initial proof deliberately excludes full character-design, product-video, UGC, advanced sound post, advanced finishing, multi-platform delivery, provider optimisation and shared creative-production infrastructure.
 

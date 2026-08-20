@@ -64,9 +64,27 @@ function validateSkill(name: string): void {
   if (!new RegExp(`^name:\\s*${name}\\s*$`, 'm').test(frontmatter)) {
     fail(`skills/${name}/SKILL.md: frontmatter name mismatch`);
   }
-  if (!/^description:\s*\S.+$/m.test(frontmatter)) {
-    fail(`skills/${name}/SKILL.md: missing non-empty description`);
+  const namePattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  if (!namePattern.test(name) || name.length > 64) {
+    fail(`skills/${name}/SKILL.md: invalid Agent Skills name`);
   }
+
+  const descriptionMatch = /^description:\s*(\S.*)$/m.exec(frontmatter);
+  if (descriptionMatch?.[1] === undefined || descriptionMatch[1].length > 1024) {
+    fail(`skills/${name}/SKILL.md: description must be 1-1024 characters`);
+  }
+
+  if (!/^license:\s*Apache-2\.0\s*$/m.test(frontmatter)) {
+    fail(`skills/${name}/SKILL.md: license must be Apache-2.0`);
+  }
+
+  const compatibilityMatch = /^compatibility:\s*(\S.*)$/m.exec(frontmatter);
+  if (compatibilityMatch?.[1] === undefined || compatibilityMatch[1].length > 500) {
+    fail(`skills/${name}/SKILL.md: compatibility must be 1-500 characters`);
+  }
+
+  const skillLines = readFileSync(skillFile, 'utf8').split('\n').length;
+  if (skillLines > 500) fail(`skills/${name}/SKILL.md: exceeds 500-line Agent Skills guidance`);
 
   const evalFile = join(skillDirectory, 'evals', 'evals.json');
   if (!existsSync(evalFile)) fail(`missing skills/${name}/evals/evals.json`);

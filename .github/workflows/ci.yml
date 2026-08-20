@@ -12,6 +12,9 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SKILLS_CLI_VERSION: '1.5.22'
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -40,4 +43,54 @@ jobs:
         with:
           node-version: '24'
       - name: Verify Agent Skills discovery
-        run: npx -y skills add . --list
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx -y "skills@${SKILLS_CLI_VERSION}" add . --list | tee /tmp/skills-list.txt
+          grep -F 'video-production' /tmp/skills-list.txt
+          grep -F 'video-evaluate' /tmp/skills-list.txt
+
+  skill-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - agent: claude-code
+            skill: video-production
+            install_path: .claude/skills/video-production
+          - agent: claude-code
+            skill: video-evaluate
+            install_path: .claude/skills/video-evaluate
+          - agent: codex
+            skill: video-production
+            install_path: .agents/skills/video-production
+          - agent: codex
+            skill: video-evaluate
+            install_path: .agents/skills/video-evaluate
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Install skill into clean consumer project
+        shell: bash
+        run: |
+          set -euo pipefail
+          consumer="$(mktemp -d)"
+          cd "$consumer"
+          git init -q
+
+          npx -y "skills@${SKILLS_CLI_VERSION}" add "$GITHUB_WORKSPACE" \
+            --skill "${{ matrix.skill }}" \
+            --agent "${{ matrix.agent }}" \
+            --copy \
+            --yes
+
+          installed="$consumer/${{ matrix.install_path }}"
+          test -f "$installed/SKILL.md"
+          test -d "$installed/references"
+          test -d "$installed/scripts"
+          test -d "$installed/evals"
+          grep -F "name: ${{ matrix.skill }}" "$installed/SKILL.md"
