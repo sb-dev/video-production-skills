@@ -20,3 +20,4 @@ All notable changes to this project will be documented here.
 - Pinned `skills@1.5.22` CI discovery/install smoke-test configuration.
 - Replicate and optional ElevenLabs peer-skill installation guidance.
 - Agent Skills `license` and `compatibility` frontmatter for both core skills.
+- Installed-skill self-containment regression tests for Claude Code and Codex project layouts.
