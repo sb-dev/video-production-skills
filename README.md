@@ -66,9 +66,18 @@ npx skills add <org>/video-production-skills --skill video-evaluate
 
 Stage 12 of the project bootstrap validates and finalises these installation commands against the current Agent Skills CLI.
 
-### Local deterministic runtime
+### TypeScript runtime and development
 
-Repository automation and deterministic media orchestration are implemented in **TypeScript** on Node.js 22.6 or later. The scripts run directly with Node's TypeScript type-stripping support and have no npm runtime dependencies.
+Repository automation and deterministic media orchestration are implemented in **TypeScript**. Runtime scripts target **Node.js 24.12+**, where native TypeScript type stripping is stable, and use only erasable TypeScript syntax so installed skills require no TypeScript runtime package.
+
+Development uses a strict `tsconfig.json` and a pinned TypeScript compiler for static checking. Install development dependencies and run the quality gate with:
+
+```bash
+npm ci
+npm test
+```
+
+The compiler configuration enables strict checking plus `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`. External JSON and CLI inputs are validated at runtime instead of being trusted through unchecked type assertions.
 
 ### Local deterministic dependencies
 

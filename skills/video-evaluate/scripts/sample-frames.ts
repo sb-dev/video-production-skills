@@ -1,15 +1,15 @@
-#!/usr/bin/env -S node --experimental-strip-types
-import { mkdirSync } from 'node:fs';
+#!/usr/bin/env node
+import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { parseArgs } from 'node:util';
+
+const EXIT_USAGE = 2;
+const DEFAULT_COUNT = 6;
+const MAX_COUNT = 100;
 
 function usage(): void {
   console.log('Usage: sample-frames.ts <input> <output-dir> [--count N]');
-}
-
-function commandExists(command: string): boolean {
-  const result = spawnSync(command, ['-version'], { stdio: 'ignore' });
-  return !result.error;
 }
 
 function mediaDuration(input: string): number {
@@ -18,63 +18,118 @@ function mediaDuration(input: string): number {
     ['-v', 'error', '-show_entries', 'format=duration', '-of', 'json', input],
     { encoding: 'utf8' },
   );
-  if (result.error) throw result.error;
+
+  if (result.error) {
+    const message = result.error.message.includes('ENOENT')
+      ? 'ffprobe is required but was not found in PATH'
+      : result.error.message;
+    throw new Error(message);
+  }
   if (result.status !== 0) throw new Error(result.stderr.trim() || 'ffprobe failed');
-  const data = JSON.parse(result.stdout) as { format?: { duration?: string } };
-  const duration = Number(data.format?.duration);
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(result.stdout) as unknown;
+  } catch (error: unknown) {
+    throw new Error(`ffprobe returned invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('ffprobe output must be a JSON object');
+  }
+
+  const format = Reflect.get(parsed, 'format');
+  if (typeof format !== 'object' || format === null || Array.isArray(format)) {
+    throw new Error('media duration is unavailable');
+  }
+
+  const durationText = Reflect.get(format, 'duration');
+  const duration = typeof durationText === 'string' ? Number(durationText) : Number.NaN;
   if (!Number.isFinite(duration) || duration <= 0) throw new Error('media duration is unavailable');
   return duration;
 }
 
-const args = process.argv.slice(2);
-if (args.includes('--help') || args.includes('-h')) {
-  usage();
-  process.exit(0);
-}
+function main(): number {
+  const { values, positionals } = parseArgs({
+    allowPositionals: true,
+    options: {
+      count: { type: 'string' },
+      help: { type: 'boolean', short: 'h' },
+    },
+    strict: true,
+  });
 
-const input = args[0];
-const outputDir = args[1];
-let count = 6;
-for (let index = 2; index < args.length; index += 1) {
-  if (args[index] === '--count') {
-    count = Number.parseInt(args[++index] ?? '', 10);
+  if (values.help) {
+    usage();
+    return 0;
   }
+  if (positionals.length !== 2) {
+    usage();
+    return EXIT_USAGE;
+  }
+
+  const input = positionals[0];
+  const outputDir = positionals[1];
+  if (input === undefined || outputDir === undefined) return EXIT_USAGE;
+  if (!existsSync(input)) {
+    console.error(`input does not exist: ${input}`);
+    return EXIT_USAGE;
+  }
+
+  const count = values.count === undefined ? DEFAULT_COUNT : Number.parseInt(values.count, 10);
+  if (!Number.isInteger(count) || count < 1 || count > MAX_COUNT) {
+    console.error(`--count must be an integer between 1 and ${MAX_COUNT}`);
+    return EXIT_USAGE;
+  }
+
+  let duration: number;
+  try {
+    duration = mediaDuration(input);
+  } catch (error: unknown) {
+    console.error(error instanceof Error ? error.message : String(error));
+    return 1;
+  }
+
+  mkdirSync(outputDir, { recursive: true });
+  const frames: string[] = [];
+
+  for (let index = 0; index < count; index += 1) {
+    const time = duration * (index + 1) / (count + 1);
+    const filename = `frame-${String(index + 1).padStart(2, '0')}.jpg`;
+    const destination = join(outputDir, filename);
+    const result = spawnSync(
+      'ffmpeg',
+      [
+        '-y',
+        '-hide_banner',
+        '-loglevel', 'error',
+        '-ss', time.toFixed(3),
+        '-i', input,
+        '-frames:v', '1',
+        '-q:v', '2',
+        destination,
+      ],
+      { stdio: 'inherit' },
+    );
+
+    if (result.error) {
+      const message = result.error.message.includes('ENOENT')
+        ? 'ffmpeg is required but was not found in PATH'
+        : result.error.message;
+      console.error(message);
+      return EXIT_USAGE;
+    }
+    if (result.status !== 0) return result.status ?? 1;
+    frames.push(destination);
+  }
+
+  console.log(JSON.stringify({ input, duration, frames }, null, 2));
+  return 0;
 }
 
-if (!input || !outputDir || !Number.isInteger(count) || count < 1) {
-  usage();
-  process.exit(2);
-}
-if (!commandExists('ffmpeg') || !commandExists('ffprobe')) {
-  console.error('ffmpeg and ffprobe are required');
-  process.exit(2);
-}
-
-mkdirSync(outputDir, { recursive: true });
-let duration: number;
 try {
-  duration = mediaDuration(input);
-} catch (error) {
+  process.exitCode = main();
+} catch (error: unknown) {
   console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
+  process.exitCode = EXIT_USAGE;
 }
-
-const frames: string[] = [];
-for (let index = 0; index < count; index += 1) {
-  const time = duration * (index + 1) / (count + 1);
-  const filename = `frame-${String(index + 1).padStart(2, '0')}.jpg`;
-  const destination = join(outputDir, filename);
-  const result = spawnSync(
-    'ffmpeg',
-    ['-y', '-hide_banner', '-loglevel', 'error', '-ss', time.toFixed(3), '-i', input, '-frames:v', '1', '-q:v', '2', destination],
-    { stdio: 'inherit' },
-  );
-  if (result.error) {
-    console.error(result.error.message);
-    process.exit(2);
-  }
-  if (result.status !== 0) process.exit(result.status ?? 1);
-  frames.push(destination);
-}
-
-console.log(JSON.stringify({ input, duration, frames }, null, 2));

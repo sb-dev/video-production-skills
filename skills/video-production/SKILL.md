@@ -185,7 +185,7 @@ Music composition remains outside this skill.
 
 ## Deterministic production
 
-Use the skill-local TypeScript scripts to orchestrate FFmpeg/ffprobe where provided. Prefer FFmpeg/ffprobe for:
+Skill-local deterministic scripts are TypeScript and require Node.js 24.12+ for stable native TypeScript execution. They have no npm runtime dependency. Use them to orchestrate FFmpeg/ffprobe where provided. Prefer FFmpeg/ffprobe for:
 
 - inspection;
 - trimming;

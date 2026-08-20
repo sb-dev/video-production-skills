@@ -1,50 +1,71 @@
-#!/usr/bin/env -S node --experimental-strip-types
+#!/usr/bin/env node
 import { existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { parseArgs } from 'node:util';
+
+const EXIT_USAGE = 2;
 
 function usage(): void {
   console.log('Usage: inspect-media.ts <input>');
 }
 
-function commandExists(command: string): boolean {
-  const result = spawnSync(command, ['-version'], { stdio: 'ignore' });
-  return !result.error;
+function main(): number {
+  const { values, positionals } = parseArgs({
+    allowPositionals: true,
+    options: {
+      help: { type: 'boolean', short: 'h' },
+    },
+    strict: true,
+  });
+
+  if (values.help) {
+    usage();
+    return 0;
+  }
+
+  if (positionals.length !== 1) {
+    usage();
+    return EXIT_USAGE;
+  }
+
+  const input = positionals[0];
+  if (input === undefined || !existsSync(input)) {
+    console.error(`input does not exist: ${input ?? '<missing>'}`);
+    return EXIT_USAGE;
+  }
+
+  const result = spawnSync(
+    'ffprobe',
+    ['-v', 'error', '-show_format', '-show_streams', '-of', 'json', input],
+    { encoding: 'utf8' },
+  );
+
+  if (result.error) {
+    const message = result.error.message.includes('ENOENT')
+      ? 'ffprobe is required but was not found in PATH'
+      : result.error.message;
+    console.error(message);
+    return EXIT_USAGE;
+  }
+
+  if (result.status !== 0) {
+    console.error(result.stderr.trim() || 'ffprobe failed');
+    return result.status ?? 1;
+  }
+
+  try {
+    const data: unknown = JSON.parse(result.stdout) as unknown;
+    console.log(JSON.stringify(data, null, 2));
+    return 0;
+  } catch (error: unknown) {
+    console.error(`ffprobe returned invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+    return 1;
+  }
 }
 
-const args = process.argv.slice(2);
-if (args.includes('--help') || args.includes('-h')) {
-  usage();
-  process.exit(0);
+try {
+  process.exitCode = main();
+} catch (error: unknown) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = EXIT_USAGE;
 }
-
-const input = args[0];
-if (!input) {
-  usage();
-  process.exit(2);
-}
-if (!commandExists('ffprobe')) {
-  console.error('ffprobe is required but was not found in PATH');
-  process.exit(2);
-}
-if (!existsSync(input)) {
-  console.error(`input does not exist: ${input}`);
-  process.exit(2);
-}
-
-const result = spawnSync(
-  'ffprobe',
-  ['-v', 'error', '-show_format', '-show_streams', '-of', 'json', input],
-  { encoding: 'utf8' },
-);
-
-if (result.error) {
-  console.error(result.error.message);
-  process.exit(2);
-}
-if (result.status !== 0) {
-  console.error(result.stderr.trim());
-  process.exit(result.status ?? 1);
-}
-
-const data: unknown = JSON.parse(result.stdout);
-console.log(JSON.stringify(data, null, 2));

@@ -870,7 +870,13 @@ render-timeline.ts
 make-contact-sheet.ts
 ```
 
-Deterministic repository scripts are implemented in TypeScript on Node.js 22.6 or later and require no npm runtime dependencies.
+Deterministic repository scripts are implemented in TypeScript and target Node.js 24.12 or later, where native TypeScript type stripping is stable. Installed skill scripts use erasable TypeScript syntax and require no npm runtime dependency.
+
+Repository development must use a strict `tsconfig.json` and a pinned TypeScript compiler. At minimum enable `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `erasableSyntaxOnly`, and `noEmit`.
+
+Type assertions must not be used as a substitute for runtime validation of external JSON, provider output, CLI arguments, or media metadata. Prefer `unknown` plus explicit narrowing and validation at trust boundaries.
+
+CLI scripts should use Node standard-library argument parsing, invoke subprocesses without a shell, use argument arrays rather than command-string interpolation, return meaningful exit codes, and produce actionable errors for missing dependencies or invalid inputs.
 
 Do not create a general media framework.
 
@@ -1398,13 +1404,15 @@ The repository contract is correct when:
 17. edit timeline and picture lock are represented without building a general NLE;
 18. evaluation and QC have distinct semantics;
 19. evals cover normal, draft, refinement, final, and failure/boundary cases;
-20. the end-to-end eval proves brief-to-master production;
-21. the initial example demonstrates a real multi-stage workflow;
-22. local skill discovery and individual installation succeed;
-23. CI validates structure, deterministic behaviour, eval fixtures, and installation;
-24. specialist follow-up skills remain deferred until proven;
-25. cross-domain reuse is tracked as extraction candidates rather than prematurely shared code.
+20. TypeScript source passes strict compiler checks and runtime trust-boundary validation;
+21. TypeScript CLI subprocesses avoid shell interpolation and validate user-controlled arguments;
+22. the end-to-end eval proves brief-to-master production;
+23. the initial example demonstrates a real multi-stage workflow;
+24. local skill discovery and individual installation succeed;
+25. CI installs pinned development dependencies with `npm ci` and runs type-checking, tests, repository validation, and installation checks;
+26. specialist follow-up skills remain deferred until proven;
+27. cross-domain reuse is tracked as extraction candidates rather than prematurely shared code.
 
 ---
 
-**Video Production Skills — Creative Skills Repository and Contracts Specification v4**
+**Video Production Skills — Creative Skills Repository and Contracts Specification v5**

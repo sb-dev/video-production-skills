@@ -65,7 +65,7 @@ Prefer:
 4. structured diagnosis;
 5. recommended corrective action.
 
-Use FFmpeg/ffprobe for objective media evidence before expensive semantic analysis.
+Skill-local deterministic scripts are TypeScript and require Node.js 24.12+ for stable native TypeScript execution. They have no npm runtime dependency. Use FFmpeg/ffprobe for objective media evidence before expensive semantic analysis.
 
 ## Draft evaluation
 

@@ -2,14 +2,20 @@
   "name": "video-production-skills",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "engines": {
-    "node": ">=22.6"
+    "node": ">=24.12"
   },
   "scripts": {
-    "check:typescript": "node --experimental-strip-types tools/check-typescript.ts",
-    "validate": "node --experimental-strip-types tools/validate-repo.ts",
-    "smoke:scripts": "node --experimental-strip-types skills/video-production/scripts/inspect-media.ts --help && node --experimental-strip-types skills/video-production/scripts/render-timeline.ts --help && node --experimental-strip-types skills/video-production/scripts/make-contact-sheet.ts --help && node --experimental-strip-types skills/video-evaluate/scripts/inspect-video.ts --help && node --experimental-strip-types skills/video-evaluate/scripts/sample-frames.ts --help",
-    "test": "npm run check:typescript && npm run validate && npm run smoke:scripts"
+    "typecheck": "tsc --noEmit",
+    "validate": "node tools/validate-repo.ts",
+    "test:unit": "node --test tests/*.test.ts",
+    "smoke:scripts": "node skills/video-production/scripts/inspect-media.ts --help && node skills/video-production/scripts/render-timeline.ts --help && node skills/video-production/scripts/make-contact-sheet.ts --help && node skills/video-evaluate/scripts/inspect-video.ts --help && node skills/video-evaluate/scripts/sample-frames.ts --help",
+    "test": "npm run typecheck && npm run validate && npm run test:unit && npm run smoke:scripts"
   },
-  "type": "module"
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  },
+  "packageManager": "npm@11.17.0"
 }
