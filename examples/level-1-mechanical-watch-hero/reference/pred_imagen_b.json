@@ -1,0 +1,1 @@
+{"detail":"Request was throttled. Your rate limit for creating predictions is reduced to 6 requests per minute with a burst of 1 requests while you have less than $5.0 in credit. Your rate limit resets in ~10s.","status":429,"retry_after":10}
