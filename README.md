@@ -31,6 +31,8 @@ Set `REPLICATE_API_TOKEN` when generation is required.
 
 ## Quick start — Mechanical Watch Hero
 
+![Mechanical Watch Hero](examples/level-1-mechanical-watch-hero/preview.gif)
+
 Start with one shot and learn the core production loop.
 
 ```text
