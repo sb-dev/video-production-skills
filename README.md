@@ -29,20 +29,39 @@ npx skills add replicate/skills \
 
 Set `REPLICATE_API_TOKEN` when generation is required.
 
-## Quick start — The Impossible Pour
+## Quick start — Mechanical Watch Hero
 
 Start with one shot and learn the core production loop.
 
 ```text
-Create a 6-second cinematic macro shot called "The Impossible Pour".
+Use video-production to create a 6-second luxury product hero shot.
 
-A stream of liquid chrome pours upward from a black ceramic cup into a floating
-sphere. Dark studio, narrow rim light, shallow depth of field, premium commercial
-finish.
+Create a cinematic macro video of a black mechanical wristwatch resting on a brushed metal surface. The shot should feel premium, controlled, and elegant.
 
-Use the cheapest useful visual checkpoint before final motion. Show me meaningful
-alternatives, preserve my selection, then produce and evaluate the final shot.
-Keep production artifacts under production/video/.
+Requirements:
+- Duration: 6 seconds
+- Format: 16:9
+- Tone: luxury commercial
+- Subject: one black mechanical watch with a detailed dial, polished case, and visible texture on the strap
+- Camera: slow, precise push-in with a subtle lateral move
+- Lighting: dark studio environment with a narrow moving highlight sweeping across the watch face and case
+- Focus: preserve crisp dial details, indices, hands, reflections, and premium material feel
+- Background: minimal, dark, unobtrusive
+- Motion: no chaotic movement; everything should feel controlled and intentional
+
+Workflow:
+- Establish concise visual direction first
+- Create a reference frame before final video generation
+- Generate at least two shot candidates
+- Select the strongest candidate
+- Run evaluation and technical QC
+
+What to optimise for:
+- premium product fidelity
+- reflection control
+- readable dial details
+- smooth camera motion
+- elegant lighting transition
 ```
 
 A one-shot project should stay small:
@@ -70,11 +89,19 @@ cheap checkpoint → approve → generate → evaluate → refine only what fail
 
 Progress through increasingly demanding productions. Each adds a real production problem, not another abstraction.
 
-### Level 1 — The Impossible Pour
+### Level 1 — Single-shot productions
 
-**6s surreal macro shot**
+**6s single shots**
 
-Learn candidates, selection, refinement, and QC.
+Learn candidates, selection, refinement, and QC. Each example folder holds the prompt, the generated files, and an explanation of what happened.
+
+<!-- Replace preview.gif files after each production run -->
+
+| [![Mechanical Watch Hero](examples/level-1-mechanical-watch-hero/preview.gif)](examples/level-1-mechanical-watch-hero/README.md) | [![Midnight Espresso](examples/level-1-midnight-espresso/preview.gif)](examples/level-1-midnight-espresso/README.md) |
+|---|---|
+| **[Mechanical Watch Hero](examples/level-1-mechanical-watch-hero/README.md)** — luxury product hero | **[Midnight Espresso](examples/level-1-midnight-espresso/README.md)** — food/product commercial |
+| [![Last Train Portrait](examples/level-1-last-train-portrait/preview.gif)](examples/level-1-last-train-portrait/README.md) | [![Boxer at Dawn](examples/level-1-boxer-at-dawn/preview.gif)](examples/level-1-boxer-at-dawn/README.md) |
+| **[Last Train Portrait](examples/level-1-last-train-portrait/README.md)** — cinematic character shot | **[Boxer at Dawn](examples/level-1-boxer-at-dawn/README.md)** — sports-action shot |
 
 ### Level 2 — Last Train Home
 
@@ -208,6 +235,10 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 - [`docs/02-creative-skills-workflows-and-artifacts-spec.md`](docs/02-creative-skills-workflows-and-artifacts-spec.md)
 - [`docs/03-creative-skills-repository-and-contracts-spec.md`](docs/03-creative-skills-repository-and-contracts-spec.md)
 - [`examples/three-shot-character-sequence/`](examples/three-shot-character-sequence/)
+- [`examples/level-1-mechanical-watch-hero/`](examples/level-1-mechanical-watch-hero/)
+- [`examples/level-1-midnight-espresso/`](examples/level-1-midnight-espresso/)
+- [`examples/level-1-last-train-portrait/`](examples/level-1-last-train-portrait/)
+- [`examples/level-1-boxer-at-dawn/`](examples/level-1-boxer-at-dawn/)
 
 ## Contributing
 
