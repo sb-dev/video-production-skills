@@ -1,5 +1,7 @@
 # Video Production Skills
 
+![Video Production Skills](hero.png)
+
 **Direct AI video productions, not isolated generations.**
 
 Video Production Skills gives Agent Skills-compatible coding agents a production workflow around image and video models: plan cheaply, approve creative decisions, preserve continuity, select shots, edit, evaluate, and retry only what failed.
