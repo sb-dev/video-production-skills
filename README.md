@@ -1,112 +1,22 @@
 # Video Production Skills
 
-Domain-native Agent Skills for directing AI-assisted video production from a creative brief to an edited, evaluated video master.
+**Direct AI video productions, not isolated generations.**
 
-The project is deliberately **not** another image/video generation wrapper. It owns production judgement — planning, draft strategy, decision preservation, continuity, editorial progression, evaluation and targeted refinement — while existing provider skills and deterministic media tools own execution.
-
-## Core skills
-
-| Skill | Purpose |
-|---|---|
-| `video-production` | Plan, draft, produce, select, edit and finish video while preserving approved production decisions. |
-| `video-evaluate` | Evaluate video-production artifacts, diagnose the failure layer and recommend the smallest corrective action. |
-
-## Production model
+Video Production Skills gives Agent Skills-compatible coding agents a production workflow around image and video models: plan cheaply, approve creative decisions, preserve continuity, select shots, edit, evaluate, and retry only what failed.
 
 ```text
-Brief
-→ Visual Direction
-→ Storyboard
-→ Shot Plan
-→ Optional Animatic
-→ Reference Frames
-→ Optional Motion Prototypes
-→ Video Shots
-→ Edit Timeline
-→ Picture Lock
-→ Finishing / Audio
-→ Video Master
-→ Evaluation + QC
+brief → plan → approve → generate → select → edit → evaluate → fix locally
 ```
-
-Not every production needs every stage. The core rule is:
-
-> Use the least expensive representation that can resolve the current production uncertainty.
-
-And once a decision is approved:
-
-> Preserve approved decisions and change only what needs to change.
-
-## Execution layer
-
-Video Production Skills sits above existing execution tools:
-
-- **Replicate Agent Skills** — default image/video model discovery, comparison, prompting and execution;
-- **ElevenLabs Agent Skills** — optional speech, transcription and generated sound effects;
-- **FFmpeg / ffprobe** — deterministic media inspection, assembly, rendering and QC evidence;
-- **ImageMagick** — deterministic storyboard/reference/contact sheets;
-- **fal.ai / genmedia** — optional secondary image/video execution for a real capability gap or explicit user choice.
-
-The repository does not implement provider SDKs, static model catalogues, a generic provider interface, a workflow engine or an artifact graph database.
 
 ## Install
 
-The project uses the open `skills` CLI. Project-local installation is the default.
-
-### Inspect available skills
-
-```bash
-npx skills add sb-dev/video-production-skills --list
-```
-
-The repository exposes:
-
-```text
-video-production
-video-evaluate
-```
-
-### Install for Claude Code
-
-Install one skill:
-
 ```bash
 npx skills add sb-dev/video-production-skills \
   --skill video-production \
-  --agent claude-code
+  --skill video-evaluate
 ```
 
-Install both:
-
-```bash
-npx skills add sb-dev/video-production-skills \
-  --skill video-production \
-  --skill video-evaluate \
-  --agent claude-code
-```
-
-### Install for Codex
-
-```bash
-npx skills add sb-dev/video-production-skills \
-  --skill video-production \
-  --skill video-evaluate \
-  --agent codex
-```
-
-Use `--copy --yes` for non-interactive or CI installs where real copied files are preferable to symlinks:
-
-```bash
-npx skills add sb-dev/video-production-skills \
-  --skill video-production \
-  --agent claude-code \
-  --copy \
-  --yes
-```
-
-### Default image/video execution skills
-
-`video-production` delegates image/video model discovery and execution to Replicate's Agent Skills. Install the five peer skills used by the core workflow into the same target agent:
+For the default image/video execution path:
 
 ```bash
 npx skills add replicate/skills \
@@ -114,109 +24,195 @@ npx skills add replicate/skills \
   --skill compare-models \
   --skill prompt-images \
   --skill prompt-videos \
-  --skill run-models \
-  --agent claude-code
+  --skill run-models
 ```
 
-Set the Replicate credential only when provider execution is required:
+Set `REPLICATE_API_TOKEN` when generation is required.
 
-```bash
-export REPLICATE_API_TOKEN=...
-```
+## Quick start — The Impossible Pour
 
-For Codex, replace `--agent claude-code` with `--agent codex`.
-
-### Optional ElevenLabs audio skills
-
-Install only the specialist capabilities the production needs. The core audio set is:
-
-```bash
-npx skills add elevenlabs/skills \
-  --skill text-to-speech \
-  --skill speech-to-text \
-  --skill sound-effects \
-  --agent claude-code
-```
-
-When used:
-
-```bash
-export ELEVENLABS_API_KEY=...
-```
-
-ElevenLabs is optional. Silent productions and productions with supplied audio do not require it.
-
-### Optional secondary image/video execution
-
-fal.ai/genmedia remains a capability fallback, not a default dependency. Do not install or configure it unless a concrete workflow requires a capability unavailable through the default execution path or the user explicitly selects fal.ai.
-
-### Installation validation contract
-
-Repository CI is configured against `skills` CLI **1.5.22** for reproducibility. User-facing commands intentionally remain unpinned so normal installs use the current CLI.
-
-CI validates:
-
-- repository discovery with `--list`;
-- individual installation of both skills;
-- Claude Code and Codex target paths;
-- copied `SKILL.md`, `references/`, and `scripts/` contents;
-- non-interactive installation with `--copy --yes`.
-
-Stage 13 performs the same installation checks locally in clean temporary consumer projects before publication.
-
-### TypeScript runtime and development
-
-Repository automation and deterministic media orchestration are implemented in **TypeScript**. Runtime scripts target **Node.js 24.12+**, where native TypeScript type stripping is stable, and use only erasable TypeScript syntax so installed skills require no TypeScript runtime package.
-
-Development uses a strict `tsconfig.json` and a pinned TypeScript compiler for static checking. Install development dependencies and run the quality gate with:
-
-```bash
-npm ci
-npm test
-```
-
-The compiler configuration enables strict checking plus `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`. External JSON and CLI inputs are validated at runtime instead of being trusted through unchecked type assertions.
-
-### Local deterministic dependencies
-
-Install the tools required by the workflow you intend to use:
+Start with one shot and learn the core production loop.
 
 ```text
-ffmpeg
-ffprobe
-ImageMagick
+Create a 6-second cinematic macro shot called "The Impossible Pour".
+
+A stream of liquid chrome pours upward from a black ceramic cup into a floating
+sphere. Dark studio, narrow rim light, shallow depth of field, premium commercial
+finish.
+
+Use the cheapest useful visual checkpoint before final motion. Show me meaningful
+alternatives, preserve my selection, then produce and evaluate the final shot.
+Keep production artifacts under production/video/.
 ```
 
-Provider credentials are required only when that provider is actually used.
+A one-shot project should stay small:
 
-## Quick start
+```text
+production/video/
+├── brief.md
+├── references/
+├── shots/shot-001/
+│   ├── reference-frame.png
+│   ├── candidates/
+│   ├── selection.json
+│   └── provenance.json
+├── master/video-master.mp4
+└── evaluation/
+```
 
-For production, give the agent a brief and any existing approved references/artifacts. The agent should choose the shortest credible production path instead of mechanically running every stage.
+The important behaviour is:
 
-For evaluation, give `video-evaluate` the artifact plus the most specific available parents and constraints — for example a shot plan and reference frame for a generated shot.
+```text
+cheap checkpoint → approve → generate → evaluate → refine only what failed
+```
 
-See [`examples/three-shot-character-sequence`](examples/three-shot-character-sequence/) for the initial repository scenario.
+## Learn by producing
 
-## Project status
+Progress through increasingly demanding productions. Each adds a real production problem, not another abstraction.
 
-Stages 1–14 of the Creative Production Skills bootstrap process are complete. The repository is published at [github.com/sb-dev/video-production-skills](https://github.com/sb-dev/video-production-skills), local installation validation (Stage 13) passed, and both skills install from GitHub into clean Claude Code and Codex projects (Stage 14).
+### Level 1 — The Impossible Pour
 
-The initial proof deliberately excludes full character-design, product-video, UGC, advanced sound post, advanced finishing, multi-platform delivery, provider optimisation and shared creative-production infrastructure.
+**6s surreal macro shot**
 
-## Specifications
+Learn candidates, selection, refinement, and QC.
 
-The canonical engineering specifications are:
+### Level 2 — Last Train Home
+
+**12s rainy London character scene**
+
+Learn character continuity, storyboard, shot planning, and editing.
+
+```text
+Keep the same woman recognisable across three shots on a rain-soaked London platform.
+Storyboard first, approve the sequence, and if one shot fails regenerate only that shot.
+```
+
+Adds `visual-direction.md`, `storyboard/`, `shot-plan.json`, and `edit/`.
+
+### Level 3 — Obsidian No. 7
+
+**15s luxury fragrance commercial**
+
+Learn product fidelity, graphics, audio, and delivery variants.
+
+```text
+Make a luxury fragrance commercial while keeping bottle geometry, label placement,
+glass colour and typography fixed across four radically different shots. Add voice-over,
+sound design, an end card, and 16:9 + 9:16 delivery versions.
+```
+
+Adds product references/manifests, `graphics/`, `audio/`, and `delivery/`.
+
+### Level 4 — Signal Lost
+
+**35s sci-fi micro-film**
+
+Learn shared references, sequences, animatics, and editorial iteration.
+
+```text
+Make a 35-second sci-fi micro-film about an astronaut receiving a transmission from Earth
+after years of silence. Plan three sequences, use animatics before expensive motion, then
+diagnose pacing from the rough cut before revising anything.
+```
+
+Adds `shared/` references and `sequences/` when a flat shot list stops scaling.
+
+### Level 5 — Aster Launch
+
+**Hero film + product demo + social teaser**
+
+Learn multiple productions and cross-domain handoffs.
+
+```text
+Produce a 45s hero film, 20s product demo and 10s social teaser for a fictional electric
+motorcycle. Reuse approved product and visual references while each video keeps its own
+brief, edit and master.
+```
+
+At this level the project can compose other Creative Production Skills through artifacts:
+
+```text
+production/
+├── advertising/   # audience, proposition, claims
+├── narrative/     # story and scenes
+├── music/         # composition and master
+└── video/         # visual production and video masters
+```
+
+## Project structure grows with the work
+
+**One shot**  
+Use `brief`, `references`, `shots`, `master`, and `evaluation`.
+
+**Shots must work together**  
+Add `visual-direction`, `storyboard`, `shot-plan`, and `edit`.
+
+**Product, audio, or delivery matter**  
+Add manifests, `graphics`, `audio`, and `delivery`.
+
+**A flat shot list stops scaling**  
+Add `shared` and `sequences`.
+
+**Several distinct videos share assets**  
+Use `video/shared` and `video/productions`.
+
+**Other creative domains contribute**  
+Use `production/{advertising,narrative,music,video}`.
+
+Keep the structure lean:
+
+- a shot is the smallest retryable production unit;
+- selections point to candidates instead of copying them into `selected/` folders;
+- lifecycle state lives in artifact metadata, not global `draft/approved/final` trees;
+- `shared/` exists only for genuinely shared artifacts;
+- masters stay separate from delivery variants.
+
+## Skills
+
+### `video-production`
+
+Plan, draft, generate, select, edit and finish video while preserving approved decisions.
+
+### `video-evaluate`
+
+Diagnose the failure layer and recommend the smallest corrective action.
+
+Evaluation is actionable rather than just a score:
+
+```text
+wrong composition      → revise reference frame or affected shot
+wrong camera movement  → revise shot plan and affected shot
+good shots, poor pace  → revise edit
+corrupt media          → fail technical QC
+```
+
+## Execution
+
+The skills decide **what production work is needed**. Existing tools execute it.
+
+- **Replicate Agent Skills** — default image/video model discovery and execution
+- **ElevenLabs Agent Skills** — optional speech, transcription and sound effects
+- **FFmpeg / ffprobe** — assembly, inspection and QC
+- **ImageMagick** — deterministic image operations
+- **fal.ai / genmedia** — optional secondary execution path
+
+Deterministic scripts are TypeScript and target **Node.js 24.12+**.
+
+> **Use the least expensive representation that can resolve the current production uncertainty.**
+>
+> **Preserve approved decisions and change only what needs to change.**
+
+## Documentation
 
 - [`docs/01-creative-skills-system-spec.md`](docs/01-creative-skills-system-spec.md)
 - [`docs/02-creative-skills-workflows-and-artifacts-spec.md`](docs/02-creative-skills-workflows-and-artifacts-spec.md)
 - [`docs/03-creative-skills-repository-and-contracts-spec.md`](docs/03-creative-skills-repository-and-contracts-spec.md)
-
-Potential shared abstractions are tracked in [`docs/extraction-candidates.md`](docs/extraction-candidates.md) and remain local until at least two production domains independently prove equivalent semantics.
+- [`examples/three-shot-character-sequence/`](examples/three-shot-character-sequence/)
 
 ## Contributing
 
-Contributions should solve a demonstrated production problem, preserve approved behaviour, include an eval, and avoid adding generic infrastructure before real workflows justify it. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## Licence
+## License
 
 Apache-2.0. See [`LICENSE`](LICENSE).
