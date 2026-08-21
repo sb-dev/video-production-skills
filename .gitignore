@@ -8,3 +8,12 @@ tmp/
 outputs/
 generated/
 *.log
+
+# Rejected candidates from example production runs — kept locally for
+# reference, not tracked (SELECTED_* files are the keepers and stay tracked)
+examples/*/eval/
+examples/*/shots/cand*.mp4
+examples/*/shots/payload_cand*.json
+examples/*/reference/ref_*.png
+examples/*/reference/ref_*.jpg
+examples/*/reference/ref_frame_datauri.txt
