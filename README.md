@@ -89,7 +89,7 @@ cheap checkpoint → approve → generate → evaluate → refine only what fail
 
 Progress through increasingly demanding productions. Each adds a real production problem, not another abstraction.
 
-### Level 1 — Single-shot productions
+### Level 1 — Control one shot
 
 **6s single shots**
 
@@ -103,58 +103,67 @@ Learn candidates, selection, refinement, and QC. Each example folder holds the p
 | [![Last Train Portrait](examples/level-1-last-train-portrait/preview.gif)](examples/level-1-last-train-portrait/README.md) | [![Boxer at Dawn](examples/level-1-boxer-at-dawn/preview.gif)](examples/level-1-boxer-at-dawn/README.md) |
 | **[Last Train Portrait](examples/level-1-last-train-portrait/README.md)** — cinematic character shot | **[Boxer at Dawn](examples/level-1-boxer-at-dawn/README.md)** — sports-action shot |
 
-### Level 2 — Last Train Home
+### Level 2 — Make shots work together
 
-**12s rainy London character scene**
+**12–15s three-shot sequences**
 
 Learn character continuity, storyboard, shot planning, and editing.
 
-```text
-Keep the same woman recognisable across three shots on a rain-soaked London platform.
-Storyboard first, approve the sequence, and if one shot fails regenerate only that shot.
-```
+<!-- Replace preview.gif files after each production run -->
+
+| [![Last Train Home](examples/level-2-last-train-home/preview.gif)](examples/level-2-last-train-home/README.md) | [![Missed Connection](examples/level-2-missed-connection/preview.gif)](examples/level-2-missed-connection/README.md) |
+|---|---|
+| **[Last Train Home](examples/level-2-last-train-home/README.md)** — three-shot character sequence | **[Missed Connection](examples/level-2-missed-connection/README.md)** — two-character near miss |
+| [![The Red Umbrella](examples/level-2-the-red-umbrella/preview.gif)](examples/level-2-the-red-umbrella/README.md) | [![The Letter](examples/level-2-the-letter/preview.gif)](examples/level-2-the-letter/README.md) |
+| **[The Red Umbrella](examples/level-2-the-red-umbrella/README.md)** — colour-anchor tracking sequence | **[The Letter](examples/level-2-the-letter/README.md)** — restrained prop drama |
 
 Adds `visual-direction.md`, `storyboard/`, `shot-plan.json`, and `edit/`.
 
-### Level 3 — Obsidian No. 7
+### Level 3 — Produce a commercial
 
-**15s luxury fragrance commercial**
+**15s commercials with audio and delivery variants**
 
 Learn product fidelity, graphics, audio, and delivery variants.
 
-```text
-Make a luxury fragrance commercial while keeping bottle geometry, label placement,
-glass colour and typography fixed across four radically different shots. Add voice-over,
-sound design, an end card, and 16:9 + 9:16 delivery versions.
-```
+<!-- Replace preview.gif files after each production run -->
+
+| [![Obsidian No. 7](examples/level-3-obsidian-no-7/preview.gif)](examples/level-3-obsidian-no-7/README.md) | [![Arc One](examples/level-3-arc-one/preview.gif)](examples/level-3-arc-one/README.md) |
+|---|---|
+| **[Obsidian No. 7](examples/level-3-obsidian-no-7/README.md)** — luxury fragrance | **[Arc One](examples/level-3-arc-one/README.md)** — wireless headphones |
+| [![Apex](examples/level-3-apex/preview.gif)](examples/level-3-apex/README.md) | [![Ember](examples/level-3-ember/preview.gif)](examples/level-3-ember/README.md) |
+| **[Apex](examples/level-3-apex/README.md)** — running shoe | **[Ember](examples/level-3-ember/README.md)** — espresso machine |
 
 Adds product references/manifests, `graphics/`, `audio/`, and `delivery/`.
 
-### Level 4 — Signal Lost
+### Level 4 — Direct a short
 
-**35s sci-fi micro-film**
+**30–45s multi-sequence micro-films**
 
 Learn shared references, sequences, animatics, and editorial iteration.
 
-```text
-Make a 35-second sci-fi micro-film about an astronaut receiving a transmission from Earth
-after years of silence. Plan three sequences, use animatics before expensive motion, then
-diagnose pacing from the rough cut before revising anything.
-```
+<!-- Replace preview.gif files after each production run -->
+
+| [![Signal Lost](examples/level-4-signal-lost/preview.gif)](examples/level-4-signal-lost/README.md) | [![Night Courier](examples/level-4-night-courier/preview.gif)](examples/level-4-night-courier/README.md) |
+|---|---|
+| **[Signal Lost](examples/level-4-signal-lost/README.md)** — sci-fi micro-film | **[Night Courier](examples/level-4-night-courier/README.md)** — urban action micro-film |
+| [![The Last Light](examples/level-4-the-last-light/preview.gif)](examples/level-4-the-last-light/README.md) | [![Room 417](examples/level-4-room-417/preview.gif)](examples/level-4-room-417/README.md) |
+| **[The Last Light](examples/level-4-the-last-light/README.md)** — atmospheric storm short | **[Room 417](examples/level-4-room-417/README.md)** — suspense micro-film |
 
 Adds `shared/` references and `sequences/` when a flat shot list stops scaling.
 
-### Level 5 — Aster Launch
+### Level 5 — Run a video campaign
 
-**Hero film + product demo + social teaser**
+**Hero film + product film + social + bumper**
 
 Learn multiple productions and cross-domain handoffs.
 
-```text
-Produce a 45s hero film, 20s product demo and 10s social teaser for a fictional electric
-motorcycle. Reuse approved product and visual references while each video keeps its own
-brief, edit and master.
-```
+<!-- Replace preview.gif files after each production run -->
+
+| [![Aster](examples/level-5-aster/preview.gif)](examples/level-5-aster/README.md) | [![Nova](examples/level-5-nova/preview.gif)](examples/level-5-nova/README.md) |
+|---|---|
+| **[Aster](examples/level-5-aster/README.md)** — electric motorcycle campaign | **[Nova](examples/level-5-nova/README.md)** — AR glasses campaign |
+| [![Helios](examples/level-5-helios/preview.gif)](examples/level-5-helios/README.md) | [![Atlas One](examples/level-5-atlas-one/preview.gif)](examples/level-5-atlas-one/README.md) |
+| **[Helios](examples/level-5-helios/README.md)** — home robot campaign | **[Atlas One](examples/level-5-atlas-one/README.md)** — adventure e-bike campaign |
 
 At this level the project can compose other Creative Production Skills through artifacts:
 
@@ -239,6 +248,22 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 - [`examples/level-1-midnight-espresso/`](examples/level-1-midnight-espresso/)
 - [`examples/level-1-last-train-portrait/`](examples/level-1-last-train-portrait/)
 - [`examples/level-1-boxer-at-dawn/`](examples/level-1-boxer-at-dawn/)
+- [`examples/level-2-last-train-home/`](examples/level-2-last-train-home/)
+- [`examples/level-2-missed-connection/`](examples/level-2-missed-connection/)
+- [`examples/level-2-the-red-umbrella/`](examples/level-2-the-red-umbrella/)
+- [`examples/level-2-the-letter/`](examples/level-2-the-letter/)
+- [`examples/level-3-obsidian-no-7/`](examples/level-3-obsidian-no-7/)
+- [`examples/level-3-arc-one/`](examples/level-3-arc-one/)
+- [`examples/level-3-apex/`](examples/level-3-apex/)
+- [`examples/level-3-ember/`](examples/level-3-ember/)
+- [`examples/level-4-signal-lost/`](examples/level-4-signal-lost/)
+- [`examples/level-4-night-courier/`](examples/level-4-night-courier/)
+- [`examples/level-4-the-last-light/`](examples/level-4-the-last-light/)
+- [`examples/level-4-room-417/`](examples/level-4-room-417/)
+- [`examples/level-5-aster/`](examples/level-5-aster/)
+- [`examples/level-5-nova/`](examples/level-5-nova/)
+- [`examples/level-5-helios/`](examples/level-5-helios/)
+- [`examples/level-5-atlas-one/`](examples/level-5-atlas-one/)
 
 ## Contributing
 
