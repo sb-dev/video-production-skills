@@ -1,0 +1,72 @@
+{
+  "skill": "video-evaluate",
+  "cases": [
+    {
+      "id": "normal-shot",
+      "class": "normal",
+      "given": "video shot + reference frame + shot plan",
+      "expect": [
+        "evaluate against production parents",
+        "report concrete evidence",
+        "return actionable verdict"
+      ]
+    },
+    {
+      "id": "draft-storyboard",
+      "class": "draft",
+      "given": "rough storyboard",
+      "expect": [
+        "evaluate sequence",
+        "evaluate shot purpose",
+        "evaluate placement",
+        "find material continuity contradictions",
+        "judge decision usefulness"
+      ],
+      "forbid": [
+        "fail solely for low visual polish"
+      ]
+    },
+    {
+      "id": "refine-child",
+      "class": "refinement",
+      "given": "approved parent + refined child + requested changes",
+      "expect": [
+        "verify requested correction",
+        "verify preservation",
+        "identify regressions",
+        "recommend accept or refine"
+      ]
+    },
+    {
+      "id": "final-master",
+      "class": "final",
+      "given": "video master + technical requirements + brief",
+      "expect": [
+        "creative evaluation",
+        "continuity evaluation",
+        "technical QC",
+        "distinct evaluation_report and qc_report semantics"
+      ]
+    },
+    {
+      "id": "boundary-editorial",
+      "class": "failure-boundary",
+      "given": "good individual shots with poor sequence pacing",
+      "expect": [
+        "failure layer editorial",
+        "recommended action revise-edit"
+      ],
+      "forbid": [
+        "recommend regenerating unrelated shots"
+      ]
+    },
+    {
+      "id": "boundary-corrupt-media",
+      "class": "failure-boundary",
+      "given": "corrupt video fixture",
+      "expect": [
+        "fail deterministic QC before semantic evaluation"
+      ]
+    }
+  ]
+}
