@@ -1,0 +1,34 @@
+{
+  "id": "8q7g7nhjf9rmt0d0543rgtc0s8",
+  "model": "bytedance/seedance-1-pro",
+  "version": "hidden",
+  "input": {
+    "aspect_ratio": "16:9",
+    "duration": 6,
+    "image": "data:image/jpeg;base64,...",
+    "prompt": "Live-action cinematic character shot. Single continuous 6-second take, no cuts.\n\nMotion: The woman in the dark charcoal overcoat stands still on the wet platform, her head turned in three-quarter profile away from the lens toward camera-left, her gaze resting off frame. She holds this for the first moment. Then she slowly turns her head back toward the camera \u2014 the chin leads, the head rotates smoothly through about forty-five degrees, and her shoulders follow a beat late and only slightly. Her damp hair carries the momentum of the turn and settles against her cheek and collar. She blinks once, slowly, as the turn completes. She comes to rest in a near three-quarter view with her eyes settling just off the lens, not staring into it, and holds there with only the smallest settle of the head and a faint breath in the shoulders. Her expression stays quiet, inward and unsmiling throughout. She does not smile, does not speak, and does not move her feet or her body position.\n\nBackground: A train is already passing behind her on the far track when the shot begins and continues passing throughout \u2014 its lit windows and body panels smear into long horizontal motion-blurred streaks of light travelling steadily across the frame behind her head. The streaking is continuous; the train never starts, stops or reverses. Light rain falls continuously and steadily for the entire shot, fine streaks catching the backlight, never starting or stopping and never becoming heavy. Water sits on her shoulders and hair and stays there.\n\nCamera: One single continuous very slow push-in on the long axis, a barely perceptible creep toward her over the six seconds. Dolly-smooth and mechanical, no handheld shake, no wobble, no orbit, no rack focus, no zoom snap. Shallow depth of field is held on her eyes; the platform, the canopy column and the passing train stay soft behind her.\n\nLighting stays constant: low-key practical night lighting, warm sodium platform lamp raking across her face, cool light from the canopy fixtures and the train windows putting a cold rim on her hair, shoulder and collar, low warm bounce off the wet platform. Deep but open shadows, desaturated sodium-and-teal grade, mild halation on the lamp, fine film grain. No lighting changes, no flicker, no exposure shift.\n\nIdentity holds absolutely: the same woman throughout, the same face structure, the same eyes, nose, mouth and jawline, the same damp dark shoulder-length hair, the same earring, the same charcoal wool coat with the collar turned up. Her face must not change, drift, morph, age or become a different person at any point in the shot. Everything else holds exactly as in the first frame: same framing, same environment, same wet platform, same night grade.",
+    "resolution": "1080p"
+  },
+  "logs": "Using seed: 1696471865\nPrompt length 2745 exceeds 2000 characters, truncating to 2000 characters\nGenerating video...\nGenerated video in 64.0sec\nDownloading 11131317 bytes\nDownloaded 10.62MB in 3.35sec\n",
+  "output": "https://replicate.delivery/xezq/ev0KeyuhWntIqEuWJHItQwbZ7IhT1Cxvsvn7zSWQ8euhnlLuA/tmpyoyd9o_u.mp4",
+  "data_removed": false,
+  "error": null,
+  "source": "api",
+  "status": "succeeded",
+  "created_at": "2026-08-22T10:32:12.666Z",
+  "started_at": "2026-08-22T10:32:12.700283044Z",
+  "completed_at": "2026-08-22T10:33:22.248261993Z",
+  "urls": {
+    "cancel": "https://api.replicate.com/v1/predictions/8q7g7nhjf9rmt0d0543rgtc0s8/cancel",
+    "get": "https://api.replicate.com/v1/predictions/8q7g7nhjf9rmt0d0543rgtc0s8",
+    "stream": "https://stream.replicate.com/v1/files/jbxs-oxb5rcde33himwbbbfd5mkhb5ivxsscpshh7qswe3tlvzisswj3q",
+    "web": "https://replicate.com/p/8q7g7nhjf9rmt0d0543rgtc0s8"
+  },
+  "metrics": {
+    "predict_time": 69.54797895,
+    "resolution_target": "1080p",
+    "token_output_count": 295800,
+    "total_time": 69.582261993,
+    "video_output_duration_seconds": 6
+  }
+}
