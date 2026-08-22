@@ -26,7 +26,7 @@ video-production-skills/
 │   ├── 01-creative-skills-system-spec.md
 │   ├── 02-creative-skills-workflows-and-artifacts-spec.md
 │   ├── 03-creative-skills-repository-and-contracts-spec.md
-│   └── extraction-candidates.md
+│   └── 2026-08-20-extraction-candidates.md
 │
 ├── skills/
 │   ├── video-production/

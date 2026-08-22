@@ -16,4 +16,4 @@
 
 ## Cross-project/provider duplication
 
-<!-- Does this duplicate provider functionality or another production project? If yes, explain why it remains local or update extraction-candidates.md. -->
+<!-- Does this duplicate provider functionality or another production project? If yes, explain why it remains local or update 2026-08-20-extraction-candidates.md. -->

@@ -259,8 +259,7 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 ### Process and reports
 
 - [New Project Bootstrap Process](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md)
-- [Extraction Candidates](docs/extraction-candidates.md)
-- [Stage 13 Local Validation Report](docs/video-production-skills-stage-13-validation-report.md)
+- [Extraction Candidates](docs/2026-08-20-extraction-candidates.md)
 
 ### Skills
 
@@ -273,7 +272,6 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 
 ### Examples
 
-- [Three-Shot Character Sequence](examples/three-shot-character-sequence/README.md)
 - Level 1 — Control one shot
   - [Mechanical Watch Hero](examples/level-1-mechanical-watch-hero/README.md)
   - [Midnight Espresso](examples/level-1-midnight-espresso/README.md)

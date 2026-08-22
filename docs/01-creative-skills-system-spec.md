@@ -795,7 +795,7 @@ A deferred concept should be promoted only when concrete workflows prove that it
 Potential cross-domain abstractions belong in:
 
 ```text
-docs/extraction-candidates.md
+docs/2026-08-20-extraction-candidates.md
 ```
 
 A concept may move into Creative Production Skills only when:
