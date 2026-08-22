@@ -1,0 +1,9 @@
+{
+  "model": "google/nano-banana-pro",
+  "input": {
+    "prompt": "Cinematic macro product photograph, 16:9. Extreme close-up of a polished chrome commercial espresso machine group head with a dual-spout portafilter in the upper right of frame, dispensing two thin glossy dark-amber streams of espresso down into a small thick-walled matte cream ceramic demitasse cup sitting in the lower left third of frame on a dark walnut tabletop. The espresso streams are continuous and unbroken, catching a bright specular highlight. The cup is half full of dense hazelnut-brown crema with fine bubbles and a marbled tiger-mottle swirl where the stream lands. Thin delicate wisps of steam rise from the cup surface and the spout, clearly separated from the dark background by a hard warm backlight.\n\nLighting: low-key warm commercial lighting, 3000K amber key, hard rim backlight from behind and slightly above creating a bright specular edge along the chrome portafilter and the ceramic cup lip, soft warm bounce fill from camera left, deep brown-to-black background falloff.\n\nLens: 100mm macro, shallow depth of field, focus plane on the crema surface and the spout tip, background dissolving into soft warm bokeh.\n\nTexture detail: brushed and polished metal grain on the chrome, matte tooth on the ceramic glaze, glossy wet reflections on the crema surface, tiny condensation beading on the metal.\n\nStyle: high-end coffee commercial still, rich and tactile and appetising, warm amber and deep brown palette, subtle fine film grain, photorealistic.\n\nNegative: no hands, no people, no text, no logos, no branding, no beans, no spoons, no saucer, no clutter, no latte art, no cool blue tones, no flat even lighting, no visible room or window.",
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}
