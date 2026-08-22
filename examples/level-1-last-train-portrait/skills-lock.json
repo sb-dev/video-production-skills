@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "skills": {
+    "compare-models": {
+      "source": "replicate/skills",
+      "sourceType": "github",
+      "skillPath": "skills/compare-models/SKILL.md",
+      "computedHash": "5d4fe54ff195b0130b119259800041506b31405f0125cb5aeb6171b2c43cbcef"
+    },
+    "find-models": {
+      "source": "replicate/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-models/SKILL.md",
+      "computedHash": "461f410d7dce3d867b86401ca03cba89033663f4456ec4b721a4f8719f5781bd"
+    },
+    "prompt-images": {
+      "source": "replicate/skills",
+      "sourceType": "github",
+      "skillPath": "skills/prompt-images/SKILL.md",
+      "computedHash": "e3faef72484b363f5f4bc726a6f9eabcbc079c40a6bc42024cfa567a7ea1030b"
+    },
+    "prompt-videos": {
+      "source": "replicate/skills",
+      "sourceType": "github",
+      "skillPath": "skills/prompt-videos/SKILL.md",
+      "computedHash": "02d0caea1517865c91dfac73f8106c95dedcceead624ae65c3ebf506d10c5639"
+    },
+    "run-models": {
+      "source": "replicate/skills",
+      "sourceType": "github",
+      "skillPath": "skills/run-models/SKILL.md",
+      "computedHash": "1aae8f440533d27e35be0eb11e6495a46f833937a7ed20ce22e45ce403b1cbb1"
+    },
+    "video-evaluate": {
+      "source": "sb-dev/video-production-skills",
+      "sourceType": "github",
+      "skillPath": "skills/video-evaluate/SKILL.md",
+      "computedHash": "5dd0101b6f6d67465327fe28de7a6821b9962b27983b70b7e381f238bb02c18b"
+    },
+    "video-production": {
+      "source": "sb-dev/video-production-skills",
+      "sourceType": "github",
+      "skillPath": "skills/video-production/SKILL.md",
+      "computedHash": "00c7026dd43b4dd47b60195ca3457d374330cb2c14222e248fbbda8565a5d7d8"
+    }
+  }
+}

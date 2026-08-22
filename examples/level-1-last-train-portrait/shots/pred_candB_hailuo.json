@@ -1,0 +1,35 @@
+{
+  "id": "d65kgnwtj9rmt0d0542rr5w18w",
+  "model": "minimax/hailuo-2.3",
+  "version": "hidden",
+  "input": {
+    "duration": 6,
+    "first_frame_image": "data:image/jpeg;base64,...",
+    "prompt": "Live-action cinematic character shot. Single continuous 6-second take, no cuts.\n\nMotion: The woman in the dark charcoal overcoat stands still on the wet platform, her head turned in three-quarter profile away from the lens toward camera-left, her gaze resting off frame. She holds this for the first moment. Then she slowly turns her head back toward the camera \u2014 the chin leads, the head rotates smoothly through about forty-five degrees, and her shoulders follow a beat late and only slightly. Her damp hair carries the momentum of the turn and settles against her cheek and collar. She blinks once, slowly, as the turn completes. She comes to rest in a near three-quarter view with her eyes settling just off the lens, not staring into it, and holds there with only the smallest settle of the head and a faint breath in the shoulders. Her expression stays quiet, inward and unsmiling throughout. She does not smile, does not speak, and does not move her feet or her body position.\n\nBackground: A train is already passing behind her on the far track when the shot begins and continues passing throughout \u2014 its lit windows and body panels smear into long horizontal motion-blurred streaks of light travelling steadily across the frame behind her head. The streaking is continuous; the train never starts, stops or reverses. Light rain falls continuously and steadily for the entire shot, fine streaks catching the backlight, never starting or stopping and never becoming heavy. Water sits on her shoulders and hair and stays there.\n\nCamera: One single continuous very slow push-in on the long axis, a barely perceptible creep toward her over the six seconds. Dolly-smooth and mechanical, no handheld shake, no wobble, no orbit, no rack focus, no zoom snap. Shallow depth of field is held on her eyes; the platform, the canopy column and the passing train stay soft behind her.\n\nLighting stays constant: low-key practical night lighting, warm sodium platform lamp raking across her face, cool light from the canopy fixtures and the train windows putting a cold rim on her hair, shoulder and collar, low warm bounce off the wet platform. Deep but open shadows, desaturated sodium-and-teal grade, mild halation on the lamp, fine film grain. No lighting changes, no flicker, no exposure shift.\n\nIdentity holds absolutely: the same woman throughout, the same face structure, the same eyes, nose, mouth and jawline, the same damp dark shoulder-length hair, the same earring, the same charcoal wool coat with the collar turned up. Her face must not change, drift, morph, age or become a different person at any point in the shot. Everything else holds exactly as in the first frame: same framing, same environment, same wet platform, same night grade.",
+    "prompt_optimizer": false,
+    "resolution": "1080p"
+  },
+  "logs": "Prompt is too long, truncating to the first 2000 characters\nWarning: Moderation check failed: Error code: 401 - {'error': {'message': 'The OpenAI account associated with this API key has been deactivated. If you are the developer for this OpenAI app, please check your email for more information. If you are seeing this error while using another app or site, please reach out to them for more help.', 'type': 'invalid_request_error', 'code': 'account_deactivated', 'param': None}, 'status': 401}\nWarning: Moderation check failed: Error code: 401 - {'error': {'message': 'The OpenAI account associated with this API key has been deactivated. If you are the developer for this OpenAI app, please check your email for more information. If you are seeing this error while using another app or site, please reach out to them for more help.', 'type': 'invalid_request_error', 'code': 'account_deactivated', 'param': None}, 'status': 401}\nGenerating video...\nStill generating...\nStill generating...\nStill generating...\nStill generating...\nGenerated video in 155.7sec\nRetrieving file...\nDownloading 3178020 bytes\nDownloaded 3.03MB in 2.88sec\n",
+  "output": "https://replicate.delivery/xezq/wxpYGIBJ07ptPh3uzqxS6E6JOc49q3CrCVyGEzpFPcx4scxF/tmphilm_3ab.mp4",
+  "data_removed": false,
+  "error": null,
+  "source": "api",
+  "status": "succeeded",
+  "created_at": "2026-08-22T10:30:28.242Z",
+  "started_at": "2026-08-22T10:30:28.274498191Z",
+  "completed_at": "2026-08-22T10:33:07.094457182Z",
+  "urls": {
+    "cancel": "https://api.replicate.com/v1/predictions/d65kgnwtj9rmt0d0542rr5w18w/cancel",
+    "get": "https://api.replicate.com/v1/predictions/d65kgnwtj9rmt0d0542rr5w18w",
+    "stream": "https://stream.replicate.com/v1/files/jbxs-y4sfz3hzoqhhnmbsiy3jg43y7vvnaqfxzfc73tvscnunh4dab7ga",
+    "web": "https://replicate.com/p/d65kgnwtj9rmt0d0542rr5w18w"
+  },
+  "metrics": {
+    "model_variant": "t2v",
+    "predict_time": 158.819958981,
+    "resolution_target": "1080P",
+    "total_time": 158.852457182,
+    "video_output_count": 1,
+    "video_output_duration_seconds": 6
+  }
+}
