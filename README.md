@@ -21,7 +21,8 @@ The workflow is designed to plan cheaply, approve creative decisions, preserve c
 ```bash
 npx skills add sb-dev/video-production-skills \
   --skill video-production \
-  --skill video-evaluate
+  --skill video-evaluate \
+  --agent claude-code
 ```
 
 For the default image/video execution path:
@@ -32,8 +33,11 @@ npx skills add replicate/skills \
   --skill compare-models \
   --skill prompt-images \
   --skill prompt-videos \
-  --skill run-models
+  --skill run-models \
+  --agent claude-code
 ```
+
+For Codex: use `--agent codex` instead.
 
 Set `REPLICATE_API_TOKEN` when generation is required.
 
