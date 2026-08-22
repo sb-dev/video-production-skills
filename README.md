@@ -4,11 +4,17 @@
 
 **Direct AI video productions, not isolated generations.**
 
-Video Production Skills gives Agent Skills-compatible coding agents a production workflow around image and video models: plan cheaply, approve creative decisions, preserve continuity, select shots, edit, evaluate, and retry only what failed.
+Video Production Skills gives AI coding agents a production workflow for turning a brief into a finished video.  
 
-```text
-brief → plan → approve → generate → select → edit → evaluate → fix locally
-```
+It supports the full production process:
+- **Creative definition**: visual direction, character sheets and manifests, product manifests
+- **Previsualisation**: storyboards, shot plans, animatics
+- **Shot development**: reference frames, motion prototypes, video-shot production and selection
+- **Editorial**: continuity, editing, audio integration
+- **Finishing and delivery**: mastering and delivery variants
+- **Quality**: evaluation, technical QC and targeted refinement. 
+
+The workflow is designed to plan cheaply, approve creative decisions, preserve continuity, select shots, edit, evaluate, and retry only what failed.
 
 ## Install
 
