@@ -253,13 +253,43 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 ### Specifications
 
 - [Creative Skills System Specification](docs/01-creative-skills-system-spec.md)
+  - [Core Principles](docs/01-creative-skills-system-spec.md#5-core-principles)
+  - [High-Level Production Model](docs/01-creative-skills-system-spec.md#8-high-level-production-model)
+  - [Core Skills](docs/01-creative-skills-system-spec.md#9-core-skills)
+  - [Execution Architecture](docs/01-creative-skills-system-spec.md#10-execution-architecture)
+  - [Production State](docs/01-creative-skills-system-spec.md#11-production-state)
+  - [Build Order](docs/01-creative-skills-system-spec.md#19-build-order)
+  - [System Acceptance Criteria](docs/01-creative-skills-system-spec.md#22-system-acceptance-criteria)
 - [Creative Skills Workflows and Artifacts Specification](docs/02-creative-skills-workflows-and-artifacts-spec.md)
+  - [Production Model](docs/02-creative-skills-workflows-and-artifacts-spec.md#2-production-model)
+  - [State Model](docs/02-creative-skills-workflows-and-artifacts-spec.md#3-state-model)
+  - [Draft Strategy](docs/02-creative-skills-workflows-and-artifacts-spec.md#4-draft-strategy)
+  - [First-Class Artifacts](docs/02-creative-skills-workflows-and-artifacts-spec.md#6-first-class-artifacts)
+  - [Editorial Workflow](docs/02-creative-skills-workflows-and-artifacts-spec.md#18-editorial-workflow)
+  - [Evaluation Lifecycle](docs/02-creative-skills-workflows-and-artifacts-spec.md#26-evaluation-lifecycle)
+  - [Failure Taxonomy](docs/02-creative-skills-workflows-and-artifacts-spec.md#30-failure-taxonomy)
+  - [Core Workflows](docs/02-creative-skills-workflows-and-artifacts-spec.md#32-core-workflows)
 - [Creative Skills Repository and Contracts Specification](docs/03-creative-skills-repository-and-contracts-spec.md)
+  - [Canonical Repository Structure](docs/03-creative-skills-repository-and-contracts-spec.md#2-canonical-repository-structure)
+  - [`video-production/SKILL.md` Contract](docs/03-creative-skills-repository-and-contracts-spec.md#9-video-productionskillmd-contract)
+  - [`video-evaluate/SKILL.md` Contract](docs/03-creative-skills-repository-and-contracts-spec.md#10-video-evaluateskillmd-contract)
+  - [Eval Requirements](docs/03-creative-skills-repository-and-contracts-spec.md#13-eval-requirements)
+  - [Installation Expectations](docs/03-creative-skills-repository-and-contracts-spec.md#19-installation-expectations)
+  - [Technical Acceptance Criteria](docs/03-creative-skills-repository-and-contracts-spec.md#26-technical-acceptance-criteria)
 
 ### Process and reports
 
 - [New Project Bootstrap Process](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md)
+  - [Governing Principles](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#3-governing-principles)
+  - [Bootstrap Flow](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#4-bootstrap-flow)
+  - [Generate the Three Canonical Specs](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#13-stage-9--generate-the-three-canonical-specs)
+  - [Canonical Installation Mechanism](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#17-canonical-installation-mechanism)
+  - [Scaffold Acceptance Gate](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#26-scaffold-acceptance-gate)
+  - [Publication Acceptance Gate](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#27-publication-acceptance-gate)
 - [Extraction Candidates](docs/2026-08-20-extraction-candidates.md)
+  - [Candidate Register](docs/2026-08-20-extraction-candidates.md#2-candidate-register)
+  - [Explicit Non-Candidates](docs/2026-08-20-extraction-candidates.md#3-explicit-non-candidates)
+  - [Review Trigger](docs/2026-08-20-extraction-candidates.md#4-review-trigger)
 
 ### Skills
 
