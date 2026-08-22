@@ -244,30 +244,55 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 
 ## Documentation
 
-- [`docs/01-creative-skills-system-spec.md`](docs/01-creative-skills-system-spec.md)
-- [`docs/02-creative-skills-workflows-and-artifacts-spec.md`](docs/02-creative-skills-workflows-and-artifacts-spec.md)
-- [`docs/03-creative-skills-repository-and-contracts-spec.md`](docs/03-creative-skills-repository-and-contracts-spec.md)
-- [`examples/three-shot-character-sequence/`](examples/three-shot-character-sequence/)
-- [`examples/level-1-mechanical-watch-hero/`](examples/level-1-mechanical-watch-hero/)
-- [`examples/level-1-midnight-espresso/`](examples/level-1-midnight-espresso/)
-- [`examples/level-1-last-train-portrait/`](examples/level-1-last-train-portrait/)
-- [`examples/level-1-boxer-at-dawn/`](examples/level-1-boxer-at-dawn/)
-- [`examples/level-2-last-train-home/`](examples/level-2-last-train-home/)
-- [`examples/level-2-missed-connection/`](examples/level-2-missed-connection/)
-- [`examples/level-2-the-red-umbrella/`](examples/level-2-the-red-umbrella/)
-- [`examples/level-2-the-letter/`](examples/level-2-the-letter/)
-- [`examples/level-3-obsidian-no-7/`](examples/level-3-obsidian-no-7/)
-- [`examples/level-3-arc-one/`](examples/level-3-arc-one/)
-- [`examples/level-3-apex/`](examples/level-3-apex/)
-- [`examples/level-3-ember/`](examples/level-3-ember/)
-- [`examples/level-4-signal-lost/`](examples/level-4-signal-lost/)
-- [`examples/level-4-night-courier/`](examples/level-4-night-courier/)
-- [`examples/level-4-the-last-light/`](examples/level-4-the-last-light/)
-- [`examples/level-4-room-417/`](examples/level-4-room-417/)
-- [`examples/level-5-aster/`](examples/level-5-aster/)
-- [`examples/level-5-nova/`](examples/level-5-nova/)
-- [`examples/level-5-helios/`](examples/level-5-helios/)
-- [`examples/level-5-atlas-one/`](examples/level-5-atlas-one/)
+### Specifications
+
+- [Creative Skills System Specification](docs/01-creative-skills-system-spec.md)
+- [Creative Skills Workflows and Artifacts Specification](docs/02-creative-skills-workflows-and-artifacts-spec.md)
+- [Creative Skills Repository and Contracts Specification](docs/03-creative-skills-repository-and-contracts-spec.md)
+
+### Process and reports
+
+- [New Project Bootstrap Process](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md)
+- [Extraction Candidates](docs/extraction-candidates.md)
+- [Stage 13 Local Validation Report](docs/video-production-skills-stage-13-validation-report.md)
+
+### Skills
+
+- [Video Production](skills/video-production/SKILL.md)
+- [Video Evaluate](skills/video-evaluate/SKILL.md)
+
+### Evals
+
+- [End-to-End Evals](evals/end-to-end/README.md)
+
+### Examples
+
+- [Three-Shot Character Sequence](examples/three-shot-character-sequence/README.md)
+- Level 1 — Control one shot
+  - [Mechanical Watch Hero](examples/level-1-mechanical-watch-hero/README.md)
+  - [Midnight Espresso](examples/level-1-midnight-espresso/README.md)
+  - [Last Train Portrait](examples/level-1-last-train-portrait/README.md)
+  - [Boxer at Dawn](examples/level-1-boxer-at-dawn/README.md)
+- Level 2 — Make shots work together
+  - [Last Train Home](examples/level-2-last-train-home/README.md)
+  - [Missed Connection](examples/level-2-missed-connection/README.md)
+  - [The Red Umbrella](examples/level-2-the-red-umbrella/README.md)
+  - [The Letter](examples/level-2-the-letter/README.md)
+- Level 3 — Produce a commercial
+  - [Obsidian No. 7](examples/level-3-obsidian-no-7/README.md)
+  - [Arc One](examples/level-3-arc-one/README.md)
+  - [Apex](examples/level-3-apex/README.md)
+  - [Ember](examples/level-3-ember/README.md)
+- Level 4 — Direct a short
+  - [Signal Lost](examples/level-4-signal-lost/README.md)
+  - [Night Courier](examples/level-4-night-courier/README.md)
+  - [The Last Light](examples/level-4-the-last-light/README.md)
+  - [Room 417](examples/level-4-room-417/README.md)
+- Level 5 — Run a video campaign
+  - [Aster](examples/level-5-aster/README.md)
+  - [Nova](examples/level-5-nova/README.md)
+  - [Helios](examples/level-5-helios/README.md)
+  - [Atlas One](examples/level-5-atlas-one/README.md)
 
 ## Contributing
 
