@@ -8,7 +8,7 @@ const REQUIRED_DOCS = [
   'docs/01-creative-skills-system-spec.md',
   'docs/02-creative-skills-workflows-and-artifacts-spec.md',
   'docs/03-creative-skills-repository-and-contracts-spec.md',
-  'docs/extraction-candidates.md',
+  'docs/2026-08-20-extraction-candidates.md',
 ] as const;
 const REQUIRED_SKILLS = ['video-production', 'video-evaluate'] as const;
 const REQUIRED_EVAL_CLASSES = ['normal', 'draft', 'refinement', 'final', 'failure-boundary'] as const;
