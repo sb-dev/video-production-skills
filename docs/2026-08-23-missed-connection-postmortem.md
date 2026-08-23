@@ -115,8 +115,36 @@ The station was whatever the first SH01 candidate produced, promoted to "environ
 most-reused asset in the production was never designed or compared, and its defects — garbled
 signage, unreadable clock — propagated into every downstream frame.
 
+The concrete symptom, which Samir found on inspection: `SH01-establish-v2.jpg` mounts the
+departure board on the central column; `SH02-crossing.jpg` hangs it free with a **different**
+column at the right edge. A pillar from nowhere, in two frames marked approved. The kiosk also
+appears in SH01 and SH03 but not SH02, with no camera move to explain it.
+
+The structural cause is in the spec. `docs/02` §6 listed `character_sheet`,
+`character_manifest` and `product_manifest` — and no environment artifact at all. Both
+`continuity.md` files listed "environment" as a dimension to evaluate, so environment continuity
+was being judged against something nothing had ever declared.
+
 **Corrective action.** `references/reference-frames.md` gains *The environment is its own
 artifact*: design and select it before shot frames derive from it.
+
+`scene_sheet`, `scene_manifest` and `object_sheet` are now first-class artifacts in `docs/02`
+§6–§7. The scene manifest declares landmarks, what they are attached to, their order along the
+location's axis, which side the camera works from, and which landmarks each shot contains.
+
+`skills/video-evaluate/scripts/validate-continuity.ts` checks it deterministically — no images,
+no provider. Run against a manifest reconstructed from the frames that shipped, it reports the
+pillar, the board and the kiosk:
+
+```text
+unknown-landmark: SH02          "column-foreground" is not declared in the scene
+attachment-contradiction: SH02  "board" attached to nothing here but to column in SH01
+landmark-discontinuity: SH02    "kiosk" present either side of this shot but absent here
+```
+
+**Test.** `tests/stages/continuity.test.ts` holds that manifest as a regression fixture, plus a
+case per finding type and a clean manifest that must produce none. Evals
+`video-evaluate/boundary-undeclared-landmark` and `boundary-attachment-contradiction`.
 
 ## F. Character references were catalogue images, and the colour device fought the register
 
@@ -318,6 +346,7 @@ by `tests/fixtures/make-fixtures.ts`, so they reproduce without a provider.
 | Review artifacts | `tests/stages/contact-sheet.test.ts` | K — skips loudly, never silently |
 | Artifact governance | `tests/stages/production-lint.test.ts` | A, I |
 | Storyboard composition | `tests/stages/storyboard.test.ts` | G — board form |
+| Spatial continuity | `tests/stages/continuity.test.ts` | E — the pillar, the board, the kiosk |
 
 Fixtures: `clean`, `seams`, `frozen`, `drift`, `offsize`, `silent`, `withaudio`, `corrupt`. The
 fixture directory is keyed on a hash of the generator, so editing a fixture definition
@@ -329,7 +358,7 @@ identified) and behavioural (a case may name a `check` the runner executes). It 
 explicitly, so a suite that is mostly unfalsifiable prose says so:
 
 ```
-18 cases, 7 executable (39% behavioural coverage)
+21 cases, 10 executable (48% behavioural coverage)
 ```
 
 `npm test` now runs typecheck → validate → unit → **stages** → **evals** → smoke.
@@ -353,5 +382,5 @@ asserts the floor is load-bearing by showing the same clean clip reads as period
 - The example's media is unchanged and still carries the defects described here.
 - The example's directory layout still diverges from the house convention (M), so its 210 MB of
   rejected candidates remain uncommitted and outside `.gitignore`'s patterns.
-- Behavioural eval coverage is 39%. The remaining cases are judgement-shaped and currently
+- Behavioural eval coverage is 48%. The remaining cases are judgement-shaped and currently
   unfalsifiable; the runner reports that rather than hiding it.

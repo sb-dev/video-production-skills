@@ -293,6 +293,11 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
   - [Eval Requirements](docs/03-creative-skills-repository-and-contracts-spec.md#13-eval-requirements)
   - [Installation Expectations](docs/03-creative-skills-repository-and-contracts-spec.md#19-installation-expectations)
   - [Technical Acceptance Criteria](docs/03-creative-skills-repository-and-contracts-spec.md#26-technical-acceptance-criteria)
+- [Testing and Benchmark Specification](docs/04-testing-and-benchmark-spec.md)
+  - [Testing Layers](docs/04-testing-and-benchmark-spec.md#2-testing-layers)
+  - [Runbook](docs/04-testing-and-benchmark-spec.md#3-runbook)
+  - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#4-adding-coverage)
+  - [Prior Art](docs/04-testing-and-benchmark-spec.md#5-prior-art)
 
 ### Process and reports
 
