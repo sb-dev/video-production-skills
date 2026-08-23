@@ -140,9 +140,46 @@ so composition cannot be judged.
 was spent on artifacts pre-declared as governing nothing. `review.md` records the contradiction
 (*"Nora wears no hat, contrary to SB-01's sketch"*) and marks the stage **APPROVED** anyway.
 
+### The form was wrong too
+
+Shown a reference storyboard — a 3×3 grid of small numbered graphite panels, clean frames, no
+text, varied shot scale — the artifact produced here is wrong in every formal respect:
+
+| Reference | Produced |
+|---|---|
+| One composed sheet, numbered panels, 3 columns | Three separate full-bleed 16:9 images, unnumbered |
+| Uniform monochrome sketch, low fidelity | Dense rendered illustrations |
+| Clean panels | Bold arrows and dashed sight-lines drawn inside the frames |
+| No text in panels | Legible "COFFEE" and "DEPARTURE" |
+| Deliberate shot-scale variety incl. inserts | Three similar wide/medium shots |
+| More panels than shots — a board explores beats | Exactly one panel per final shot |
+
+The last row is the substantive one. Three panels for a three-shot sequence meant the board
+could not test sequence, rhythm or coverage at all; it only illustrated decisions already taken.
+
+The skill is why. The guidance said what a board must *do* and nothing about what a board **is**,
+and no tool produced the form — so whatever the image model returned became "the storyboard".
+
 **Corrective action.** `references/storyboard-and-shot-planning.md` now requires boards to
 inherit approved references, forbids rendering a board already declared non-authoritative,
 keeps annotations outside the frame, and states that board approval is not motion validation.
+
+It also now specifies **form**: one sheet of small numbered keylined sketch panels on a paper
+background; many cheap low-fidelity panels rather than a few polished ones; more panels than the
+sequence has shots; an identical style clause across panels; panels generated individually so
+they stay independently addressable, then composed deterministically.
+
+`skills/video-production/scripts/make-storyboard.ts` produces that form by default — numbered
+panels, black keyline, white sheet, three columns — so an agent gets a board right without
+knowing which flags to pass. Layout, numbering and framing are deterministic work; an image
+model is not asked to lay out a grid, because a generated grid cannot be re-ordered, re-numbered
+or have a single panel replaced.
+
+**Test.** `tests/stages/storyboard.test.ts` asserts the composed command carries the grid,
+numbering, keyline and background, and does so without ImageMagick via `--print-command`; the
+real composition test skips loudly when ImageMagick is absent. Eval
+`video-production/normal-storyboard-form` forbids one panel per final shot and annotations
+inside panels.
 
 ## H. The one stage that would have caught this was reasoned away
 
@@ -280,6 +317,7 @@ by `tests/fixtures/make-fixtures.ts`, so they reproduce without a provider.
 | Editorial assembly | `tests/stages/timeline.test.ts` | conform/letterbox trap, durations |
 | Review artifacts | `tests/stages/contact-sheet.test.ts` | K — skips loudly, never silently |
 | Artifact governance | `tests/stages/production-lint.test.ts` | A, I |
+| Storyboard composition | `tests/stages/storyboard.test.ts` | G — board form |
 
 Fixtures: `clean`, `seams`, `frozen`, `drift`, `offsize`, `silent`, `withaudio`, `corrupt`. The
 fixture directory is keyed on a hash of the generator, so editing a fixture definition
@@ -291,7 +329,7 @@ identified) and behavioural (a case may name a `check` the runner executes). It 
 explicitly, so a suite that is mostly unfalsifiable prose says so:
 
 ```
-17 cases, 6 executable (35% behavioural coverage)
+18 cases, 7 executable (39% behavioural coverage)
 ```
 
 `npm test` now runs typecheck → validate → unit → **stages** → **evals** → smoke.
@@ -315,5 +353,5 @@ asserts the floor is load-bearing by showing the same clean clip reads as period
 - The example's media is unchanged and still carries the defects described here.
 - The example's directory layout still diverges from the house convention (M), so its 210 MB of
   rejected candidates remain uncommitted and outside `.gitignore`'s patterns.
-- Behavioural eval coverage is 35%. The remaining cases are judgement-shaped and currently
+- Behavioural eval coverage is 39%. The remaining cases are judgement-shaped and currently
   unfalsifiable; the runner reports that rather than hiding it.

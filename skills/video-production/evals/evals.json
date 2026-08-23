@@ -109,6 +109,24 @@
         "escalate cost silently",
         "keep retrying the same layer indefinitely"
       ]
+    },
+    {
+      "id": "normal-storyboard-form",
+      "class": "normal",
+      "given": "a multi-shot sequence that needs a storyboard before motion generation",
+      "expect": [
+        "produce one composed board sheet with numbered panels",
+        "generate panels individually so they stay independently addressable",
+        "compose layout, numbering and framing deterministically",
+        "carry more panels than the sequence will have shots",
+        "keep annotations outside the panel frame"
+      ],
+      "forbid": [
+        "one panel per final shot",
+        "arrows or sight-lines drawn inside a panel",
+        "ask an image model to lay out the grid"
+      ],
+      "check": "storyboard:composes-numbered-board"
     }
   ]
 }
