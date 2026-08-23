@@ -29,6 +29,12 @@ All notable changes to this project will be documented here.
 - Per-stage isolation test harness with ffmpeg-synthesised fixtures, so every workflow stage is exercisable without a provider, without ImageMagick and without committed binaries.
 - `references/generated-motion-limits.md` describing how to stage around known generated-motion weaknesses.
 - Post-mortem for the "Missed Connection" example recording the failure chain and its corrective actions.
+- `scene_sheet`, `scene_manifest` and `object_sheet` artifacts, so environment and prop continuity are declared rather than recalled.
+- `validate-continuity.ts` reporting undeclared landmarks, attachment contradictions, screen-order contradictions, landmark discontinuities and undeclared axis crossings.
+- Recommended usable range in `detect-motion-artifacts.ts`, so editorial has a span to trim against.
+- `--every N` dense frame packs in `sample-frames.ts`, with a density rule tied to the artifact period.
+- Disposable reviewer, ordered diagnosis, a four-way defect taxonomy and expanded shot and edit review checklists in `video-evaluate`.
+- `docs/04-testing-and-benchmark-spec.md` specifying the testing layers and serving as the runbook for running them.
 - `make-storyboard.ts` composing storyboard panels into a numbered, keylined board sheet, with defaults that produce the expected form and `--print-command` for hosts without ImageMagick.
 
 ### Changed
