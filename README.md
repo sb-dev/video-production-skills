@@ -16,6 +16,19 @@ It supports the full production process:
 
 The workflow is designed to plan cheaply, approve creative decisions, preserve continuity, select shots, edit, evaluate, and retry only what failed.
 
+## Approval and cost control
+
+Creative decisions are approved by you, not by the agent.
+
+- **Selection is the agent's.** It may advance an artifact to `selected` — "keep developing this".
+- **Approval is yours.** Only you move an artifact to `approved` or `locked`, and the approver is recorded in `approvedBy`. An artifact marked approved with nobody recorded as approving it is treated as unapproved, and `tools/validate-production.ts` reports it.
+
+Approval is requested before expensive generation for visual direction, character and identity references, environment references, the shot plan, and picture lock.
+
+The agent asks before inventing a story-changing parameter it was not given — who the characters are, where the piece is set, which props carry meaning — because the cheapest representation that resolves a creative question is a question.
+
+Retries and spend are bounded. When corrective attempts at one layer hit the agreed ceiling, or generation passes the agreed budget, the run stops and reports rather than escalating cost quietly.
+
 ## Install
 
 ```bash

@@ -1,0 +1,224 @@
+#!/usr/bin/env node
+/**
+ * Executes the skill eval suites.
+ *
+ * The suites were previously declarative prose with no runner, so a case could
+ * assert anything and never be contradicted. Two tiers now apply:
+ *
+ *   structural  - every case is well formed and uniquely identified.
+ *   behavioural - a case may name a `check`, which the runner executes.
+ *
+ * Coverage is reported explicitly: a suite where most cases are unfalfisiable
+ * prose should say so out loud rather than look green.
+ */
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+import { parseArgs } from 'node:util';
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const EXIT_USAGE = 2;
+const EXIT_FAILED = 1;
+const SKILLS = ['video-production', 'video-evaluate'] as const;
+
+interface CheckResult {
+  readonly ok: boolean;
+  readonly detail: string;
+}
+
+interface EvalCase {
+  readonly id: string;
+  readonly class: string;
+  readonly check?: string;
+}
+
+function usage(): void {
+  console.log('Usage: run-evals.ts [--json]');
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function runScript(relativePath: string, args: readonly string[]): { status: number | null; stdout: string; stderr: string } {
+  const result = spawnSync(process.execPath, [resolve(ROOT, relativePath), ...args], {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  return { status: result.status, stdout: result.stdout ?? '', stderr: result.stderr ?? '' };
+}
+
+function ffmpegAvailable(): boolean {
+  const result = spawnSync('ffmpeg', ['-version'], { stdio: 'ignore' });
+  return result.status === 0 && result.error === undefined;
+}
+
+let fixturesCache: string | null = null;
+
+function fixtures(): string {
+  if (fixturesCache !== null) return fixturesCache;
+  const directory = mkdtempSync(join(tmpdir(), 'vps-evals-'));
+  const result = runScript('tests/fixtures/make-fixtures.ts', [directory]);
+  if (result.status !== 0) throw new Error(`fixture generation failed: ${result.stderr.trim()}`);
+  fixturesCache = directory;
+  return directory;
+}
+
+const DETECTOR = 'skills/video-evaluate/scripts/detect-motion-artifacts.ts';
+
+const CHECKS: Readonly<Record<string, () => CheckResult>> = {
+  'motion:detects-periodic-seams': () => {
+    const result = runScript(DETECTOR, [join(fixtures(), 'seams.mp4'), '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const periodic = isRecord(parsed) ? parsed.periodic : undefined;
+    const detected = isRecord(periodic) && periodic.detected === true;
+    return {
+      ok: detected && result.status === 1,
+      detail: detected ? 'periodic seams detected and gated' : 'seams were not detected',
+    };
+  },
+  'motion:passes-clean-motion': () => {
+    const result = runScript(DETECTOR, [join(fixtures(), 'clean.mp4')]);
+    return { ok: result.status === 0, detail: `exit ${String(result.status)}` };
+  },
+  'motion:reports-frozen-frames': () => {
+    const result = runScript(DETECTOR, [join(fixtures(), 'frozen.mp4'), '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const runs = isRecord(parsed) && Array.isArray(parsed.frozenRuns) ? parsed.frozenRuns.length : 0;
+    return { ok: runs > 0, detail: `${String(runs)} frozen run(s)` };
+  },
+  'qc:rejects-unreadable-media': () => {
+    const result = runScript('skills/video-evaluate/scripts/inspect-video.ts', [join(fixtures(), 'corrupt.mp4')]);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const readable = isRecord(parsed) ? parsed.readable : true;
+    return { ok: readable === false, detail: `readable=${String(readable)}` };
+  },
+  'editorial:warns-on-aspect-mismatch': () => {
+    const directory = mkdtempSync(join(tmpdir(), 'vps-evals-timeline-'));
+    const timeline = join(directory, 'timeline.json');
+    writeFileSync(
+      timeline,
+      JSON.stringify({
+        shots: [{ source: join(fixtures(), 'offsize.mp4'), in: 0, duration: 1 }],
+        render: { width: 1920, height: 1080, fps: 24 },
+      }),
+    );
+
+    const result = runScript('skills/video-production/scripts/render-timeline.ts', [
+      timeline,
+      join(directory, 'out.mp4'),
+    ]);
+    const warned = /will be padded/.test(result.stderr);
+    return { ok: warned, detail: warned ? 'operator warned' : 'padding happened silently' };
+  },
+  'governance:flags-approval-without-approver': () => {
+    const directory = mkdtempSync(join(tmpdir(), 'vps-evals-governance-'));
+    writeFileSync(join(directory, 'direction.md'), '---\ndecisionState: approved\n---\n');
+
+    const result = runScript('tools/validate-production.ts', [directory, '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const found =
+      isRecord(parsed) && Array.isArray(parsed.findings)
+        ? parsed.findings.some((finding) => isRecord(finding) && finding.rule === 'approval-without-approver')
+        : false;
+    return { ok: found, detail: found ? 'self-approval flagged' : 'self-approval went unnoticed' };
+  },
+};
+
+function loadCases(skill: string): readonly EvalCase[] {
+  const file = join(ROOT, 'skills', skill, 'evals', 'evals.json');
+  if (!existsSync(file)) throw new Error(`missing evals for ${skill}`);
+
+  const parsed: unknown = JSON.parse(readFileSync(file, 'utf8'));
+  if (!isRecord(parsed) || !Array.isArray(parsed.cases)) throw new Error(`${skill}: cases must be an array`);
+
+  const seen = new Set<string>();
+  return parsed.cases.map((value, index) => {
+    if (!isRecord(value)) throw new Error(`${skill}: cases[${String(index)}] must be an object`);
+
+    const id = value.id;
+    const className = value.class;
+    if (typeof id !== 'string' || id === '') throw new Error(`${skill}: cases[${String(index)}] needs an id`);
+    if (seen.has(id)) throw new Error(`${skill}: duplicate eval id ${id}`);
+    seen.add(id);
+
+    if (typeof className !== 'string' || className === '') throw new Error(`${skill}/${id}: needs a class`);
+    if (typeof value.given !== 'string' || value.given === '') throw new Error(`${skill}/${id}: needs a given`);
+    if (!Array.isArray(value.expect) || value.expect.length === 0) {
+      throw new Error(`${skill}/${id}: needs at least one expectation`);
+    }
+
+    const check = value.check;
+    if (check !== undefined && (typeof check !== 'string' || CHECKS[check] === undefined)) {
+      throw new Error(`${skill}/${id}: unknown check "${String(check)}"`);
+    }
+
+    return { id, class: className, ...(typeof check === 'string' ? { check } : {}) };
+  });
+}
+
+function main(): number {
+  const { values, positionals } = parseArgs({
+    allowPositionals: true,
+    options: { json: { type: 'boolean' }, help: { type: 'boolean', short: 'h' } },
+    strict: true,
+  });
+
+  if (values.help) {
+    usage();
+    return 0;
+  }
+  if (positionals.length > 0) {
+    usage();
+    return EXIT_USAGE;
+  }
+
+  const canExecute = ffmpegAvailable();
+  const results: { skill: string; id: string; check: string; ok: boolean; detail: string }[] = [];
+  let total = 0;
+  let executable = 0;
+
+  for (const skill of SKILLS) {
+    for (const evalCase of loadCases(skill)) {
+      total += 1;
+      if (evalCase.check === undefined) continue;
+      executable += 1;
+
+      if (!canExecute) {
+        results.push({ skill, id: evalCase.id, check: evalCase.check, ok: true, detail: 'skipped: ffmpeg unavailable' });
+        continue;
+      }
+
+      const check = CHECKS[evalCase.check];
+      if (check === undefined) continue;
+      const outcome = check();
+      results.push({ skill, id: evalCase.id, check: evalCase.check, ok: outcome.ok, detail: outcome.detail });
+    }
+  }
+
+  const failed = results.filter((result) => !result.ok);
+  const coverage = total === 0 ? 0 : Math.round((executable / total) * 100);
+
+  if (values.json) {
+    console.log(JSON.stringify({ total, executable, coverage, results, ok: failed.length === 0 }, null, 2));
+  } else {
+    for (const result of results) {
+      console.log(`${result.ok ? 'ok  ' : 'FAIL'} ${result.skill}/${result.id} [${result.check}] ${result.detail}`);
+    }
+    console.log('');
+    console.log(`${String(total)} cases, ${String(executable)} executable (${String(coverage)}% behavioural coverage)`);
+    if (!canExecute) console.log('ffmpeg unavailable: behavioural checks were skipped, not verified');
+    if (failed.length > 0) console.log(`${String(failed.length)} failing`);
+  }
+
+  return failed.length === 0 ? 0 : EXIT_FAILED;
+}
+
+try {
+  process.exitCode = main();
+} catch (error: unknown) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = EXIT_USAGE;
+}
