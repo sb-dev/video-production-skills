@@ -271,6 +271,9 @@ visual_direction
 
 character_sheet
 character_manifest
+scene_sheet
+scene_manifest
+object_sheet
 product_manifest
 
 storyboard
@@ -308,6 +311,9 @@ Generic storage/media types such as `image_asset` and `audio_asset` are not norm
 | `visual_direction` | visual language of the video | look, palette, lighting, camera, styling | storyboard, references, finishing |
 | `character_sheet` | canonical recurring visual identity | face, silhouette, key styling and useful views | storyboard, refs, shots, evaluation |
 | `character_manifest` | semantic identity constraints | must-preserve / mutable properties | generation and continuity evaluation |
+| `scene_sheet` | canonical recurring environment | look, landmarks, spatial layout | storyboard, refs, shots, continuity evaluation |
+| `scene_manifest` | environment spatial constraints | landmarks, attachments, axis order, camera side, per-shot presence | reference-frame generation and continuity evaluation |
+| `object_sheet` | recurring prop or object identity | must-preserve geometry, colour, markings | refs, shots, continuity evaluation |
 | `product_manifest` | product-critical constraints | geometry, colour, logo, text, packaging constraints | storyboard, refs, shots, fidelity evaluation |
 | `storyboard` | visual sequence | sequence, shot purpose, staging, coarse pacing | shot plan, animatic, reference frames |
 | `shot_plan` | executable shot requirements | duration, framing, action, camera, refs, continuity | reference frames, motion, shots |

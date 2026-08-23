@@ -257,3 +257,15 @@ extract
 ```
 
 Otherwise leave the implementations independent.
+
+## claude-video/watch — candidate execution substrate, not extracted
+
+`claude-video/watch` provides scene-aware frame extraction and transcription, which is the
+substrate `video-evaluate` needs to inspect video at all.
+
+Not adopted: `docs/03` §5 requires each skill to remain self-contained, and
+`skills/video-evaluate/scripts/sample-frames.ts` already covers extraction with no external
+dependency. Recorded here so the overlap is visible if the self-containment rule is ever revisited.
+
+Related prior art borrowed at the vocabulary level rather than extracted is credited in
+`docs/04-testing-and-benchmark-spec.md` §5.

@@ -54,7 +54,10 @@ const DEPENDENCIES: readonly Dependency[] = [
     id: 'imagemagick',
     commands: ['magick', 'convert'],
     required: false,
-    enables: ['video-production/scripts/make-contact-sheet.ts'],
+    enables: [
+      'video-production/scripts/make-contact-sheet.ts',
+      'video-production/scripts/make-storyboard.ts',
+    ],
   },
 ];
 

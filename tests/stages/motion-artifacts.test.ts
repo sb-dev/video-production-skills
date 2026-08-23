@@ -83,6 +83,28 @@ test('sub-luma periodic variation is not mistaken for generation seams', () => {
   );
 });
 
+/**
+ * Editorial needs something to trim against. A take whose usable range is far
+ * shorter than its duration was never usable at the length it was cut to.
+ */
+test('usable range spans a clean take and collapses on a seamed one', () => {
+  const clean = report(fixture('clean.mp4'));
+  const cleanRange = clean.usableRange;
+  assert.ok(isRecord(cleanRange));
+  assert.ok(
+    (cleanRange.seconds as number) > 4,
+    `a clean 5s take should be usable throughout, got ${String(cleanRange.seconds)}s`,
+  );
+
+  const seamed = report(fixture('seams.mp4'));
+  const seamedRange = seamed.usableRange;
+  assert.ok(isRecord(seamedRange));
+  assert.ok(
+    (seamedRange.seconds as number) < (cleanRange.seconds as number),
+    'seams must shorten the usable range',
+  );
+});
+
 test('a missing input is rejected before ffmpeg is invoked', () => {
   const result = runScript(SCRIPT, ['definitely-missing.mp4']);
   assert.equal(result.status, 2);

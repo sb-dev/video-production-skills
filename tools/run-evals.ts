@@ -67,6 +67,7 @@ function fixtures(): string {
 }
 
 const DETECTOR = 'skills/video-evaluate/scripts/detect-motion-artifacts.ts';
+const CONTINUITY = 'skills/video-evaluate/scripts/validate-continuity.ts';
 
 const CHECKS: Readonly<Record<string, () => CheckResult>> = {
   'motion:detects-periodic-seams': () => {
@@ -112,6 +113,63 @@ const CHECKS: Readonly<Record<string, () => CheckResult>> = {
     ]);
     const warned = /will be padded/.test(result.stderr);
     return { ok: warned, detail: warned ? 'operator warned' : 'padding happened silently' };
+  },
+  'motion:reports-usable-range': () => {
+    const result = runScript(DETECTOR, [join(fixtures(), 'clean.mp4'), '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const range = isRecord(parsed) ? parsed.usableRange : undefined;
+    const reported = isRecord(range) && typeof range.seconds === 'number' && range.seconds > 0;
+    return {
+      ok: reported,
+      detail: reported ? `usable range ${String((range as Record<string, unknown>).seconds)}s` : 'no usable range',
+    };
+  },
+  'continuity:flags-undeclared-landmark': () => {
+    const directory = mkdtempSync(join(tmpdir(), 'vps-evals-continuity-'));
+    const path = join(directory, 'scene.json');
+    writeFileSync(
+      path,
+      JSON.stringify({
+        sceneId: 'eval-scene',
+        cameraSide: 'south',
+        axis: { name: 'west-east', order: ['board'] },
+        landmarks: [{ id: 'board' }],
+        shots: { SH01: { present: ['board'] }, SH02: { present: ['board', 'pillar'] } },
+      }),
+    );
+
+    const result = runScript(CONTINUITY, [path, '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const found =
+      isRecord(parsed) && Array.isArray(parsed.findings)
+        ? parsed.findings.some((finding) => isRecord(finding) && finding.rule === 'unknown-landmark')
+        : false;
+    return { ok: found && result.status === 1, detail: found ? 'undeclared landmark flagged' : 'pillar missed' };
+  },
+  'continuity:flags-attachment-contradiction': () => {
+    const directory = mkdtempSync(join(tmpdir(), 'vps-evals-continuity-'));
+    const path = join(directory, 'scene.json');
+    writeFileSync(
+      path,
+      JSON.stringify({
+        sceneId: 'eval-scene',
+        cameraSide: 'south',
+        axis: { name: 'west-east', order: ['board', 'column'] },
+        landmarks: [{ id: 'board', attachedTo: 'column' }, { id: 'column' }],
+        shots: {
+          SH01: { present: ['board', 'column'], attachments: { board: 'column' } },
+          SH02: { present: ['board', 'column'], attachments: { board: null } },
+        },
+      }),
+    );
+
+    const result = runScript(CONTINUITY, [path, '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const found =
+      isRecord(parsed) && Array.isArray(parsed.findings)
+        ? parsed.findings.some((finding) => isRecord(finding) && finding.rule === 'attachment-contradiction')
+        : false;
+    return { ok: found, detail: found ? 'attachment contradiction flagged' : 'contradiction missed' };
   },
   'storyboard:composes-numbered-board': () => {
     const directory = mkdtempSync(join(tmpdir(), 'vps-evals-storyboard-'));

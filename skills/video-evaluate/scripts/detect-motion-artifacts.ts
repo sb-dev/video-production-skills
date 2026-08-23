@@ -44,6 +44,12 @@ interface Periodic {
   readonly confidence: number;
 }
 
+interface UsableRange {
+  readonly start: number;
+  readonly end: number;
+  readonly seconds: number;
+}
+
 interface Report {
   readonly input: string;
   readonly frames: number;
@@ -52,6 +58,7 @@ interface Report {
   readonly periodic: Periodic;
   readonly frozenRuns: readonly FrozenRun[];
   readonly driftPerSecond: number;
+  readonly usableRange: UsableRange;
   readonly verdict: 'clean' | 'artifacts';
 }
 
@@ -222,6 +229,56 @@ function findFrozenRuns(samples: readonly Sample[], skipHead: number): readonly 
   return runs;
 }
 
+/**
+ * The longest stretch carrying neither a spike nor a frozen run.
+ *
+ * Editorial otherwise has nothing to trim against and the out-point gets chosen
+ * by eye. A take whose usable range is far shorter than its duration was never
+ * usable at the length it was cut to.
+ */
+function findUsableRange(
+  samples: readonly Sample[],
+  spikes: readonly Spike[],
+  frozenRuns: readonly FrozenRun[],
+): UsableRange {
+  const damaged = new Set<number>();
+  for (const spike of spikes) damaged.add(spike.frame);
+  for (const run of frozenRuns) {
+    for (let offset = 0; offset < run.frames; offset += 1) damaged.add(run.startFrame + offset);
+  }
+
+  let bestStart = 0;
+  let bestLength = 0;
+  let currentStart: number | null = null;
+  let currentLength = 0;
+
+  for (const [index, sample] of samples.entries()) {
+    if (damaged.has(sample.frame)) {
+      currentStart = null;
+      currentLength = 0;
+      continue;
+    }
+    if (currentStart === null) currentStart = index;
+    currentLength += 1;
+    if (currentLength > bestLength) {
+      bestLength = currentLength;
+      bestStart = currentStart;
+    }
+  }
+
+  if (bestLength === 0) return { start: 0, end: 0, seconds: 0 };
+
+  const first = samples[bestStart];
+  const last = samples[bestStart + bestLength - 1];
+  if (first === undefined || last === undefined) return { start: 0, end: 0, seconds: 0 };
+
+  return {
+    start: Number(first.time.toFixed(3)),
+    end: Number(last.time.toFixed(3)),
+    seconds: Number((last.time - first.time).toFixed(3)),
+  };
+}
+
 /** Least-squares slope of diff against time: a take that destabilises as it runs. */
 function driftPerSecond(samples: readonly Sample[]): number {
   if (samples.length < 3) return 0;
@@ -246,6 +303,10 @@ function printText(report: Report): void {
   console.log(`frames:       ${report.frames}`);
   console.log(`median diff:  ${report.medianDiff.toFixed(2)}`);
   console.log(`drift/second: ${report.driftPerSecond.toFixed(3)}`);
+  console.log(
+    `usable range: ${report.usableRange.start.toFixed(2)}s-${report.usableRange.end.toFixed(2)}s ` +
+      `(${report.usableRange.seconds.toFixed(2)}s)`,
+  );
 
   if (report.periodic.detected) {
     console.log(
@@ -319,6 +380,7 @@ function main(): number {
 
   const hasHardSpike = spikes.some((spike) => spike.ratio >= hardSpikeRatio);
   const verdict = periodic.detected || frozenRuns.length > 0 || hasHardSpike ? 'artifacts' : 'clean';
+  const usableRange = findUsableRange(samples, spikes, frozenRuns);
 
   const report: Report = {
     input,
@@ -328,6 +390,7 @@ function main(): number {
     periodic,
     frozenRuns,
     driftPerSecond: driftPerSecond(samples),
+    usableRange,
     verdict,
   };
 

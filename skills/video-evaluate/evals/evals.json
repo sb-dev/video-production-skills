@@ -112,6 +112,48 @@
         "diagnose it as a prompt failure",
         "recommend retrying the same reference with new wording"
       ]
+    },
+    {
+      "id": "boundary-undeclared-landmark",
+      "class": "failure-boundary",
+      "given": "a reference frame containing a landmark that appears in no other shot and in no scene manifest",
+      "expect": [
+        "classify the finding as a continuity defect",
+        "identify the reference stage as the owning artifact",
+        "recommend declaring the scene before regenerating"
+      ],
+      "forbid": [
+        "accept because the frame is well composed",
+        "amend the scene declaration to match the generated frame"
+      ],
+      "check": "continuity:flags-undeclared-landmark"
+    },
+    {
+      "id": "boundary-attachment-contradiction",
+      "class": "failure-boundary",
+      "given": "the same landmark mounted on another landmark in one shot and free-standing in the next",
+      "expect": [
+        "report an attachment contradiction",
+        "name both shots"
+      ],
+      "forbid": [
+        "treat it as an acceptable camera-angle difference"
+      ],
+      "check": "continuity:flags-attachment-contradiction"
+    },
+    {
+      "id": "normal-usable-range",
+      "class": "normal",
+      "given": "a generated shot considered for selection",
+      "expect": [
+        "report a recommended usable range",
+        "report it even when the verdict is keep",
+        "return a keep, trim or regenerate verdict"
+      ],
+      "forbid": [
+        "choose an out-point without reporting the usable range"
+      ],
+      "check": "motion:reports-usable-range"
     }
   ]
 }

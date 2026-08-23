@@ -116,6 +116,19 @@ When visual direction is materially uncertain, establish a concise visual-direct
 
 Carry approved visual decisions downstream.
 
+## Scene and object references
+
+Any production whose shots share a location needs a **scene sheet** and a **scene manifest** before reference frames are generated.
+
+- The **scene sheet** is the canonical visual reference for the environment: its look, and the landmarks in it.
+- The **scene manifest** is the machine-readable half: landmarks and what they are attached to, their order along the location's long axis, which side of that axis the camera works from, and which landmarks each shot contains.
+
+Without a declared scene, environment continuity is judged against recollection, and a landmark can reach an approved frame while existing in no other shot. When `video-evaluate` is installed, its continuity validator checks the manifest deterministically; the manifest is worth declaring either way, because it is what makes environment continuity reviewable at all.
+
+Create an **object sheet** for any prop that must stay consistent across shots, carrying its must-preserve properties inline. Use a product manifest instead when the object is a commercial product with brand constraints.
+
+The scene is the most reused asset in a multi-shot production. Design and select it as its own artifact rather than promoting whichever shot frame happened to be generated first.
+
 ## Storyboard
 
 Use a storyboard for multi-shot sequence decisions.
