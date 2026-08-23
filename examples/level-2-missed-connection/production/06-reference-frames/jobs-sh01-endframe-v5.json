@@ -1,0 +1,16 @@
+[
+  {
+    "id": "SH01-end",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Edit [Image1]. This is the SAME photograph a few seconds later. Keep the camera position, the framing, the lens, the architecture, the arched glass roof and pendant lamps, the hanging departure board and its round clock, the stone column, the coffee kiosk on the left, the stone floor, the lighting and the exact colour grade all completely unchanged. Keep the crowd density and the crowd's muted charcoal, black, navy, beige, olive and grey wardrobe unchanged.\n\nChange only where the two coloured figures are standing, as if a few seconds of walking have passed.\n\nThe man in the RUST-ORANGE corduroy jacket with the brown leather cross-body satchel, who was on the LEFT side of the frame, has walked to his right and is now positioned just LEFT OF THE CENTRE of the frame. He is still in clean profile, still mid-stride facing and walking toward the RIGHT of frame, still glancing down at the phone in his hand, still on the walking plane nearest the camera in the lower part of the frame, still the same size, still with a pocket of clear floor around him.\n\nThe woman in the DEEP-TEAL wool overcoat with the low bun, cream scarf, tan crossbody bag and white paper coffee cup, who was on the RIGHT side of the frame, has walked to her left and is now positioned just RIGHT OF THE CENTRE of the frame. She is still in clean profile, still mid-stride facing and walking toward the LEFT of frame, still one depth plane further back than the man so she sits higher in the frame than he does, still the same size, still with a pocket of clear floor around her.\n\nThey have NOT met and they are NOT touching. There is still a clear gap of open floor between them and they are at obviously different depths. Neither is looking at the other. His jacket is still a strong saturated rust orange and her overcoat is still a strong saturated deep teal; nobody else in the frame wears any saturated colour.\n\nPhotorealistic, identical grade and grain to the original. No lens flare, no readable signage text, no captions, no watermark.",
+      "image_input": [
+        { "$file": "production/06-reference-frames/selected/SH01-establish.jpg" }
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/06-reference-frames/candidates/sh01-endframe.jpg"
+  }
+]

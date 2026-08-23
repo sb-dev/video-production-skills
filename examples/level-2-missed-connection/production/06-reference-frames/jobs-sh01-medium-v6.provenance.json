@@ -1,0 +1,50 @@
+[
+  {
+    "id": "SH01-med-a",
+    "model": "google/nano-banana-pro",
+    "predictionId": "t2pesexn89rmy0d05ehs4nvdh4",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T22:42:24.194Z",
+    "completedAt": "2026-08-22T22:43:03.525028627Z",
+    "predictTime": 39.313739125,
+    "input": {
+      "prompt": "A photorealistic cinematic film frame, 16:9. [Image1] is the railway station concourse this shot takes place in — reuse its architecture, its arched steel-and-glass trainshed roof and rows of pendant lamps, its hanging dark departure board with the round clock beneath it, its stone column, its warm coffee kiosk on the left, its stone floor, its evening-rush crowd, its mixed cool-dusk and warm-amber light and its exact colour grade.\n\nThe camera is on the same side of the same hall looking north, but much closer and lower — roughly chest height at the foot of the mezzanine steps, on a 50mm lens. This is a MEDIUM-WIDE shot: the hall's scale still reads, with the arched glass roof overhead, the hanging departure board and its round clock visible in the upper centre-left, the coffee kiosk glowing on the far LEFT, and the stone column on the centre-right. But the two main figures are now LARGE and completely individually recognisable — you can clearly see both of their faces and clothing.\n\nIn the LEFT THIRD of frame, on the walking plane nearer the camera, standing about HALF the frame height tall so his face is clearly legible: [Image2], a tall lean man in his early thirties with dark brown tousled hair and short stubble, warm olive skin, wearing an unbuttoned RUST-ORANGE corduroy jacket over a charcoal crewneck sweater, dark charcoal trousers and brown leather boots, a dark brown leather satchel worn cross-body, holding a phone in his right hand. He is mid-stride in profile walking toward the RIGHT of frame, glancing down at the phone, with clear floor around him.\n\nIn the RIGHT THIRD of frame, a little further back so she sits slightly higher in the frame, standing about TWO FIFTHS of the frame height tall so her face is also clearly legible: [Image3], a woman in her late twenties with dark curly hair pulled into a low bun with loose strands, deep brown skin, wearing an open DEEP-TEAL wool overcoat over a cream ribbed sweater, dark jeans and black ankle boots, a cream scarf and a small tan leather crossbody bag, holding a white paper coffee cup. She is mid-stride in profile walking toward the LEFT of frame, her chin lifted toward the departure board, with clear floor around her.\n\nA wide stretch of open floor separates them across the middle of the frame. They are not looking at each other and show no awareness of each other. His jacket is a strong saturated rust orange and her overcoat is a strong saturated deep teal; every other person in the frame wears only muted charcoal, black, navy, beige, olive or grey.\n\nObservational documentary photography, available light, naturalistic colour, medium-low contrast, lifted milky blacks, soft lamp halation, fine film grain. Real photograph, not a render. No lens flare, no rain, no readable signage text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/MDBhNTg0MTUtODE4ZS00MjBhLWI1ZDItNzQ1M2QxNWNjZTE2.jpg",
+        "https://api.replicate.com/v1/files/YWViZmQ0MGUtNmRmOC00ODVkLTg5OTAtMDc2OTU5MTRlNTAx.jpg",
+        "https://api.replicate.com/v1/files/NmIxYzc2YmEtYjlhZS00YzhmLThkMTYtNDI3MTZjODYyMTdh.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh01-med-a.jpg"
+    ]
+  },
+  {
+    "id": "SH01-med-b",
+    "model": "google/nano-banana-pro",
+    "predictionId": "egcjyzdv91rmt0d05ehr66kzwc",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T22:42:25.736Z",
+    "completedAt": "2026-08-22T22:42:56.966242519Z",
+    "predictTime": 31.214641925,
+    "input": {
+      "prompt": "Photoreal cinematic still, 16:9, medium-wide observational shot inside the railway station concourse shown in [Image1]. Preserve [Image1]'s architecture, arched glass-and-iron roof, pendant lamps, hanging dark departure board with its round clock, stone column, warm coffee kiosk on the LEFT, stone floor, evening-rush crowd, mixed cool-dusk and warm-amber light and exact colour grade.\n\nCamera: same side of the same hall, looking north, but down among the commuters and much closer than [Image1] — a 50mm lens at chest height. The hall still reads big: arched roof above, departure board and clock upper centre-left, coffee kiosk glowing far LEFT, stone column centre-right. The two coloured figures are large enough that their faces and clothing are unmistakable.\n\nLeft third of frame, nearer walking plane, about half the frame height tall, mid-stride in profile heading toward the RIGHT: [Image2] — a tall lean man in his early thirties, dark brown tousled hair, short stubble, warm olive skin, unbuttoned RUST-ORANGE corduroy jacket over a charcoal crewneck, dark charcoal trousers, brown leather boots, dark brown leather cross-body satchel, glancing down at the phone in his right hand.\n\nRight third of frame, slightly deeper so she sits a little higher in frame, about two fifths of the frame height tall, mid-stride in profile heading toward the LEFT: [Image3] — a woman in her late twenties, dark curly hair in a low bun with loose strands, deep brown skin, open DEEP-TEAL wool overcoat over a cream ribbed sweater, dark jeans, black ankle boots, cream scarf, small tan crossbody bag, white paper coffee cup, chin lifted toward the departure board.\n\nA broad stretch of empty floor lies between them. Neither is aware of the other. Only these two carry saturated colour — the surrounding crowd is strictly muted charcoal, black, navy, beige, olive and grey.\n\nAvailable-light European station photography, restrained naturalistic grade, medium-low contrast, milky blacks, fine grain, subtle lamp halation. A photograph, not CGI. No lens flare, no rain, no legible signage text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/Y2RmOWFlMjMtMjY2Zi00NjE1LTk4ODMtYTVlNTY3ODE2ZGFk.jpg",
+        "https://api.replicate.com/v1/files/NWEzYmJhNDMtOTgyYy00MTJmLThjNTUtZmFlZTgzYzY2YTQ2.jpg",
+        "https://api.replicate.com/v1/files/MWFjOTY3MTItZmUyYi00ODczLWIxM2QtMDliOTU5YzYwNDZl.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh01-med-b.jpg"
+    ]
+  }
+]

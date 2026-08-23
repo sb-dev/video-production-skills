@@ -1,0 +1,36 @@
+[
+  {
+    "id": "SH02-t3",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[SH02-t3] failed: Prediction failed: Async prediction failed: ModelError: The input or output was flagged as sensitive. Please try again with different inputs. (E005) (uIJ6l3ruRD)"
+  },
+  {
+    "id": "SH02-t4",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[SH02-t4] failed: Prediction failed: Async prediction failed: ModelError: The input or output was flagged as sensitive. Please try again with different inputs. (E005) (uIJ6l3ruRD)"
+  },
+  {
+    "id": "SH01-t1",
+    "model": "bytedance/seedance-2.0",
+    "predictionId": "hh14szn701rmt0d05d4r26rysr",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:04:02.304Z",
+    "completedAt": "2026-08-22T21:06:52.413703477Z",
+    "predictTime": 170.093400183,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/ZTM3YTMyN2YtOGFjOS00YjM1LWFiMzItYjA3YTA2ZmQyMDQ5.jpg",
+      "prompt": "Continue this exact scene as a single continuous shot with no cuts. The camera performs one extremely slow, almost imperceptible push-in across the whole clip. No pan, no tilt, no shake, no cut.\n\nThe tall man in the rust-orange corduroy jacket in the lower left keeps walking steadily toward the RIGHT of frame, in profile, glancing down at the phone in his hand. He keeps his own steady pace and stays on his own route.\n\nThe woman in the deep-teal wool overcoat right of centre keeps walking steadily toward the LEFT of frame, holding her paper coffee cup, glancing up toward the hanging departure board. She keeps her own steady pace and stays on her own route.\n\nBoth simply continue walking through the crowd. Nobody stops, nobody turns their head, nobody greets anyone, nobody speaks, nobody interacts.\n\nAround them the evening rush crowd flows continuously in both directions with natural motion blur. Nobody looks at the camera. The light does not change. The clothing does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1103
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh01-t1.mp4"
+    ]
+  }
+]

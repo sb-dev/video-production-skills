@@ -1,0 +1,46 @@
+[
+  {
+    "id": "SH01-k3",
+    "model": "kwaivgi/kling-v3-video",
+    "predictionId": "ttcmys0qpdrmt0d05dwrn71sbm",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:55:51.347Z",
+    "completedAt": "2026-08-22T21:58:00.876119314Z",
+    "predictTime": 129.51229114,
+    "input": {
+      "start_image": "https://api.replicate.com/v1/files/YWE1NDliM2MtNDdkZC00NjY3LWFiZWEtNDJiMmU4ZGY4OWE4.jpg",
+      "prompt": "One unbroken wide observational shot. The camera is locked off on a tripod and does not move at all. Normal real-time speed, ordinary motion blur. Two people cross the concourse in opposite directions. The man in the rust-orange corduroy jacket with the brown leather satchel starts on the left side of the picture and walks AWAY FROM THE COFFEE KIOSK and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE, glancing down at his phone; across the shot his position in the frame moves steadily rightwards, from the left side towards the middle of the picture. The woman in the deep-teal wool overcoat with the paper coffee cup starts on the right side of the picture and walks AWAY FROM THE TICKET GATES and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE; across the shot her position in the frame moves steadily leftwards, from the right side towards the middle of the picture. Her deep-teal overcoat stays strongly saturated and never darkens. They walk past each other at a distance and never meet, never touch, never look at each other. The rush-hour crowd flows continuously around them at ordinary walking speed.",
+      "negative_prompt": "the woman in the teal coat walking to the right, the woman in the teal coat moving towards the ticket gates, the woman in the teal coat leaving the frame on the right, the man walking to the left, both people walking the same way, time-lapse, long exposure, motion streaks, sped up footage, camera push-in, zoom, pan, tilt, handheld shake, the two of them meeting, walking side by side, eye contact, greeting, waving, talking, teal coat turning black or navy, people looking at the camera, subtitles, captions, on-screen text, watermark, lens flare",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh01-k3.mp4"
+    ]
+  },
+  {
+    "id": "SH01-t5",
+    "model": "bytedance/seedance-2.0",
+    "predictionId": "h3nxapgttsrmy0d05dwsq0e2qw",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:55:52.15Z",
+    "completedAt": "2026-08-22T21:58:33.594294825Z",
+    "predictTime": 161.427610534,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/ZWUyNGVlZTUtYzUzMS00ZTk3LWIyMWEtMmRjYjQwM2Q2ZDI4.jpg",
+      "prompt": "Continue this exact scene as one unbroken wide observational shot.\n\nCAMERA: completely locked off on a tripod. No push-in, no zoom, no pan, no tilt, no shake. The framing at the end is identical to the framing at the start.\n\nSPEED: normal real-time speed with ordinary natural motion blur. Not a time-lapse, not a long exposure. Every person stays a distinct, solid figure.\n\nTHE MAN: the tall man in the rust-orange corduroy jacket with the brown leather satchel begins on the LEFT side of the picture. He walks AWAY FROM THE COFFEE KIOSK and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE, glancing down at his phone. Over the course of the shot his position in the frame moves steadily RIGHTWARDS, ending nearer the middle of the picture than where he began.\n\nTHE WOMAN: the woman in the deep-teal wool overcoat holding a paper coffee cup begins on the RIGHT side of the picture. She walks AWAY FROM THE TICKET GATES and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE. Over the course of the shot her position in the frame moves steadily LEFTWARDS, ending nearer the middle of the picture than where she began. She must NOT drift towards the right-hand edge and must NOT leave the frame on the right. Her deep-teal overcoat stays strongly saturated throughout and never turns black, navy or grey.\n\nThey are walking in OPPOSITE directions across the frame — he to the right, she to the left. They pass at a distance and never meet, never touch, never turn toward each other and never look at each other.\n\nThe evening rush crowd keeps flowing in both directions at normal walking speed. Nobody looks at the camera. The light does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1106
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh01-t5.mp4"
+    ]
+  }
+]

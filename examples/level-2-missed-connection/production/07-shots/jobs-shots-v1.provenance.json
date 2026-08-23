@@ -1,0 +1,86 @@
+[
+  {
+    "id": "SH01-t1",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[SH01-t1] create failed 429: {\"detail\":\"Request was throttled. Your rate limit for creating predictions is reduced to 60 requests per minute with a burst of 5 requests while you have less than $10.0 in credit. Your rate limit resets in ~5s.\",\"status\":429,\"retry_after\":5}\n"
+  },
+  {
+    "id": "SH01-t2",
+    "model": "bytedance/seedance-2.0",
+    "predictionId": "tbt2swvcv9rmw0d05d1vc97q3r",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:57:14.202Z",
+    "completedAt": "2026-08-22T21:00:13.023908569Z",
+    "predictTime": 178.805314664,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/NjFkYmY4ZTUtNjg3MS00MWI5LWEwNGItZjVjMjc3ODdjNTM5.jpg",
+      "prompt": "Continue this exact scene as one unbroken observational shot. The camera creeps forward in a barely perceptible slow push-in for the entire clip and does nothing else — no pan, no tilt, no roll, no handheld shake, no cut.\n\nThe man in the rust-orange corduroy jacket at lower left strides on toward the RIGHT edge of frame, head slightly down over the phone in his right hand, the satchel swinging at his hip. His path stays on the walking plane nearest the camera. He does not look up, does not look around, does not slow.\n\nThe woman in the deep-teal wool overcoat right of centre walks on toward the LEFT edge of frame, one plane deeper into the hall, coffee cup in hand, her attention drifting up toward the suspended departure board. She does not look down, does not look sideways, does not slow.\n\nTheir routes converge as the shot progresses. They do not meet, do not touch, do not see each other, and neither reacts to the other at any moment.\n\nThe surrounding rush-hour crowd keeps flowing in both directions, motion-blurred and anonymous, all in muted charcoal, black, navy, beige and grey. No other person wears orange, rust or teal. Nobody looks at the camera. Lighting and wardrobe stay exactly as they are.\n\nNaturalistic available-light cinematography, medium-low contrast, fine grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1102
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh01-t2.mp4"
+    ]
+  },
+  {
+    "id": "SH02-t1",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[SH02-t1] failed: Prediction failed: Async prediction failed: ModelError: The input or output was flagged as sensitive. Please try again with different inputs. (E005) (uIJ6l3ruRD)"
+  },
+  {
+    "id": "SH02-t2",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[SH02-t2] failed: Prediction failed: Async prediction failed: ModelError: The input or output was flagged as sensitive. Please try again with different inputs. (E005) (uIJ6l3ruRD)"
+  },
+  {
+    "id": "SH03-t1",
+    "model": "bytedance/seedance-2.0",
+    "predictionId": "ejh6k33cyxrmr0d05d1rwj0ahc",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:57:14.231Z",
+    "completedAt": "2026-08-22T21:01:42.480140162Z",
+    "predictTime": 268.233351809,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/ZDMyYjBmZTktYWJiOS00MzI3LTllN2UtZDJjNTZkNzNlNzM0.jpg",
+      "prompt": "Continue this exact scene as one unbroken shot. The camera tracks very gently with the woman for a moment and then settles almost still. No cut, no zoom, no whip pan.\n\nThe woman in the deep-teal wool overcoat with the low bun, seen from behind, keeps walking away from camera toward the LEFT through the crowd, her coffee cup in her hand.\n\nThen she slows. She turns her head back over her RIGHT shoulder and looks BACK toward the RIGHT side of frame, behind her, as if she half-felt something. Her face comes round into three-quarter profile. Her expression is small and unresolved — not a smile, not sadness, barely anything, just a flicker of almost-recognition that finds nothing.\n\nShe holds the look for a beat. There is nobody there — only ordinary strangers walking past. Then she faces forward again and walks on, continuing away toward the LEFT.\n\nNobody in the crowd behind her is distinctive. No one wears orange, rust or red. No one approaches her, no one greets her, no one looks at her, nobody looks at the camera. She does not wave, does not speak, does not stop walking for more than a moment.\n\nRestrained observational cinematography, available light, naturalistic grade, medium-low contrast, fine film grain. Understated, quiet, unsentimental. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 3301
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh03-t1.mp4"
+    ]
+  },
+  {
+    "id": "SH03-t2",
+    "model": "bytedance/seedance-2.0",
+    "predictionId": "sjnwjmkc69rmt0d05d1vsxgd2c",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:57:14.034Z",
+    "completedAt": "2026-08-22T20:59:51.83646332Z",
+    "predictTime": 157.771135701,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/NzljYWZlNmYtY2IwMy00OTUyLWJjOTQtMmJlZGUxMmJiNDgx.jpg",
+      "prompt": "Continue this exact scene as a single continuous take. The camera follows a step or two behind the woman with a very slight drift, then comes to rest. No cut, no zoom, no sudden movement.\n\nBeat one: the woman in the deep-teal wool overcoat, hair in a low bun, walks away from the camera toward the LEFT through the evening-rush crowd, coffee cup in hand, head facing forward. Ordinary, unremarkable.\n\nBeat two: she slows her pace. Her head turns back over her RIGHT shoulder and she looks BACK toward the RIGHT of frame, into the crowd she has already walked through. Her face turns far enough for us to see it in three-quarter profile.\n\nBeat three: she finds nothing. Her expression barely changes — a quiet, unreadable flicker, no smile, no frown, no performance. She faces forward again and walks on toward the LEFT, disappearing into the flow.\n\nBehind her there is only anonymous crowd. Nobody there is distinctive. Nobody wears orange, rust or red. Nobody responds to her, nobody comes toward her, nobody looks at the camera. She does not speak.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain, understated and unsentimental. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 3302
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh03-t2.mp4"
+    ]
+  }
+]

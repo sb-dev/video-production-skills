@@ -1,0 +1,14 @@
+[
+  {
+    "id": "DIAG-image",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[DIAG-image] failed: Prediction failed: Async prediction failed: ModelError: The input or output was flagged as sensitive. Please try again with different inputs. (E005) (uIJ6l3ruRD)"
+  },
+  {
+    "id": "DIAG-altframe",
+    "model": "bytedance/seedance-2.0",
+    "status": "failed",
+    "error": "[DIAG-altframe] failed: Prediction failed: Async prediction failed: ModelError: The input or output was flagged as sensitive. Please try again with different inputs. (E005) (uIJ6l3ruRD)"
+  }
+]

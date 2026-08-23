@@ -1,0 +1,28 @@
+[
+  {
+    "id": "AMB-a",
+    "model": "stability-ai/stable-audio-2.5",
+    "predictionId": "pvw06wdq39rmr0d05d2aq5kdbr",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:58:38.746Z",
+    "completedAt": "2026-08-22T20:58:43.136425881Z",
+    "predictTime": 4.377830583,
+    "input": {
+      "prompt": "Field recording of the interior of a large busy railway station concourse during evening rush hour. A broad, continuous wash of distant crowd murmur with no individual voice ever intelligible. Hundreds of footsteps on a hard stone floor. Rolling suitcase wheels passing at intervals. The deep reverberant room tone of a huge arched glass-and-iron trainshed. A distant train brake squeal and a low departure rumble far away. A muffled, completely unintelligible public address announcement buried low in the mix, no discernible words. Steady, even, unchanging atmosphere with no build and no climax. Pure ambient location sound. No music, no melody, no instruments, no beat, no rhythm, no singing, no clear speech, no dialogue.",
+      "duration": 17,
+      "steps": 8,
+      "cfg_scale": 3,
+      "seed": 4401
+    },
+    "outputs": [
+      "production/08-edit/audio/ambience-a.wav"
+    ]
+  },
+  {
+    "id": "AMB-b",
+    "model": "stability-ai/stable-audio-2.5",
+    "status": "failed",
+    "error": "[AMB-b] create failed 429: {\"detail\":\"Request was throttled. Your rate limit for creating predictions is reduced to 6 requests per minute with a burst of 1 requests while you have less than $5.0 in credit. Your rate limit resets in ~10s.\",\"status\":429,\"retry_after\":10}\n"
+  }
+]

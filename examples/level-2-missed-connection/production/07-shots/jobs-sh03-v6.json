@@ -1,0 +1,16 @@
+[
+  {
+    "id": "SH03-k1",
+    "model": "kwaivgi/kling-v3-video",
+    "input": {
+      "start_image": { "$file": "production/06-reference-frames/selected/SH03-glanceback.jpg" },
+      "prompt": "One unbroken shot. The camera drifts very slightly with the woman and then settles almost still; no cut, no zoom, no whip pan. [0-2s]: the woman in the deep-teal wool overcoat with the low bun, seen from behind, keeps walking away from camera toward the LEFT through the crowd at an ordinary pace, her head facing forward the whole time, her paper coffee cup in her hand. Nothing else happens; she does not turn. [2-3.5s]: she slows and turns her head back over her RIGHT shoulder, looking BACK toward the RIGHT side of frame, her face coming round into three-quarter profile, her expression small and unresolved, barely anything, no smile. She finds nothing there but ordinary strangers. [3.5-5s]: she faces forward again and walks on, continuing away toward the LEFT. Nobody in the crowd behind her is distinctive, nobody approaches her, nobody greets her. Restrained observational cinematography, available light, naturalistic grade, medium-low contrast, fine film grain, understated and unsentimental.",
+      "negative_prompt": "turning around fully, facing the camera, walking toward the camera, stopping and standing still for a long time, smiling, waving, greeting, talking, speech, someone approaching her, a man in an orange or rust jacket, orange clothing, red clothing, people looking at the camera, time-lapse, long exposure, motion streaks, sped up footage, zoom, whip pan, subtitles, captions, on-screen text, watermark",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "out": "production/07-shots/candidates/sh03-k1.mp4"
+  }
+]

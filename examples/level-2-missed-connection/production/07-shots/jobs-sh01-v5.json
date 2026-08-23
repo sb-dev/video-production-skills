@@ -1,0 +1,30 @@
+[
+  {
+    "id": "SH01-k1",
+    "model": "kwaivgi/kling-v3-video",
+    "input": {
+      "start_image": { "$file": "production/06-reference-frames/selected/SH01-wide.jpg" },
+      "prompt": "One unbroken wide observational shot. The camera is locked off on a tripod and does not move at all — no push-in, no zoom, no pan, no tilt, no shake. Everything happens at normal real-time speed with ordinary motion blur. The man in the rust-orange corduroy jacket in the lower left keeps walking at a steady ordinary walking pace toward the RIGHT of frame, in profile, glancing down at the phone in his hand, staying in the lower left quarter of the frame the whole time. The woman in the deep-teal wool overcoat right of centre keeps walking at a steady ordinary walking pace toward the LEFT of frame, holding her paper coffee cup, glancing up toward the hanging departure board, staying in the right half of the frame the whole time. They remain far apart on opposite sides of the frame for the entire shot. The evening rush crowd flows continuously in both directions at normal walking speed. The light does not change and the clothing does not change.",
+      "negative_prompt": "time-lapse, timelapse, long exposure, motion blur streaks, light trails, sped up footage, fast motion, camera push-in, zoom, dolly, pan, tilt, handheld shake, the man and the woman meeting, the man and the woman walking side by side, the man and the woman standing next to each other, characters turning toward each other, eye contact, greeting, waving, talking, speech, people looking at the camera, subtitles, captions, on-screen text, watermark, lens flare",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "out": "production/07-shots/candidates/sh01-k1.mp4"
+  },
+  {
+    "id": "SH01-t3",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-wide.jpg" },
+      "prompt": "Continue this exact scene as one unbroken wide observational shot.\n\nCAMERA: completely locked off on a tripod. The camera does not move at all — no push-in, no zoom, no dolly, no pan, no tilt, no shake. The framing at the end is identical to the framing at the start.\n\nSPEED: everything happens at normal real-time speed with ordinary natural motion blur. This is not a time-lapse and not a long exposure. Do not speed up time. Do not turn the crowd into blurred streaks or light trails. Every person stays a distinct, solid, recognisable figure for the whole shot.\n\nThe tall man in the rust-orange corduroy jacket in the lower left walks at an ordinary steady walking pace toward the RIGHT of frame, in profile, glancing down at the phone in his hand. He stays in the lower left quarter of the frame for the entire shot.\n\nThe woman in the deep-teal wool overcoat right of centre walks at an ordinary steady walking pace toward the LEFT of frame, one plane deeper into the hall, holding her paper coffee cup, glancing up toward the hanging departure board. She stays in the right half of the frame for the entire shot.\n\nThey stay far apart on opposite sides of the frame for the whole shot. They never come near each other, never walk side by side, never stand together, never meet, never turn toward each other and never interact.\n\nThe evening rush crowd keeps flowing in both directions at normal walking speed. Nobody looks at the camera. The light does not change. The clothing does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1104
+    },
+    "out": "production/07-shots/candidates/sh01-t3.mp4"
+  }
+]

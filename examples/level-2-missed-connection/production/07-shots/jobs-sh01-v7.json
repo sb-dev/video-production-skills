@@ -1,0 +1,30 @@
+[
+  {
+    "id": "SH01-k2",
+    "model": "kwaivgi/kling-v3-video",
+    "input": {
+      "start_image": { "$file": "production/06-reference-frames/selected/SH01-establish.jpg" },
+      "prompt": "One unbroken wide observational shot. The camera is locked off on a tripod and does not move at all — no push-in, no zoom, no pan, no tilt, no shake. Everything happens at normal real-time speed with ordinary motion blur. The man in the RUST-ORANGE corduroy jacket walks at a steady ordinary walking pace toward the RIGHT of frame, in profile, glancing down at the phone in his hand, staying in the left half of the frame the whole time; his jacket stays a strong saturated rust orange throughout. The woman in the DEEP-TEAL wool overcoat walks at a steady ordinary walking pace toward the LEFT of frame, holding her paper coffee cup, glancing up toward the hanging departure board, staying in the right half of the frame the whole time; her overcoat stays a strong saturated deep teal throughout and never darkens to black or navy. They remain far apart on opposite sides of the frame for the entire shot and never meet. The evening rush crowd flows continuously in both directions at normal walking speed, everyone else in muted charcoal, black, navy, beige and grey. The light does not change and the clothing does not change.",
+      "negative_prompt": "time-lapse, timelapse, long exposure, motion blur streaks, light trails, sped up footage, fast motion, camera push-in, zoom, dolly, pan, tilt, handheld shake, the man and the woman meeting, the man and the woman walking side by side, characters turning toward each other, eye contact, greeting, waving, talking, the teal coat turning black, the teal coat turning navy, desaturated clothing, people looking at the camera, subtitles, captions, on-screen text, watermark, lens flare",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "out": "production/07-shots/candidates/sh01-k2.mp4"
+  },
+  {
+    "id": "SH01-t4",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-establish.jpg" },
+      "prompt": "Continue this exact scene as one unbroken wide observational shot.\n\nCAMERA: completely locked off on a tripod. No push-in, no zoom, no dolly, no pan, no tilt, no shake. The framing at the end is identical to the framing at the start.\n\nSPEED: normal real-time speed with ordinary natural motion blur. This is not a time-lapse and not a long exposure. Every person stays a distinct, solid, recognisable figure for the whole shot.\n\nThe tall man in the RUST-ORANGE corduroy jacket with the leather satchel walks at an ordinary steady walking pace toward the RIGHT of frame, in profile, glancing down at the phone in his hand. He stays in the left half of the frame for the entire shot. His jacket stays a strong saturated rust orange the whole time.\n\nThe woman in the DEEP-TEAL wool overcoat walks at an ordinary steady walking pace toward the LEFT of frame, holding her paper coffee cup, glancing up toward the hanging departure board. She stays in the right half of the frame for the entire shot. Her overcoat stays a strong saturated deep teal the whole time and never turns black, navy or grey.\n\nThey stay far apart on opposite sides of the frame for the whole shot. They never come near each other, never walk side by side, never meet, never turn toward each other and never interact.\n\nThe evening rush crowd keeps flowing in both directions at normal walking speed. Nobody looks at the camera. The light does not change. The clothing does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1105
+    },
+    "out": "production/07-shots/candidates/sh01-t4.mp4"
+  }
+]

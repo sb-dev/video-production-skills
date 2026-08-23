@@ -1,0 +1,24 @@
+[
+  {
+    "id": "SH03-a-r1",
+    "model": "google/nano-banana-pro",
+    "predictionId": "52abj50x31rmt0d05d0t28r9gc",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:54:42.712Z",
+    "completedAt": "2026-08-22T20:55:12.358337572Z",
+    "predictTime": 29.630019239,
+    "input": {
+      "prompt": "Edit [Image1]. Keep absolutely everything the same: the same railway station, the same arched glass roof and pendant lamps, the same hanging departure board and round clock in the upper right, the same warm amber coffee kiosk at the far left, the same stone floor, the same crowd in the same positions and poses, the same camera angle, the same framing, the same lighting and the same colour grade. Keep the woman in the deep-teal wool overcoat with the low bun, cream scarf, tan crossbody bag and white paper coffee cup exactly as she is — same position, same pose, same clothing, same hair, seen from three-quarters behind, walking away toward the left, head still facing forward.\n\nMake exactly one change: remove every trace of orange, rust, burnt-orange, amber-coloured and red CLOTHING, BAGS and OBJECTS carried or worn by anyone in the crowd. Recolour any such garment or item to muted charcoal, black, navy, beige, olive or grey so that it blends into the rest of the crowd. This applies to the whole frame including the mid-ground and background. The warm amber glow of the coffee kiosk lamps and the pendant lamps must stay exactly as it is — that is light, not clothing, and it must not change.\n\nAfter the edit there must be no orange or red garment, bag or object anywhere in the picture, and nobody in the crowd should be distinctive or eye-catching. Photorealistic, identical grade, fine film grain. No text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/M2U0MDM3MWYtMWNmMS00YTJlLThmYTUtNDk1ZTc3OGYyYzJi.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh03-a-r1.jpg"
+    ]
+  }
+]

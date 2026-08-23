@@ -1,0 +1,46 @@
+[
+  {
+    "id": "SH02-k1",
+    "model": "kwaivgi/kling-v3-video",
+    "predictionId": "gv7jf4r735rmt0d05davzx686r",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:16:27.801Z",
+    "completedAt": "2026-08-22T21:18:37.014030118Z",
+    "predictTime": 129.194068088,
+    "input": {
+      "start_image": "https://api.replicate.com/v1/files/NTRkN2UwNTktYWRlMS00ZTY5LTkwNjctY2JkYTJmMzdhNmJi.jpg",
+      "prompt": "One unbroken locked-off shot from a static tripod; the camera does not move at all. Two commuters cross the frame in opposite directions, each absorbed in their own errand. The man in the rust-orange corduroy jacket walks steadily from LEFT to RIGHT along the foreground at a brisk commuter pace, his head tilted DOWN AND TO THE RIGHT reading the phone in his right hand for the whole shot, and he walks out of frame at the RIGHT edge. The woman in the deep-teal wool overcoat walks steadily from RIGHT to LEFT through the mid-ground at a slower unhurried pace, holding her paper coffee cup, her chin raised and her head turned UP AND TO THE LEFT toward the hanging departure board for the whole shot, continuing toward the LEFT of frame. Their two paths simply cross. Each keeps the same head position throughout. The evening rush crowd keeps flowing in both directions with natural motion blur, everyone in muted charcoal, black, navy, beige and grey. Observational documentary cinematography on a long lens, compressed perspective, shallow depth of field, restrained naturalistic grade, fine film grain.",
+      "negative_prompt": "camera movement, panning, zooming, handheld shake, cutting to another shot, people looking at the camera, characters turning toward each other, eye contact, greeting, waving, talking, speech, subtitles, captions, on-screen text, watermark, slow motion, lens flare",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh02-k1.mp4"
+    ]
+  },
+  {
+    "id": "SH02-v1",
+    "model": "google/veo-3.1",
+    "predictionId": "g9zkj50c2drmr0d05dar2drd3c",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:16:29.075Z",
+    "completedAt": "2026-08-22T21:18:11.074675944Z",
+    "predictTime": 101.989679969,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/YjEyZTYwOGMtYWU4OS00ZGNlLWE4Y2QtOTZmMTIyM2ZjZTQz.jpg",
+      "prompt": "One unbroken locked-off shot from a static tripod; the camera does not move at all. Two commuters cross the frame in opposite directions, each absorbed in their own errand. The man in the rust-orange corduroy jacket walks steadily from left to right along the foreground at a brisk commuter pace, his head tilted down and to the right reading the phone in his right hand for the whole shot, and he walks out of frame at the right edge. The woman in the deep-teal wool overcoat walks steadily from right to left through the mid-ground at a slower unhurried pace, holding her paper coffee cup, her chin raised and her head turned up and to the left toward the hanging departure board for the whole shot, continuing toward the left of frame. Their two paths simply cross. Each keeps the same head position throughout. The evening rush crowd keeps flowing in both directions with natural motion blur, everyone in muted charcoal, black, navy, beige and grey. Observational documentary cinematography on a long lens, compressed perspective, shallow depth of field, restrained naturalistic grade, fine film grain.",
+      "negative_prompt": "camera movement, panning, zooming, handheld shake, cutting to another shot, people looking at the camera, characters turning toward each other, eye contact, greeting, waving, talking, speech, subtitles, captions, on-screen text, watermark, slow motion, lens flare",
+      "duration": 6,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh02-v1.mp4"
+    ]
+  }
+]

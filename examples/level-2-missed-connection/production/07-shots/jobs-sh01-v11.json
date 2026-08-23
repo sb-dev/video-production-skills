@@ -1,0 +1,30 @@
+[
+  {
+    "id": "SH01-k4",
+    "model": "kwaivgi/kling-v3-video",
+    "input": {
+      "start_image": { "$file": "production/06-reference-frames/selected/SH01-establish-v2.jpg" },
+      "prompt": "One unbroken observational shot from a completely static tripod; the camera never moves, zooms, pans or tilts. Normal real-time speed with ordinary motion blur. On the LEFT of the picture the man in the rust-orange corduroy jacket with the leather satchel walks steadily in profile, head down over his phone, moving AWAY FROM THE COFFEE KIOSK and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE; his position creeps RIGHTWARDS but he stays in the LEFT HALF of the picture throughout. On the RIGHT of the picture the woman in the deep-teal wool overcoat with the cream scarf and paper coffee cup walks steadily, chin lifted toward the hanging departure board, moving AWAY FROM THE TICKET GATES and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE; her position creeps LEFTWARDS but she stays in the RIGHT HALF of the picture throughout. The wide stretch of empty floor between them never closes; they never meet, never pass each other, never look at each other. Both faces stay clearly visible and their clothing does not change. The evening rush crowd keeps flowing in both directions at ordinary walking speed. Observational documentary cinematography, available light, restrained naturalistic grade, fine film grain.",
+      "negative_prompt": "the woman in the teal coat walking to the right, the woman in the teal coat moving towards the ticket gates, the woman in the teal coat leaving the frame on the right, the man walking to the left, both people walking the same way, the two of them meeting, passing each other, walking side by side, eye contact, greeting, waving, talking, time-lapse, long exposure, motion streaks, sped up footage, camera push-in, zoom, pan, tilt, handheld shake, teal coat turning black or navy, people looking at the camera, subtitles, captions, on-screen text, watermark, lens flare",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "out": "production/07-shots/candidates/sh01-k4.mp4"
+  },
+  {
+    "id": "SH01-v2",
+    "model": "google/veo-3.1",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-establish-v2.jpg" },
+      "prompt": "One unbroken observational shot from a completely static tripod; the camera never moves, zooms, pans or tilts. Normal real-time speed with ordinary motion blur. On the left of the picture the man in the rust-orange corduroy jacket with the leather satchel walks steadily in profile, head down over his phone, moving away from the coffee kiosk and towards the ticket gates on the right-hand side of the picture; his position creeps rightwards but he stays in the left half of the picture throughout. On the right of the picture the woman in the deep-teal wool overcoat with the cream scarf and paper coffee cup walks steadily, chin lifted toward the hanging departure board, moving away from the ticket gates and towards the warmly lit coffee kiosk on the left-hand side of the picture; her position creeps leftwards but she stays in the right half of the picture throughout. The wide stretch of empty floor between them never closes; they never meet, never pass each other, never look at each other. Both faces stay clearly visible and their clothing does not change. The evening rush crowd keeps flowing in both directions at ordinary walking speed. Observational documentary cinematography, available light, restrained naturalistic grade, fine film grain.",
+      "negative_prompt": "the woman walking to the right, the man walking to the left, the two of them meeting or passing each other, eye contact, greeting, waving, talking, time-lapse, motion streaks, sped up footage, camera movement, zoom, pan, tilt, handheld shake, people looking at the camera, subtitles, captions, on-screen text, watermark, lens flare",
+      "duration": 6,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "out": "production/07-shots/candidates/sh01-v2.mp4"
+  }
+]

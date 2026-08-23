@@ -1,0 +1,10 @@
+[
+  {
+    "id": "AMB-a-transcribe",
+    "model": "openai/gpt-4o-transcribe",
+    "input": {
+      "audio_file": { "$file": "production/08-edit/audio/ambience-a.wav" }
+    },
+    "out": "production/08-edit/audio/ambience-a-transcript.txt"
+  }
+]

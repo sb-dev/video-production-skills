@@ -1,0 +1,24 @@
+{
+  "shots": [
+    {
+      "source": "../07-shots/selected/SH01-v3-conformed.mp4",
+      "in": 0.0,
+      "duration": 4.0
+    },
+    {
+      "source": "../07-shots/selected/SH02-conformed.mp4",
+      "in": 0.0,
+      "duration": 4.0
+    },
+    {
+      "source": "../07-shots/selected/SH03.mp4",
+      "in": 0.0,
+      "duration": 5.04
+    }
+  ],
+  "render": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 24
+  }
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "SH01-a",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "A photorealistic cinematic film frame, 16:9, shot on a 35mm lens from a high wide vantage point on a mezzanine, looking down and across the concourse of a large old European railway terminus during evening rush hour, about 18:00. Overhead is a vast arched steel-and-glass trainshed roof with long rows of hanging pendant lamps; cool blue-grey dusk light falls through the glass from above while warm amber sodium light pools at human height. A large dark rectangular departure board hangs above the centre of the concourse with a round station clock beneath it reading 17:48. A coffee kiosk glows warm amber on the LEFT side, clearly to the left of the departure board. A thick cylindrical stone column stands in the middle of the concourse. Numbered platform gates run along the far side beneath the arches. A dense crowd of commuters flows in both directions, motion-blurred, all dressed only in muted charcoal, black, navy, beige, olive and grey.\n\nTwo people stand out because they are the only saturated colours in the frame.\n\nIn the LOWER LEFT of frame, on the walking plane nearest the camera, [Image1]: a tall lean man in his early thirties with dark brown tousled hair and short stubble, warm olive skin, wearing an unbuttoned rust-orange corduroy jacket over a charcoal crewneck sweater, dark charcoal trousers and brown leather boots, a dark brown leather satchel worn cross-body, holding a phone in his right hand. He is mid-stride walking toward the RIGHT of frame, in profile, a small pocket of clear floor around him.\n\nTo the RIGHT OF CENTRE of frame, one depth plane further back, [Image2]: a woman in her late twenties with dark curly hair pulled into a low bun with loose strands framing her face, deep brown skin, wearing an open deep-teal wool overcoat over a cream ribbed sweater, dark jeans and black ankle boots, a cream scarf loose at her neck and a small tan leather crossbody bag, holding a white paper coffee cup. She is mid-stride walking toward the LEFT of frame.\n\nThey are separated by about a third of the frame width and are not looking at each other. Observational documentary photography, available light, naturalistic colour, desaturated except for the rust-orange and deep-teal coats, medium-low contrast, slightly lifted milky blacks, gentle highlight rolloff, soft halation on the lamps, fine film grain. Real photograph, not a render, not an illustration. No lens flare, no rain, no readable text on any sign, no subtitles, no captions, no watermark.",
+      "image_input": [
+        { "$file": "production/03-characters/selected/CHAR-M-elias.jpg" },
+        { "$file": "production/03-characters/selected/CHAR-F-nora.jpg" }
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/06-reference-frames/candidates/sh01-a.jpg"
+  },
+  {
+    "id": "SH01-b",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "A photorealistic cinematic film frame, 16:9, high wide observational shot from a mezzanine balcony looking north across the stone floor of a huge Victorian railway station concourse at evening rush hour. Arched wrought-iron and glass roof overhead, rows of warm pendant lamps, cold blue dusk coming through the roof glass, warm amber light pooling on the floor. A big dark departure board with a round clock beneath it reading 17:48 hangs over the centre-right of the concourse. Warm-lit coffee kiosk on the far LEFT, to the left of the departure board. A heavy cylindrical stone column mid-floor. Platform gates along the far wall. Hundreds of commuters crossing in both directions in motion blur, all wearing only muted charcoal, black, navy, beige and grey.\n\nOnly two figures carry saturated colour.\n\nBottom-left of frame, closest walking plane, seen in near-profile mid-stride heading toward the RIGHT: [Image1], a tall lean man in his early thirties with dark brown tousled hair and short stubble, warm olive skin, in an unbuttoned rust-orange corduroy jacket over a charcoal crewneck, dark charcoal trousers, brown boots, dark brown leather satchel worn cross-body, phone in his right hand.\n\nRight of centre, further back in depth, mid-stride heading toward the LEFT: [Image2], a woman in her late twenties with dark curly hair in a low bun with loose strands, deep brown skin, in an open deep-teal wool overcoat over a cream ribbed sweater, dark jeans, black ankle boots, cream scarf, small tan crossbody bag, white paper coffee cup in her left hand.\n\nNeither is aware of the other. Available-light documentary realism in the register of European station photography, desaturated palette protecting only the rust-orange and the teal, medium-low contrast, milky blacks, fine grain, soft lamp halation. Photograph, not CGI, not illustration. No lens flare, no rain, no readable signage text, no captions, no watermark.",
+      "image_input": [
+        { "$file": "production/03-characters/selected/CHAR-M-elias.jpg" },
+        { "$file": "production/03-characters/selected/CHAR-F-nora.jpg" }
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/06-reference-frames/candidates/sh01-b.jpg"
+  },
+  {
+    "id": "SH01-c",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Photoreal cinematic still, 16:9, wide observational establishing shot of a great urban railway station concourse at evening rush, camera high on the south side looking north. Enormous arched glass-and-steel trainshed, pendant lamps in long rows, dusk-blue light from above meeting warm amber light below. Suspended departure board with a round clock beneath reading 17:48 hangs over the centre of the hall. A coffee kiosk spills warm amber light on the LEFT of frame, left of the board. A stout cylindrical stone column rises through mid-frame. Numbered platform gates beyond. Thick two-way crowd of commuters, motion-blurred, dressed exclusively in muted charcoal, black, navy, beige, olive and grey so that no other colour competes.\n\nLower-left foreground plane, walking toward the RIGHT in mid-stride: [Image1] — a tall lean man in his early thirties, dark brown tousled hair, short stubble, warm olive skin, unbuttoned rust-orange corduroy jacket over a charcoal crewneck sweater, dark charcoal trousers, brown leather boots, dark brown leather cross-body satchel, phone in his right hand.\n\nRight of centre, a plane deeper into the hall, walking toward the LEFT in mid-stride: [Image2] — a woman in her late twenties, dark curly hair in a low bun with loose strands, deep brown skin, open deep-teal wool overcoat over a cream ribbed sweater, dark jeans, black ankle boots, cream scarf, small tan leather crossbody bag, white paper coffee cup.\n\nEach has a small pocket of clear floor so both are readable at wide scale. They are not looking at each other. Naturalistic available-light photograph, restrained grade, desaturated except for the two protected coat colours, medium-low contrast, lifted blacks, fine film grain, subtle halation on practical lamps. A real photograph, not a render, not a painting. No lens flare, no rain, no legible text anywhere, no captions, no watermark.",
+      "image_input": [
+        { "$file": "production/03-characters/selected/CHAR-M-elias.jpg" },
+        { "$file": "production/03-characters/selected/CHAR-F-nora.jpg" }
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/06-reference-frames/candidates/sh01-c.jpg"
+  }
+]

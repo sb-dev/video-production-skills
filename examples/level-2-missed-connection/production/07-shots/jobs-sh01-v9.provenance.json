@@ -1,0 +1,24 @@
+[
+  {
+    "id": "SH01-t6",
+    "model": "bytedance/seedance-2.0",
+    "predictionId": "mdf6640grsrmt0d05e28zk01vr",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T22:07:50.47Z",
+    "completedAt": "2026-08-22T22:12:11.106342286Z",
+    "predictTime": 260.620311429,
+    "input": {
+      "image": "https://api.replicate.com/v1/files/ODI3YmZlYzEtNWYxYi00ODY4LTllMzktNzUwOGNmOTI0MWZh.jpg",
+      "prompt": "Continue this exact scene as one unbroken wide observational shot.\n\nCAMERA: completely locked off on a tripod. No push-in, no zoom, no pan, no tilt, no shake. The framing at the end is identical to the framing at the start.\n\nSPEED: normal real-time speed with ordinary natural motion blur. Not a time-lapse, not a long exposure. Every person stays a distinct, solid figure.\n\nTHE MAN: the tall man in the rust-orange corduroy jacket with the brown leather satchel begins on the LEFT side of the picture. He walks AWAY FROM THE COFFEE KIOSK and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE, glancing down at his phone. Over the course of the shot his position in the frame moves slowly RIGHTWARDS, but he stays in the LEFT THIRD of the picture the whole time and never reaches the middle.\n\nTHE WOMAN: the woman in the deep-teal wool overcoat holding a paper coffee cup begins on the RIGHT side of the picture. She walks AWAY FROM THE TICKET GATES and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE. Over the course of the shot her position in the frame moves slowly LEFTWARDS, but she stays in the RIGHT THIRD of the picture the whole time and never reaches the middle. She must NOT drift towards the right-hand edge. Her deep-teal overcoat stays strongly saturated throughout and never turns black, navy or grey.\n\nCRITICAL SEPARATION: they walk in opposite directions but they stay FAR APART for the entire shot. A wide gap of open floor always remains between them. They never come close to one another, never pass one another, never walk side by side, never touch, never meet, never turn toward one another and never look at one another. At the end of the shot they are still separated by a wide stretch of floor.\n\nThe evening rush crowd keeps flowing in both directions at normal walking speed. Nobody looks at the camera. The light does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1107
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh01-t6.mp4"
+    ]
+  }
+]

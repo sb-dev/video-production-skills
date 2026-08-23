@@ -1,0 +1,60 @@
+[
+  {
+    "id": "SH02-a",
+    "model": "google/nano-banana-pro",
+    "status": "failed",
+    "error": "[SH02-a] failed: Prediction failed: Async prediction failed: ModelRateLimitError: Service is currently unavailable due to high demand. Please try again later. (E003) (1cah9wlWR9)"
+  },
+  {
+    "id": "SH02-b",
+    "model": "google/nano-banana-pro",
+    "status": "failed",
+    "error": "[SH02-b] failed: Prediction failed: Async prediction failed: ModelRateLimitError: Service is currently unavailable due to high demand. Please try again later. (E003) (1cah9wlWR9)"
+  },
+  {
+    "id": "SH03-a",
+    "model": "google/nano-banana-pro",
+    "predictionId": "ayxxna4zcxrmw0d05cr84egfnw",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:36:41.959Z",
+    "completedAt": "2026-08-22T20:37:28.694902598Z",
+    "predictTime": 46.717504303,
+    "input": {
+      "prompt": "A photorealistic cinematic film frame, 16:9, shot on a 50mm lens at eye level, following slightly behind and to the left of a walking woman. [Image1] is the same railway station concourse at the same moment of evening rush — reuse its architecture, arched glass roof, pendant lamps, hanging dark departure board with the round clock beneath, stone floor, warm-and-cool light and exact colour grade. The camera has moved further west along the same side of the same hall.\n\nComposition: the hanging dark DEPARTURE BOARD with its round clock is now in the UPPER RIGHT of frame, behind her. A warmly lit coffee kiosk glows amber at the far LEFT of frame, ahead of her.\n\nCENTRE-LEFT of frame, close to camera, seen from THREE-QUARTERS BEHIND: [Image2], a woman in her late twenties with dark curly hair pulled into a low bun with loose strands, deep brown skin, wearing an open deep-teal wool overcoat over a cream ribbed sweater, dark jeans and black ankle boots, a cream scarf loose at her neck and a small tan leather crossbody bag, holding a white paper coffee cup. She is walking AWAY from camera toward the LEFT of frame. Her head still faces FORWARD in her direction of travel — she has not turned. Her low bun and the back of her teal coat are clearly visible.\n\nAround and behind her: a dense evening-rush crowd of completely anonymous commuters, motion-blurred, all dressed ONLY in muted charcoal, black, navy, beige, olive and grey. Nobody in the frame is distinctive. There is NO orange, NO rust, NO burnt orange and NO red anywhere in the image. No man in an orange jacket. The space to her right holds nothing but ordinary strangers.\n\nObservational documentary photography, available light, naturalistic colour, desaturated except for her deep-teal coat, medium-low contrast, lifted milky blacks, soft lamp halation, fine film grain. Real photograph, not a render, not an illustration. No lens flare, no rain, no readable signage text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/OGMyYjJhYjEtYWNmNy00NmYyLWIyZDEtMTg5YzI0NzAzNWNj.jpg",
+        "https://api.replicate.com/v1/files/NDdhZDg0NTEtMTI5Zi00N2M5LThhZGEtMWU4NDZjYjMwOTZj.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh03-a.jpg"
+    ]
+  },
+  {
+    "id": "SH03-b",
+    "model": "google/nano-banana-pro",
+    "predictionId": "f50w21czp1rmr0d05crax28acc",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:36:42.032Z",
+    "completedAt": "2026-08-22T20:39:29.932298942Z",
+    "predictTime": 167.878896426,
+    "input": {
+      "prompt": "Photoreal cinematic still, 16:9, 50mm lens, eye level, trailing a few paces behind a woman walking through the evening-rush crowd of the railway station concourse shown in [Image1]. Preserve [Image1]'s architecture, arched glass-and-iron roof, hanging pendant lamps, suspended dark departure board with a round clock beneath it, stone floor, mixed warm-amber and cool-dusk light, and exact colour grade. The camera has moved further west along the same side of the same hall than in [Image1].\n\nFrame layout: the hanging departure board and its round clock sit UPPER RIGHT, behind her. A warm amber coffee kiosk glows at the far LEFT edge, ahead of her. The rest is crowd.\n\nCentre-left, near to camera, framed from three-quarters behind at waist-up-to-full height: [Image2] — a woman in her late twenties, dark curly hair in a low bun with loose strands, deep brown skin, open deep-teal wool overcoat over a cream ribbed sweater, dark jeans, black ankle boots, cream scarf, small tan leather crossbody bag, white paper coffee cup held at chest height. She walks AWAY from the camera toward the LEFT. Her head is still facing forward along her path; she has not looked back yet. The back of her teal coat and her low bun read clearly.\n\nEverybody else in frame is an anonymous commuter in muted charcoal, black, navy, beige, olive or grey, softened by motion blur. Absolutely no orange, rust, burnt orange or red garment appears anywhere in the picture. No tall man in an orange corduroy jacket. Nobody behind her is distinctive or worth noticing.\n\nAvailable-light European station photography, restrained naturalistic grade, desaturated apart from her teal coat, medium-low contrast, milky blacks, subtle lamp halation, fine grain. A photograph, not CGI, not illustration. No lens flare, no rain, no legible signage text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/ZDdkNTIwYTItNDkxYi00MTJlLWFiMTEtOTVjMjdkZGJjN2Jl.jpg",
+        "https://api.replicate.com/v1/files/M2Q1NGJhMmEtNWM4Mi00Yzk0LTllYTMtYjcwNWQ0YWFjMzQy.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh03-b.jpg"
+    ]
+  }
+]

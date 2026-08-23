@@ -1,0 +1,46 @@
+[
+  {
+    "id": "CHAR-M-a",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Photographic character reference sheet, four full-body views of the SAME man on a plain neutral mid-grey seamless studio backdrop, arranged left to right in a single row: (1) front view standing, (2) three-quarter front view, (3) side profile mid-stride walking to the right, (4) rear view walking away. The man: a tall lean man in his early thirties with dark brown tousled slightly overgrown hair and short stubble, warm olive skin, brown eyes, straight nose, defined jaw. He wears an unbuttoned rust-orange corduroy jacket over a charcoal crewneck sweater, dark charcoal trousers and brown leather boots, with a dark brown leather satchel worn cross-body over his right shoulder resting on his left hip, and he holds a phone in his right hand. Identical face, identical hair, identical clothing in all four views. Even soft neutral studio lighting, no coloured light, no shadows on the backdrop. Shot on a 50mm lens, sharp, photorealistic, natural skin texture and pores, real fabric weave on the corduroy. Documentary photography realism, not illustration, not 3D render. No text, no labels, no watermarks.",
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/03-characters/candidates/char-m-a.jpg"
+  },
+  {
+    "id": "CHAR-M-b",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Candid photographic character study sheet: four photographs of the SAME man laid out in one row against a plain light-grey wall, natural window light. Views: front standing, three-quarter turned, full side profile walking rightwards, and from directly behind walking away. The man: a tall lean man in his early thirties, dark brown tousled hair, short dark stubble, warm olive skin, brown eyes. Wardrobe held identical across all four: an unbuttoned rust-orange corduroy jacket, charcoal crewneck sweater underneath, dark charcoal trousers, brown leather boots, dark brown leather cross-body satchel strap running diagonally across his chest, a phone in his right hand. Ordinary commuter, slightly preoccupied expression, not posed or heroic. Realistic photograph, 50mm, medium contrast, natural colour, fine grain. Not an illustration, not a render. No text or labels anywhere.",
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/03-characters/candidates/char-m-b.jpg"
+  },
+  {
+    "id": "CHAR-F-a",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Photographic character reference sheet, four full-body views of the SAME woman on a plain neutral mid-grey seamless studio backdrop, arranged left to right in a single row: (1) front view standing, (2) three-quarter front view, (3) side profile mid-stride walking to the left, (4) rear view walking away. The woman: late twenties, deep brown skin, dark eyes, softly rounded features, dark curly hair pulled into a low bun with loose curly strands framing her face. She wears an open deep-teal wool overcoat over a cream ribbed sweater, dark jeans and black ankle boots, a cream scarf loose around her neck, and a small tan leather crossbody bag; she holds a plain white paper coffee cup in her left hand. Identical face, identical hair, identical clothing in all four views. Even soft neutral studio lighting, no coloured light, no shadows on the backdrop. Shot on a 50mm lens, sharp, photorealistic, natural skin texture and pores, real wool texture on the coat. Documentary photography realism, not illustration, not 3D render. No text, no labels, no watermarks.",
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/03-characters/candidates/char-f-a.jpg"
+  },
+  {
+    "id": "CHAR-F-b",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Candid photographic character study sheet: four photographs of the SAME woman laid out in one row against a plain light-grey wall, natural window light. Views: front standing, three-quarter turned, full side profile walking leftwards, and from directly behind walking away. The woman: late twenties, deep brown skin, dark eyes, dark curly hair in a low bun with loose strands at her temples. Wardrobe held identical across all four: an open deep-teal wool overcoat, cream ribbed sweater, dark jeans, black ankle boots, a cream scarf loose at her neck, a small tan leather crossbody bag, and a plain white paper coffee cup held in her left hand at chest height. Ordinary commuter, calm and unhurried expression, not posed or glamorous. Realistic photograph, 50mm, medium contrast, natural colour, fine grain. Not an illustration, not a render. No text or labels anywhere.",
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/03-characters/candidates/char-f-b.jpg"
+  }
+]

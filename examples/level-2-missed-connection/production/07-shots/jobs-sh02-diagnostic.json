@@ -1,0 +1,30 @@
+[
+  {
+    "id": "DIAG-image",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH02-crossing.jpg" },
+      "prompt": "People walk through a railway station. The camera does not move.",
+      "duration": 5,
+      "resolution": "480p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 9001
+    },
+    "out": "production/07-shots/diagnostic/diag-image.mp4"
+  },
+  {
+    "id": "DIAG-altframe",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/candidates/sh02-a.jpg" },
+      "prompt": "People walk through a railway station. The camera does not move.",
+      "duration": 5,
+      "resolution": "480p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 9002
+    },
+    "out": "production/07-shots/diagnostic/diag-altframe.mp4"
+  }
+]

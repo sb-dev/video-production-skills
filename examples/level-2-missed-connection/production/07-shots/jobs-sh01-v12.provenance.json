@@ -1,0 +1,24 @@
+[
+  {
+    "id": "SH01-k5",
+    "model": "kwaivgi/kling-v3-video",
+    "predictionId": "17r8y9r8v1rmt0d05es8axtm8m",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T22:58:03.096Z",
+    "completedAt": "2026-08-22T23:00:53.731710242Z",
+    "predictTime": 170.619194834,
+    "input": {
+      "start_image": "https://api.replicate.com/v1/files/YjNlNmFjNzYtYzE1Yi00MmQ3LThhMTAtYzFkNjBhZjZhYzZk.jpg",
+      "prompt": "One unbroken observational shot from a completely static tripod; the camera never moves, zooms, pans or tilts. Normal real-time speed with ordinary motion blur. BOTH people are WALKING briskly and continuously for the whole shot — neither of them ever stops, stands still, waits, hesitates or pauses, and both of them visibly cover ground across the stone floor. On the LEFT of the picture the man in the rust-orange corduroy jacket with the leather satchel keeps walking in profile with a long steady stride, his eyes down on his phone the entire time, moving AWAY FROM THE COFFEE KIOSK and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE, staying in the LEFT HALF of the picture. On the RIGHT of the picture the woman in the deep-teal wool overcoat with the cream scarf and paper coffee cup keeps walking in profile with a steady stride, moving AWAY FROM THE TICKET GATES and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE, staying in the RIGHT HALF of the picture. Her chin stays lifted HIGH and her eyes stay UP on the hanging departure board mounted high above the concourse; she is reading the departure board and looking well above head height the entire time. Neither of them ever lowers or turns their head toward the other, and there is no moment at which either of them looks at the other person. The wide stretch of empty floor between them never closes. The evening rush crowd keeps flowing in both directions at ordinary walking speed. Observational documentary cinematography, available light, restrained naturalistic grade, fine film grain.",
+      "negative_prompt": "standing still, stopping, waiting, pausing, hesitating, walking on the spot, watching the other person, looking at the man, looking at the woman, glancing sideways at each other, eye contact, facing each other, greeting, waving, talking, the woman walking to the right, the man walking to the left, the two of them meeting or passing each other, time-lapse, long exposure, motion streaks, sped up footage, camera push-in, zoom, pan, tilt, handheld shake, teal coat turning black or navy, people looking at the camera, subtitles, captions, on-screen text, watermark, lens flare",
+      "duration": 5,
+      "mode": "pro",
+      "aspect_ratio": "16:9",
+      "generate_audio": false
+    },
+    "outputs": [
+      "production/07-shots/candidates/sh01-k5.mp4"
+    ]
+  }
+]

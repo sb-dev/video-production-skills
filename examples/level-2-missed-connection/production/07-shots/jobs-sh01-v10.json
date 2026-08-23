@@ -1,0 +1,30 @@
+[
+  {
+    "id": "SH01-t7",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-establish-v2.jpg" },
+      "prompt": "Continue this exact scene as one unbroken observational shot.\n\nCAMERA: completely locked off on a tripod. No push-in, no zoom, no pan, no tilt, no shake. The framing at the end is identical to the framing at the start.\n\nSPEED: normal real-time speed with ordinary natural motion blur. Not a time-lapse, not a long exposure. Every person stays a distinct, solid figure.\n\nTHE MAN: the tall man in the rust-orange corduroy jacket with the brown leather satchel is on the LEFT side of the picture. He keeps walking AWAY FROM THE COFFEE KIOSK and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE at an ordinary steady walking pace, in profile, his head down over the phone in his right hand. Over the shot his position in the frame moves slowly RIGHTWARDS, but he stays in the LEFT HALF of the picture the whole time.\n\nTHE WOMAN: the woman in the deep-teal wool overcoat holding a paper coffee cup is on the RIGHT side of the picture. She keeps walking AWAY FROM THE TICKET GATES and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE at an ordinary steady walking pace, her chin lifted toward the hanging departure board. Over the shot her position in the frame moves slowly LEFTWARDS, but she stays in the RIGHT HALF of the picture the whole time. She must NOT drift towards the right-hand edge. Her deep-teal overcoat stays strongly saturated and never turns black, navy or grey.\n\nCRITICAL SEPARATION: they walk in opposite directions but a wide stretch of open floor always remains between them. They never come close, never pass one another, never walk side by side, never touch, never meet, never turn toward one another, never look at one another and never react to one another. At the end of the shot they are still separated by open floor.\n\nBoth faces stay clearly visible and both keep their exact clothing. The evening rush crowd keeps flowing in both directions at normal walking speed. Nobody looks at the camera. The light does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1201
+    },
+    "out": "production/07-shots/candidates/sh01-t7.mp4"
+  },
+  {
+    "id": "SH01-t8",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-establish-v2.jpg" },
+      "prompt": "Continue this exact scene as one unbroken observational shot from a completely static tripod. The camera does not move, zoom, pan or tilt at any point. Everything plays at normal real-time speed with ordinary motion blur — not a time-lapse.\n\nOn the LEFT of the picture, the man in the rust-orange corduroy jacket with the leather satchel walks steadily in profile, head down over his phone, moving AWAY FROM THE COFFEE KIOSK BEHIND HIM and TOWARDS THE TICKET GATES ON THE RIGHT-HAND SIDE OF THE PICTURE. His position in the frame creeps RIGHTWARDS but he remains in the LEFT HALF of the picture throughout.\n\nOn the RIGHT of the picture, the woman in the deep-teal wool overcoat with the cream scarf and paper coffee cup walks steadily, chin lifted toward the hanging departure board, moving AWAY FROM THE TICKET GATES BEHIND HER and TOWARDS THE WARMLY LIT COFFEE KIOSK ON THE LEFT-HAND SIDE OF THE PICTURE. Her position in the frame creeps LEFTWARDS but she remains in the RIGHT HALF of the picture throughout. She must not drift right and must not leave the frame. Her overcoat stays a strong saturated deep teal.\n\nThe wide stretch of empty floor between them never closes. They do not meet, do not pass each other, do not come near each other, do not turn toward each other, do not look at each other and do not react to each other at any moment.\n\nBoth of their faces remain clearly visible and their clothing does not change. Around them the evening rush crowd keeps flowing in both directions at normal walking speed, everyone else in muted charcoal, black, navy, beige and grey. Nobody looks at the camera. The lighting does not change.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, medium-low contrast, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1202
+    },
+    "out": "production/07-shots/candidates/sh01-t8.mp4"
+  }
+]

@@ -1,0 +1,59 @@
+[
+  {
+    "id": "SB-01",
+    "model": "google/nano-banana-pro",
+    "predictionId": "agt6dz1cjhrmr0d05cnax1drbg",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:29:39.348Z",
+    "completedAt": "2026-08-22T20:30:01.855669719Z",
+    "predictTime": 22.491430267,
+    "input": {
+      "prompt": "A hand-drawn cinematic storyboard panel, monochrome graphite and grey marker on paper, loose confident film-storyboard style with hatching. Content: a HIGH WIDE shot looking down and across the concourse of a large old railway station at evening rush hour. A huge arched steel-and-glass trainshed roof with rows of hanging pendant lamps. A large rectangular departure board hangs above the centre of the concourse with a round clock beneath it. A coffee kiosk on the left, a thick cylindrical stone column mid-concourse, numbered platform gates along the far side. A dense crowd of commuters drawn as loose grey shapes. In the lower LEFT foreground a tall man in a light-toned jacket walks toward the RIGHT, with a bold arrow drawn beside him pointing right. On the RIGHT side of frame, further back in depth, a woman in a dark coat walks toward the LEFT, with a bold arrow drawn beside her pointing left. Only these two figures are drawn with clean detail; everyone else is loose. Storyboard sketch only, no colour, no photograph. No text, no numbers, no labels, no captions.",
+      "aspect_ratio": "16:9",
+      "resolution": "1K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/04-storyboard/frames/sb-01.jpg"
+    ]
+  },
+  {
+    "id": "SB-02",
+    "model": "google/nano-banana-pro",
+    "predictionId": "zdbbc39d55rmw0d05cn8zqg698",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:29:39.497Z",
+    "completedAt": "2026-08-22T20:30:01.065181623Z",
+    "predictTime": 21.550330942,
+    "input": {
+      "prompt": "A hand-drawn cinematic storyboard panel, monochrome graphite and grey marker on paper, loose confident film-storyboard style with hatching. Content: an EYE-LEVEL long-lens shot inside a busy railway station concourse. In the FOREGROUND, large in frame and cropped at the knees, a tall man in a light-toned corduroy jacket with a cross-body satchel strides from left to right, head tilted DOWN and to the RIGHT looking at a phone in his hand; a bold arrow beside him points right. Directly BEHIND him about two metres deeper into the shot, a woman in a dark coat holding a paper cup walks from right to left, her head tilted UP and to the LEFT looking at a large departure board with a round clock that hangs in the upper left of frame; a bold arrow beside her points left. Two thin dashed sight-lines are drawn from each of their eyes showing that the lines diverge and never meet. A thick cylindrical stone column stands at the right edge. A blurred crowd fills the space between them. Storyboard sketch only, no colour, no photograph. No text, no numbers, no labels, no captions.",
+      "aspect_ratio": "16:9",
+      "resolution": "1K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/04-storyboard/frames/sb-02.jpg"
+    ]
+  },
+  {
+    "id": "SB-03",
+    "model": "google/nano-banana-pro",
+    "predictionId": "zke6p51ck5rmt0d05cnb38ev2w",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T20:29:39.353Z",
+    "completedAt": "2026-08-22T20:29:58.989947823Z",
+    "predictTime": 19.621170983,
+    "input": {
+      "prompt": "A hand-drawn cinematic storyboard panel, monochrome graphite and grey marker on paper, loose confident film-storyboard style with hatching. Content: a MEDIUM shot inside a busy railway station concourse, camera trailing slightly behind and to the left of a woman in a dark knee-length coat with her hair in a low bun, holding a paper cup. She is walking away from camera toward the LEFT, and she has slowed and turned her head back over her RIGHT shoulder, looking back toward the RIGHT side of frame; a curved arrow shows her head turning back. Her face is three-quarters visible, expression quiet and unresolved. Behind her and to the right, only an anonymous mass of ordinary commuters — nobody distinctive, no one she is looking at. A departure board with a round clock hangs in the upper left, a coffee kiosk glows at the right edge. Storyboard sketch only, no colour, no photograph. No text, no numbers, no labels, no captions.",
+      "aspect_ratio": "16:9",
+      "resolution": "1K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/04-storyboard/frames/sb-03.jpg"
+    ]
+  }
+]

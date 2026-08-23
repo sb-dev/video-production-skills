@@ -1,0 +1,44 @@
+[
+  {
+    "id": "SH02-t3",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH02-crossing.jpg" },
+      "prompt": "Continue this exact scene as one unbroken locked-off shot. The camera is on a tripod and does not move at all — no push, no pan, no tilt, no shake, no cut.\n\nTwo commuters cross the frame in opposite directions, each absorbed in their own errand.\n\nThe man in the rust-orange corduroy jacket walks steadily from LEFT to RIGHT along the foreground, reading the phone in his right hand. He keeps reading it for the whole shot, his head tilted DOWN AND TO THE RIGHT, and he walks out of frame at the RIGHT edge at a normal commuter pace.\n\nThe woman in the deep-teal wool overcoat walks steadily from RIGHT to LEFT through the mid-ground, holding her paper coffee cup. She keeps reading the hanging departure board for the whole shot, her chin raised and her head turned UP AND TO THE LEFT, and she continues toward the LEFT of frame.\n\nTheir two paths simply cross. Each keeps their own head position the entire time: his stays down on the phone, hers stays up on the board. No one turns their head, no one changes direction, no one stops, no one speaks, no one waves, no one greets anyone. Both simply continue on their own routes at their own steady pace.\n\nAround them the evening rush crowd keeps flowing in both directions with natural motion blur, everyone in muted charcoal, black, navy, beige and grey. Nobody looks at the camera. Lighting, wardrobe and framing stay exactly as they are.\n\nObservational documentary cinematography on a long lens, compressed perspective, shallow depth of field, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 2203
+    },
+    "out": "production/07-shots/candidates/sh02-t3.mp4"
+  },
+  {
+    "id": "SH02-t4",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH02-crossing.jpg" },
+      "prompt": "Continue this exact scene as a single continuous take from a completely static tripod. The camera never moves and there is no cut.\n\nOrdinary rush-hour foot traffic. Two commuters travel in opposite directions through the same frame.\n\nForeground: the man in the rust-orange corduroy jacket walks from LEFT to RIGHT at a brisk commuter pace, eyes on the phone in his right hand for the entire shot. His head stays angled DOWN AND TO THE RIGHT and never lifts. He carries on and leaves the frame at the RIGHT edge.\n\nMid-ground: the woman in the deep-teal wool overcoat walks from RIGHT to LEFT at a slower, unhurried pace, coffee cup in hand, studying the hanging departure board for the entire shot. Her face stays tilted UP AND TO THE LEFT and never turns down or sideways. She carries on toward the LEFT.\n\nBoth simply continue walking. No head turns, no direction changes, no pauses, no gestures, no speech, no greeting, no interaction of any kind between anyone in frame. Everyone behaves like an ordinary commuter minding their own journey.\n\nThe surrounding crowd keeps moving past in both directions, motion-blurred and anonymous in muted charcoal, black, navy, beige and grey. Nobody looks at the camera. Lighting, clothing and framing remain unchanged throughout.\n\nLong-lens observational cinematography, shallow depth of field, naturalistic available-light grade, medium-low contrast, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 2204
+    },
+    "out": "production/07-shots/candidates/sh02-t4.mp4"
+  },
+  {
+    "id": "SH01-t1",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-wide.jpg" },
+      "prompt": "Continue this exact scene as a single continuous shot with no cuts. The camera performs one extremely slow, almost imperceptible push-in across the whole clip. No pan, no tilt, no shake, no cut.\n\nThe tall man in the rust-orange corduroy jacket in the lower left keeps walking steadily toward the RIGHT of frame, in profile, glancing down at the phone in his hand. He keeps his own steady pace and stays on his own route.\n\nThe woman in the deep-teal wool overcoat right of centre keeps walking steadily toward the LEFT of frame, holding her paper coffee cup, glancing up toward the hanging departure board. She keeps her own steady pace and stays on her own route.\n\nBoth simply continue walking through the crowd. Nobody stops, nobody turns their head, nobody greets anyone, nobody speaks, nobody interacts.\n\nAround them the evening rush crowd flows continuously in both directions with natural motion blur. Nobody looks at the camera. The light does not change. The clothing does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1103
+    },
+    "out": "production/07-shots/candidates/sh01-t1.mp4"
+  }
+]

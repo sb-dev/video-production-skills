@@ -1,0 +1,46 @@
+[
+  {
+    "id": "SH02-r-ticket",
+    "model": "google/nano-banana-pro",
+    "predictionId": "fgyrd33xxhrmy0d05d7815xp1m",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:09:19.468Z",
+    "completedAt": "2026-08-22T21:09:44.373115386Z",
+    "predictTime": 24.888277544,
+    "input": {
+      "prompt": "Edit [Image1]. Keep absolutely everything identical: the same railway station concourse, the same arched glass roof and pendant lamps, the same hanging departure board and round clock in the upper left, the same stone column at the right edge, the same stone floor, the same crowd in the same positions and poses, the same camera angle, the same framing, the same depth of field, the same lighting and the same colour grade.\n\nKeep the man in the rust-orange corduroy jacket exactly where he is, at the same scale, in the same stride, in the same clothing, with the same leather satchel, and with his head tilted at exactly the same angle — DOWN AND TO THE RIGHT.\n\nMake exactly one change: remove the mobile phone from his right hand and replace it with a small folded paper train ticket held between his fingers. He is glancing down at the paper ticket. There must be no phone, no smartphone and no screen of any kind anywhere in the image. His hand position, arm position and head angle stay exactly as they are.\n\nKeep the woman in the deep-teal wool overcoat exactly as she is — same position, same pose, same clothing, same coffee cup, chin raised, head turned UP AND TO THE LEFT toward the departure board.\n\nPhotorealistic, identical grade and grain. No text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/NTgzN2RkMzYtMzY3ZS00ZDRkLTk3OTctZmVlNWFiMzZiZjRl.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh02-r-ticket.jpg"
+    ]
+  },
+  {
+    "id": "SH02-r-strap",
+    "model": "google/nano-banana-pro",
+    "predictionId": "2pykraw5snrmr0d05d7b95vka4",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:09:21.485Z",
+    "completedAt": "2026-08-22T21:09:51.390958644Z",
+    "predictTime": 29.888748031,
+    "input": {
+      "prompt": "Edit [Image1]. Keep absolutely everything identical: the same railway station concourse, the same arched glass roof and pendant lamps, the same hanging departure board and round clock in the upper left, the same stone column at the right edge, the same stone floor, the same crowd in the same positions and poses, the same camera angle, the same framing, the same depth of field, the same lighting and the same colour grade.\n\nKeep the man in the rust-orange corduroy jacket exactly where he is, at the same scale, in the same stride, in the same clothing, with the same leather satchel, and with his head tilted at exactly the same angle — DOWN AND TO THE RIGHT.\n\nMake exactly one change: remove the mobile phone from his right hand. His right hand now rests on the strap of his leather satchel where it crosses his chest, and he is glancing down toward the satchel as if checking it. There must be no phone, no smartphone and no screen of any kind anywhere in the image. His head angle stays exactly as it is, tilted down and to the right.\n\nKeep the woman in the deep-teal wool overcoat exactly as she is — same position, same pose, same clothing, same coffee cup, chin raised, head turned UP AND TO THE LEFT toward the departure board.\n\nPhotorealistic, identical grade and grain. No text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/NjdlNjc2NjktNTkwNi00YTVlLWJiZGItOGIzYWQ4NjhlMzRk.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh02-r-strap.jpg"
+    ]
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "SH02-a",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "A photorealistic cinematic film frame, 16:9, shot on an 85mm lens at eye level, compressed perspective, shallow-ish depth of field. [Image1] is the same railway station concourse, at the same moment of evening rush, in the same light \u2014 reuse its architecture, its arched glass roof and pendant lamps, its hanging dark departure board with the round clock beneath, its stone column, its floor, its colour grade and its crowd exactly. This is a closer view from the same side of the same hall.\n\nComposition: the large dark DEPARTURE BOARD with the round clock beneath it hangs in the UPPER LEFT of frame. The thick cylindrical stone column fills the RIGHT EDGE of frame in the foreground. Between them, a dense crowd of commuters flows in both directions, motion-blurred, dressed only in muted charcoal, black, navy, beige, olive and grey.\n\nIn the FOREGROUND at the extreme LEFT EDGE of frame, large in shot, entering the frame and cropped by the left edge so only part of his body is visible: [Image2], a tall lean man in his early thirties with dark brown tousled hair and short stubble, warm olive skin, wearing an unbuttoned rust-orange corduroy jacket over a charcoal crewneck sweater, dark charcoal trousers and brown leather boots, a dark brown leather satchel worn cross-body. He is mid-stride striding toward the RIGHT of frame. His head is tilted DOWN AND TO THE RIGHT, looking at the phone held in his right hand. He is closest to camera and slightly soft.\n\nIn the MID-GROUND, RIGHT OF CENTRE, roughly two metres deeper into the shot and sharply focused: [Image3], a woman in her late twenties with dark curly hair pulled into a low bun with loose strands framing her face, deep brown skin, wearing an open deep-teal wool overcoat over a cream ribbed sweater, dark jeans and black ankle boots, a cream scarf loose at her neck and a small tan leather crossbody bag, holding a white paper coffee cup. She is walking toward the LEFT of frame. Her chin is lifted and her head is turned UP AND TO THE LEFT, looking at the departure board in the upper left.\n\nCritical: the man looks down-right, the woman looks up-left. Their lines of sight diverge and do not meet. Neither of them looks at the other. Neither face is turned toward the other. They are unaware of each other.\n\nObservational documentary photography, available light, naturalistic colour, desaturated except for the rust-orange jacket and the deep-teal coat, medium-low contrast, slightly lifted milky blacks, soft halation on the lamps, fine film grain. Real photograph, not a render, not an illustration. No lens flare, no rain, no readable text on any sign, no captions, no watermark.",
+      "image_input": [
+        {
+          "$file": "production/06-reference-frames/selected/SH01-wide.jpg"
+        },
+        {
+          "$file": "production/03-characters/selected/CHAR-M-elias.jpg"
+        },
+        {
+          "$file": "production/03-characters/selected/CHAR-F-nora.jpg"
+        }
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/06-reference-frames/candidates/sh02-a.jpg"
+  },
+  {
+    "id": "SH02-b",
+    "model": "google/nano-banana-pro",
+    "input": {
+      "prompt": "Photoreal cinematic still, 16:9, 85mm long lens, eye level, standing inside the crowd on the concourse of the railway station shown in [Image1]. Keep [Image1]'s architecture, arched glass-and-iron roof, hanging pendant lamps, suspended dark departure board with a round clock beneath it, heavy stone column, stone floor, evening rush crowd and exact colour grade. Only the camera position has changed: it is now down among the commuters, much closer.\n\nFrame layout: departure board and its round clock hang UPPER LEFT. The stone column occupies the RIGHT EDGE as a foreground vertical. Motion-blurred commuters in muted charcoal, black, navy, beige, olive and grey fill the middle distance.\n\nForeground, entering from the LEFT EDGE and partly cropped by it, filling the left third of frame: [Image2] \u2014 a tall lean man in his early thirties, dark brown tousled hair, short stubble, warm olive skin, unbuttoned rust-orange corduroy jacket over a charcoal crewneck, dark charcoal trousers, brown leather boots, dark brown leather cross-body satchel. Mid-stride moving RIGHT. Head angled DOWN AND RIGHT at the phone in his right hand. Nearest the lens, slightly out of focus.\n\nMid-ground, right of centre, about two metres behind him and in sharp focus: [Image3] \u2014 a woman in her late twenties, dark curly hair in a low bun with loose strands, deep brown skin, open deep-teal wool overcoat over a cream ribbed sweater, dark jeans, black ankle boots, cream scarf, small tan crossbody bag, white paper coffee cup in her left hand. Mid-stride moving LEFT. Chin raised, head turned UP AND LEFT toward the departure board.\n\nThey are close enough to touch but completely unaware of one another. His gaze goes down-right, hers goes up-left; the two sightlines diverge. Neither turns toward the other. No eye contact, no recognition, no reaction.\n\nAvailable-light European station photography, restrained naturalistic grade, desaturated apart from the protected rust-orange and teal, medium-low contrast, milky blacks, gentle lamp halation, fine grain. A photograph, not CGI. No lens flare, no rain, no legible signage text, no captions, no watermark.",
+      "image_input": [
+        {
+          "$file": "production/06-reference-frames/selected/SH01-wide.jpg"
+        },
+        {
+          "$file": "production/03-characters/selected/CHAR-M-elias.jpg"
+        },
+        {
+          "$file": "production/03-characters/selected/CHAR-F-nora.jpg"
+        }
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "out": "production/06-reference-frames/candidates/sh02-b.jpg"
+  }
+]

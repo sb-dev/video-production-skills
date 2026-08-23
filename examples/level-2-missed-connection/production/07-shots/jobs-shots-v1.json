@@ -1,0 +1,86 @@
+[
+  {
+    "id": "SH01-t1",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-wide.jpg" },
+      "prompt": "Continue this exact scene as a single continuous shot with no cuts. The camera performs one extremely slow, almost imperceptible push-in across the whole clip. No pan, no tilt, no shake, no cut.\n\nThe tall man in the rust-orange corduroy jacket in the lower left keeps walking steadily toward the RIGHT of frame, in profile, glancing down at the phone in his hand. He never turns toward the woman, never looks up at her, never stops.\n\nThe woman in the deep-teal wool overcoat right of centre keeps walking steadily toward the LEFT of frame, holding her paper coffee cup, glancing up toward the hanging departure board. She never turns toward the man, never looks at him, never stops.\n\nThey move on converging paths through the crowd and end the shot closer together than they began, but they do not meet and never acknowledge each other.\n\nAround them the evening rush crowd flows continuously in both directions with natural motion blur. Nobody looks at the camera. The light does not change. The clothing does not change. Nobody else wears orange, rust or teal.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1101
+    },
+    "out": "production/07-shots/candidates/sh01-t1.mp4"
+  },
+  {
+    "id": "SH01-t2",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH01-wide.jpg" },
+      "prompt": "Continue this exact scene as one unbroken observational shot. The camera creeps forward in a barely perceptible slow push-in for the entire clip and does nothing else — no pan, no tilt, no roll, no handheld shake, no cut.\n\nThe man in the rust-orange corduroy jacket at lower left strides on toward the RIGHT edge of frame, head slightly down over the phone in his right hand, the satchel swinging at his hip. His path stays on the walking plane nearest the camera. He does not look up, does not look around, does not slow.\n\nThe woman in the deep-teal wool overcoat right of centre walks on toward the LEFT edge of frame, one plane deeper into the hall, coffee cup in hand, her attention drifting up toward the suspended departure board. She does not look down, does not look sideways, does not slow.\n\nTheir routes converge as the shot progresses. They do not meet, do not touch, do not see each other, and neither reacts to the other at any moment.\n\nThe surrounding rush-hour crowd keeps flowing in both directions, motion-blurred and anonymous, all in muted charcoal, black, navy, beige and grey. No other person wears orange, rust or teal. Nobody looks at the camera. Lighting and wardrobe stay exactly as they are.\n\nNaturalistic available-light cinematography, medium-low contrast, fine grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 1102
+    },
+    "out": "production/07-shots/candidates/sh01-t2.mp4"
+  },
+  {
+    "id": "SH02-t1",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH02-crossing.jpg" },
+      "prompt": "Continue this exact scene as one unbroken locked-off shot. The camera is on a tripod and does not move at all — no push, no pan, no tilt, no shake, no cut.\n\nThe tall man in the rust-orange corduroy jacket in the foreground on the left strides steadily across the frame from LEFT to RIGHT, passing close in front of the camera. His head stays tilted DOWN AND TO THE RIGHT, watching the phone in his right hand, for the entire shot. He briefly passes in front of the woman in the deep-teal coat, blocking her from view for a moment, then continues on and walks out of frame at the RIGHT edge.\n\nThe woman in the deep-teal wool overcoat behind him walks steadily from RIGHT to LEFT, about two metres deeper into the shot, holding her paper coffee cup. Her chin stays raised and her head stays turned UP AND TO THE LEFT, reading the hanging departure board, for the entire shot. After he passes she keeps walking left, still looking up at the board.\n\nAbsolutely critical: they pass within two metres of each other and neither ever notices the other. He never lifts his head. She never lowers hers. Neither turns toward the other, neither glances at the other, neither reacts, neither slows, neither stops. There is no eye contact at any frame. Their lines of sight stay diverging — his down-right, hers up-left.\n\nThe rush-hour crowd keeps moving around them in both directions with natural motion blur, all in muted charcoal, black, navy, beige and grey. Nobody looks at the camera. The light, the wardrobe and the framing do not change.\n\nObservational documentary cinematography on a long lens, shallow depth of field, restrained naturalistic grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 2201
+    },
+    "out": "production/07-shots/candidates/sh02-t1.mp4"
+  },
+  {
+    "id": "SH02-t2",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH02-crossing.jpg" },
+      "prompt": "Continue this exact scene as a single continuous take from a completely static tripod. The camera never moves, never pans, never pushes in, and there is no cut.\n\nAction, in order:\n\nThe man in the rust-orange corduroy jacket walks from LEFT to RIGHT across the foreground at a steady commuter pace, close to the lens. His eyes stay down on the phone in his right hand the whole time; his head never lifts. About halfway through he crosses directly in front of the woman in the deep-teal coat and momentarily hides her, then keeps going and exits the frame at the RIGHT.\n\nThe woman in the deep-teal wool overcoat walks from RIGHT to LEFT through the mid-ground at a slower, unhurried pace, coffee cup in her hand. Her face stays tilted UP AND LEFT toward the hanging departure board the whole time; her head never turns down or sideways. When he has passed, she is revealed again, still walking left, still looking up at the board, entirely unaware.\n\nThey come within about two metres of one another. Neither one notices. No glance, no double-take, no turning of the head, no pause, no smile, no reaction of any kind from either person. Their eyelines never meet.\n\nThe evening crowd flows past in both directions, motion-blurred and anonymous in muted charcoal, black, navy, beige and grey. Nobody looks at the camera. Lighting, clothing and framing remain unchanged throughout.\n\nLong-lens observational cinematography, compressed perspective, shallow depth of field, naturalistic available-light grade, fine film grain. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 2202
+    },
+    "out": "production/07-shots/candidates/sh02-t2.mp4"
+  },
+  {
+    "id": "SH03-t1",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH03-glanceback.jpg" },
+      "prompt": "Continue this exact scene as one unbroken shot. The camera tracks very gently with the woman for a moment and then settles almost still. No cut, no zoom, no whip pan.\n\nThe woman in the deep-teal wool overcoat with the low bun, seen from behind, keeps walking away from camera toward the LEFT through the crowd, her coffee cup in her hand.\n\nThen she slows. She turns her head back over her RIGHT shoulder and looks BACK toward the RIGHT side of frame, behind her, as if she half-felt something. Her face comes round into three-quarter profile. Her expression is small and unresolved — not a smile, not sadness, barely anything, just a flicker of almost-recognition that finds nothing.\n\nShe holds the look for a beat. There is nobody there — only ordinary strangers walking past. Then she faces forward again and walks on, continuing away toward the LEFT.\n\nNobody in the crowd behind her is distinctive. No one wears orange, rust or red. No one approaches her, no one greets her, no one looks at her, nobody looks at the camera. She does not wave, does not speak, does not stop walking for more than a moment.\n\nRestrained observational cinematography, available light, naturalistic grade, medium-low contrast, fine film grain. Understated, quiet, unsentimental. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 3301
+    },
+    "out": "production/07-shots/candidates/sh03-t1.mp4"
+  },
+  {
+    "id": "SH03-t2",
+    "model": "bytedance/seedance-2.0",
+    "input": {
+      "image": { "$file": "production/06-reference-frames/selected/SH03-glanceback.jpg" },
+      "prompt": "Continue this exact scene as a single continuous take. The camera follows a step or two behind the woman with a very slight drift, then comes to rest. No cut, no zoom, no sudden movement.\n\nBeat one: the woman in the deep-teal wool overcoat, hair in a low bun, walks away from the camera toward the LEFT through the evening-rush crowd, coffee cup in hand, head facing forward. Ordinary, unremarkable.\n\nBeat two: she slows her pace. Her head turns back over her RIGHT shoulder and she looks BACK toward the RIGHT of frame, into the crowd she has already walked through. Her face turns far enough for us to see it in three-quarter profile.\n\nBeat three: she finds nothing. Her expression barely changes — a quiet, unreadable flicker, no smile, no frown, no performance. She faces forward again and walks on toward the LEFT, disappearing into the flow.\n\nBehind her there is only anonymous crowd. Nobody there is distinctive. Nobody wears orange, rust or red. Nobody responds to her, nobody comes toward her, nobody looks at the camera. She does not speak.\n\nObservational documentary cinematography, available light, restrained naturalistic grade, fine film grain, understated and unsentimental. No dialogue, no speech, no music. No text, no subtitles, no captions.",
+      "duration": 5,
+      "resolution": "1080p",
+      "aspect_ratio": "16:9",
+      "generate_audio": false,
+      "seed": 3302
+    },
+    "out": "production/07-shots/candidates/sh03-t2.mp4"
+  }
+]

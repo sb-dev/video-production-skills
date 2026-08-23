@@ -1,0 +1,50 @@
+[
+  {
+    "id": "SH01-tight-a",
+    "model": "google/nano-banana-pro",
+    "predictionId": "7v5aex6ensrmt0d05dmtkm2t80",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:39:09.614Z",
+    "completedAt": "2026-08-22T21:39:57.760112422Z",
+    "predictTime": 48.123213136,
+    "input": {
+      "prompt": "A photorealistic cinematic film frame, 16:9. [Image1] is the railway station concourse this shot takes place in — reuse its architecture, its arched steel-and-glass trainshed roof and rows of pendant lamps, its hanging dark departure board with the round clock beneath it, its stone column, its warm coffee kiosk on the left, its stone floor, its evening-rush crowd, its mixed cool-dusk and warm-amber light and its exact colour grade.\n\nThe only change is the camera: it is still high on the same south-side mezzanine looking north, but on a longer lens, so the view is TIGHTER and the people are MUCH LARGER in frame. Still a wide establishing shot that shows the scale of the hall — the arched roof, the departure board with its clock, the coffee kiosk on the LEFT and the stone column are all still visible — but the two main figures are now big enough to read clearly.\n\nIn the LOWER LEFT of frame, on the walking plane nearest the camera, standing about one third of the frame height tall: [Image2], a tall lean man in his early thirties with dark brown tousled hair and short stubble, warm olive skin, wearing an unbuttoned RUST-ORANGE corduroy jacket over a charcoal crewneck sweater, dark charcoal trousers and brown leather boots, a dark brown leather satchel worn cross-body, holding a phone in his right hand. He is mid-stride in profile walking toward the RIGHT of frame, with a pocket of clear floor around him.\n\nTo the RIGHT OF CENTRE of frame, one depth plane further back, standing about one quarter of the frame height tall: [Image3], a woman in her late twenties with dark curly hair pulled into a low bun with loose strands, deep brown skin, wearing an open DEEP-TEAL wool overcoat over a cream ribbed sweater, dark jeans and black ankle boots, a cream scarf and a small tan leather crossbody bag, holding a white paper coffee cup. She is mid-stride walking toward the LEFT of frame, with a pocket of clear floor around her.\n\nHer coat must be a strong, clearly saturated DEEP TEAL — vividly and obviously teal, never black, never navy, never grey. His jacket must be a strong, clearly saturated RUST ORANGE. They are the only two saturated colours in the picture; every other person wears only muted charcoal, black, navy, beige, olive or grey. They are separated by roughly a third of the frame width and are not looking at each other.\n\nObservational documentary photography, available light, naturalistic colour, medium-low contrast, lifted milky blacks, soft lamp halation, fine film grain. Real photograph, not a render. No lens flare, no rain, no readable signage text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/ZWMxNTNkNmUtMjZkZC00YmQ4LThhODQtNGQyNTkyZGUxODkw.jpg",
+        "https://api.replicate.com/v1/files/ZGEzODY4M2EtMjBjNi00NGI4LTkyOGMtNGZhZmY0NjY5ZGMz.jpg",
+        "https://api.replicate.com/v1/files/ZmY2NjE3MzQtZmViZS00NGRiLWFjMWQtNmUxODFjYjdjNGUz.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh01-tight-a.jpg"
+    ]
+  },
+  {
+    "id": "SH01-tight-b",
+    "model": "google/nano-banana-pro",
+    "predictionId": "hwsrmsppa1rmr0d05dmtbntjnm",
+    "versionId": "hidden",
+    "status": "succeeded",
+    "createdAt": "2026-08-22T21:39:11.568Z",
+    "completedAt": "2026-08-22T21:40:07.716069313Z",
+    "predictTime": 56.129947386,
+    "input": {
+      "prompt": "Photoreal cinematic still, 16:9, wide establishing shot of the railway station concourse shown in [Image1], at the same evening rush hour, in the same light, with the same architecture, the same arched glass-and-iron roof and pendant lamps, the same hanging departure board with the round clock beneath it, the same stone column, the same warm coffee kiosk on the LEFT, the same stone floor, the same crowd and the same colour grade.\n\nCamera: still high on the same side of the same hall looking north, but noticeably closer and on a longer lens. The hall's scale still reads — arched roof, departure board and clock, kiosk on the left, stone column — but the two main figures are large enough to identify at a glance.\n\nLower-left of frame, nearest walking plane, about a third of the frame height tall, mid-stride in profile walking toward the RIGHT: [Image2] — a tall lean man in his early thirties, dark brown tousled hair, short stubble, warm olive skin, in an unbuttoned RUST-ORANGE corduroy jacket over a charcoal crewneck, dark charcoal trousers, brown leather boots, dark brown leather cross-body satchel, phone in his right hand.\n\nRight of centre, one plane deeper, about a quarter of the frame height tall, mid-stride walking toward the LEFT: [Image3] — a woman in her late twenties, dark curly hair in a low bun with loose strands, deep brown skin, in an open DEEP-TEAL wool overcoat over a cream ribbed sweater, dark jeans, black ankle boots, cream scarf, small tan crossbody bag, white paper coffee cup.\n\nHer overcoat must read as an unmistakable saturated deep teal, not black and not navy. His jacket must read as an unmistakable saturated rust orange. Nobody else in the frame wears any colour at all — the crowd is strictly muted charcoal, black, navy, beige, olive and grey. Each of the two has a small pocket of clear floor around them. They are not looking at each other.\n\nAvailable-light European station photography, restrained naturalistic grade, medium-low contrast, milky blacks, fine grain, subtle halation on the lamps. A photograph, not CGI, not illustration. No lens flare, no rain, no legible signage text, no captions, no watermark.",
+      "image_input": [
+        "https://api.replicate.com/v1/files/MzdkZTM4NjAtN2E5My00ZGU1LWJjODQtNWYzZWEzYmZhNzFk.jpg",
+        "https://api.replicate.com/v1/files/NTBiOTkxMjAtMDc2Mi00ZjlkLWFiNDgtZjQyMmIzMDMxZTBl.jpg",
+        "https://api.replicate.com/v1/files/OTdjYmE1NDMtMTg5Yi00MWNmLTk1NjEtNTU4NGE3YTgzMzQw.jpg"
+      ],
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "output_format": "jpg"
+    },
+    "outputs": [
+      "production/06-reference-frames/candidates/sh01-tight-b.jpg"
+    ]
+  }
+]

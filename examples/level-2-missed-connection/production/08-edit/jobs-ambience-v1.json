@@ -1,0 +1,26 @@
+[
+  {
+    "id": "AMB-a",
+    "model": "stability-ai/stable-audio-2.5",
+    "input": {
+      "prompt": "Field recording of the interior of a large busy railway station concourse during evening rush hour. A broad, continuous wash of distant crowd murmur with no individual voice ever intelligible. Hundreds of footsteps on a hard stone floor. Rolling suitcase wheels passing at intervals. The deep reverberant room tone of a huge arched glass-and-iron trainshed. A distant train brake squeal and a low departure rumble far away. A muffled, completely unintelligible public address announcement buried low in the mix, no discernible words. Steady, even, unchanging atmosphere with no build and no climax. Pure ambient location sound. No music, no melody, no instruments, no beat, no rhythm, no singing, no clear speech, no dialogue.",
+      "duration": 17,
+      "steps": 8,
+      "cfg_scale": 3,
+      "seed": 4401
+    },
+    "out": "production/08-edit/audio/ambience-a.wav"
+  },
+  {
+    "id": "AMB-b",
+    "model": "stability-ai/stable-audio-2.5",
+    "input": {
+      "prompt": "Ambient location recording inside a cavernous Victorian railway terminus at 6pm on a weekday. Dense, even hubbub of commuters — hundreds of overlapping footsteps on stone, wheeled luggage, a constant low unintelligible murmur of crowd noise, long natural reverb from a high arched glass roof. Occasional distant metallic clatter and a far-off train pulling away. A vague, heavily reverberant tannoy announcement so blurred by the room that no word can be made out. Flat, continuous, documentary room tone throughout. No music whatsoever, no instruments, no melody, no rhythm, no beat, no song, no intelligible speech, no dialogue, no narration.",
+      "duration": 17,
+      "steps": 8,
+      "cfg_scale": 3,
+      "seed": 4402
+    },
+    "out": "production/08-edit/audio/ambience-b.wav"
+  }
+]
