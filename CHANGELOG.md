@@ -29,6 +29,7 @@ All notable changes to this project will be documented here.
 - Per-stage isolation test harness with ffmpeg-synthesised fixtures, so every workflow stage is exercisable without a provider, without ImageMagick and without committed binaries.
 - `references/generated-motion-limits.md` describing how to stage around known generated-motion weaknesses.
 - Post-mortem for the "Missed Connection" example recording the failure chain and its corrective actions.
+- `make-storyboard.ts` composing storyboard panels into a numbered, keylined board sheet, with defaults that produce the expected form and `--print-command` for hosts without ImageMagick.
 
 ### Changed
 
@@ -38,3 +39,4 @@ All notable changes to this project will be documented here.
 - Motion prototypes are required whenever a subject must translate, turn or change gait.
 - Shot selection is gated on motion quality; still frames resolve staging, not motion.
 - Media QC covers temporal integrity and sampling adequacy alongside container validity.
+- Storyboard guidance specifies board form: one sheet of small numbered keylined sketch panels, more panels than the sequence has shots, panels generated individually and composed deterministically.

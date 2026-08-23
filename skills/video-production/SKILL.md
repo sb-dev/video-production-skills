@@ -124,6 +124,10 @@ Separate storyboard semantics from executable shot-plan details.
 
 Keep storyboard frames independently addressable.
 
+A storyboard is a board: one sheet of small numbered sketch panels, generated individually and composed deterministically with `scripts/make-storyboard.ts`. Carry more panels than the sequence will have shots — a board explores beats, so it is cheap and numerous, and one panel per final shot tests nothing.
+
+Panel form is specified in `references/storyboard-and-shot-planning.md`.
+
 Do not generate expensive final motion while sequence or composition remains unstable.
 
 ## Shot plan

@@ -12,7 +12,7 @@
     "test:unit": "node --test tests/*.test.ts",
     "test:stages": "node --test tests/stages/*.test.ts",
     "test:evals": "node tools/run-evals.ts",
-    "smoke:scripts": "node skills/video-production/scripts/inspect-media.ts --help && node skills/video-production/scripts/render-timeline.ts --help && node skills/video-production/scripts/make-contact-sheet.ts --help && node skills/video-evaluate/scripts/inspect-video.ts --help && node skills/video-evaluate/scripts/sample-frames.ts --help && node skills/video-evaluate/scripts/detect-motion-artifacts.ts --help && node skills/video-evaluate/scripts/preflight.ts --help && node tools/validate-production.ts --help && node tools/run-evals.ts --help",
+    "smoke:scripts": "node skills/video-production/scripts/inspect-media.ts --help && node skills/video-production/scripts/render-timeline.ts --help && node skills/video-production/scripts/make-contact-sheet.ts --help && node skills/video-production/scripts/make-storyboard.ts --help && node skills/video-evaluate/scripts/inspect-video.ts --help && node skills/video-evaluate/scripts/sample-frames.ts --help && node skills/video-evaluate/scripts/detect-motion-artifacts.ts --help && node skills/video-evaluate/scripts/preflight.ts --help && node tools/validate-production.ts --help && node tools/run-evals.ts --help",
     "test": "npm run typecheck && npm run validate && npm run test:unit && npm run test:stages && npm run test:evals && npm run smoke:scripts"
   },
   "devDependencies": {

@@ -113,6 +113,31 @@ const CHECKS: Readonly<Record<string, () => CheckResult>> = {
     const warned = /will be padded/.test(result.stderr);
     return { ok: warned, detail: warned ? 'operator warned' : 'padding happened silently' };
   },
+  'storyboard:composes-numbered-board': () => {
+    const directory = mkdtempSync(join(tmpdir(), 'vps-evals-storyboard-'));
+    const panels = ['a', 'b', 'c', 'd'].map((name) => {
+      const file = join(directory, `panel-${name}.png`);
+      writeFileSync(file, '');
+      return file;
+    });
+
+    const result = runScript('skills/video-production/scripts/make-storyboard.ts', [
+      join(directory, 'board.png'),
+      ...panels,
+      '--print-command',
+    ]);
+    const command = result.stdout;
+    const formed =
+      /-tile 3x/.test(command) &&
+      /-set label/.test(command) &&
+      /-bordercolor black/.test(command) &&
+      /-background white/.test(command);
+
+    return {
+      ok: result.status === 0 && formed,
+      detail: formed ? 'numbered, keylined board grid composed' : 'board form not composed',
+    };
+  },
   'governance:flags-approval-without-approver': () => {
     const directory = mkdtempSync(join(tmpdir(), 'vps-evals-governance-'));
     writeFileSync(join(directory, 'direction.md'), '---\ndecisionState: approved\n---\n');
