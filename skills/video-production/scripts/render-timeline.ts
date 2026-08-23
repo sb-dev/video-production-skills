@@ -112,6 +112,36 @@ function loadTimeline(path: string): Timeline {
   return parseTimeline(parsed);
 }
 
+/**
+ * Sources are scaled to fit and padded, so a source whose aspect differs from
+ * the render aspect gains black bars. That is correct behaviour, but silent:
+ * a provider returning 1928x1072 into a 1920x1080 timeline letterboxes one shot
+ * and nothing says so. Warn, and let the operator conform deliberately.
+ */
+function warnOnAspectMismatch(source: string, width: number, height: number): void {
+  const result = spawnSync(
+    'ffprobe',
+    ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', source],
+    { encoding: 'utf8' },
+  );
+  if (result.status !== 0) return;
+
+  const [sourceWidthText, sourceHeightText] = result.stdout.trim().split(',');
+  const sourceWidth = Number(sourceWidthText);
+  const sourceHeight = Number(sourceHeightText);
+  if (!Number.isFinite(sourceWidth) || !Number.isFinite(sourceHeight) || sourceHeight === 0) return;
+
+  const sourceAspect = sourceWidth / sourceHeight;
+  const renderAspect = width / height;
+  if (Math.abs(sourceAspect - renderAspect) <= 0.005) return;
+
+  console.error(
+    `warning: ${source} is ${String(sourceWidth)}x${String(sourceHeight)} ` +
+      `(aspect ${sourceAspect.toFixed(4)}) but the timeline renders at ${String(width)}x${String(height)} ` +
+      `(aspect ${renderAspect.toFixed(4)}); this shot will be padded. Conform the source to avoid bars.`,
+  );
+}
+
 function main(): number {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
@@ -157,6 +187,8 @@ function main(): number {
       console.error(`shot source does not exist: ${source}`);
       return EXIT_USAGE;
     }
+
+    warnOnAspectMismatch(source, timeline.render.width, timeline.render.height);
 
     commandArgs.push('-i', source);
 
