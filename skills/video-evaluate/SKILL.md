@@ -69,6 +69,15 @@ Prefer:
 
 Skill-local deterministic scripts are TypeScript and require Node.js 24.12+ for stable native TypeScript execution. They have no npm runtime dependency. Use FFmpeg/ffprobe for objective media evidence before expensive semantic analysis.
 
+Run `scripts/preflight.ts` first. A declared dependency that is missing does not announce itself; it turns into ad-hoc substitute tooling and a review method that quietly stops matching the one specified.
+
+Deterministic scripts available here:
+
+- `scripts/inspect-video.ts` — container, streams and stated requirements;
+- `scripts/sample-frames.ts` — still sampling for staging review;
+- `scripts/detect-motion-artifacts.ts` — temporal integrity;
+- `scripts/preflight.ts` — external dependency availability.
+
 ## Draft evaluation
 
 Ask whether the artifact is useful for the decision it was created to support.
@@ -136,9 +145,12 @@ Check:
 - intended action exists;
 - shot purpose achieved;
 - media technically usable;
+- **motion plausible** — run `scripts/detect-motion-artifacts.ts` for periodic seams, frozen frames and drift;
 - identity/product constraints preserved where relevant;
 - continuity acceptable;
 - editorially usable.
+
+Still frames resolve staging, not motion. Do not conclude a shot is usable from contact sheets alone, and do not sample stills at an interval near a suspected artifact period.
 
 ## Edit evaluation
 
@@ -177,7 +189,11 @@ Check only applicable requirements such as:
 - audio presence;
 - gross sync;
 - obvious corruption;
-- specified delivery requirements.
+- specified delivery requirements;
+- temporal integrity — periodic seams, frozen frames and drift, via `scripts/detect-motion-artifacts.ts`;
+- unintended letterboxing introduced by unconformed sources.
+
+Container validity is not picture validity. A file can pass every container check and still carry visible generation seams.
 
 Do not implement a broadcast-grade QC system unless the project later requires it.
 
@@ -221,6 +237,15 @@ good shots but weak pacing
 
 corrupt media
 → retry-execution or repair deterministic output
+
+periodic seams, frozen frames or implausible gait
+→ retry-execution, or change-capability when the model reproduces it
+
+subject static in the shot because the reference frame posed it static
+→ revise-reference, never revise the prompt
+
+creative artifact marked approved with no approver recorded
+→ reject pending human approval
 
 unsupported required capability
 → change-capability

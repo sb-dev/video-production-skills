@@ -480,6 +480,35 @@ Approval means:
 
 > Downstream production may rely on this decision.
 
+### Who selects and who approves
+
+Selection and approval are performed by different parties.
+
+- **Selection is an agent act.** An agent may move an artifact from `open` to `selected`.
+- **Approval is a human act.** Only a human moves a creative artifact to `approved` or `locked`, and the approving party is recorded in `approvedBy`.
+
+An agent must not advance a creative artifact to `approved` on its own authority. An artifact marked `approved` with no approver recorded is not approved; it is selected, and downstream production must not rely on it.
+
+Approval is required before expensive generation for:
+
+- visual direction;
+- character and identity references;
+- environment references;
+- shot plan;
+- picture lock.
+
+### Resolving creative uncertainty
+
+The cheapest representation that resolves a creative question is a question to the human.
+
+Resolve in this order:
+
+1. ask, when the answer would change what gets generated;
+2. produce the cheapest artifact that settles it, when asking cannot;
+3. escalate representation fidelity only when the cheaper artifact cannot answer.
+
+Inventing an unstated but story-changing parameter — who the people are, where this takes place, which props carry meaning — is not a production decision an agent owns.
+
 Picture lock is a specialised `locked` state on the edit timeline, not another lifecycle stage.
 
 ---
