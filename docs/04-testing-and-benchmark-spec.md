@@ -28,11 +28,8 @@ Criteria*; it does not restate them.
 | unit | Do scripts reject bad input before doing work? | no | `npm run test:unit` |
 | stage | Does each workflow stage behave correctly in isolation? | no | `npm run test:stages` |
 | evals | Do the skills' declared behaviours actually hold? | no (structural), opt-in (behavioural) | `npm run test:evals` |
-| benchmark — deterministic | Are declared defects detected, and clean artifacts left alone? | no | *Pass 2* |
-| benchmark — semantic | Does judgement catch defects only visible in the image? | opt-in | *Pass 2* |
-
-The benchmark rows are specified here and not yet built. They are listed so the gap is visible
-rather than implied.
+| benchmark — deterministic | Are declared defects detected, and clean artifacts left alone? | no | `npm run test:benchmark` |
+| benchmark — semantic | Does judgement catch defects only visible in the image? | opt-in | `RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts` |
 
 ### 2.1 What each layer cannot do
 
@@ -102,7 +99,8 @@ A missing dependency is not a reason to improvise a replacement. Record it.
 npm test
 ```
 
-Runs typecheck → validate → unit → stages → evals → smoke. Exit 0 is the only pass.
+Runs typecheck → validate → unit → stages → evals → benchmark → smoke. Exit 0 is the only pass.
+The semantic tier is never part of `npm test` and never gates CI.
 
 ### 3.3 Run one layer or one stage
 
@@ -113,7 +111,7 @@ node --test tests/stages/motion-artifacts.test.ts
 ```
 
 Stage files map one-to-one onto workflow stages: `preflight`, `media-qc`, `motion-artifacts`,
-`sampling`, `timeline`, `contact-sheet`, `storyboard`, `continuity`, `production-lint`.
+`sampling`, `timeline`, `contact-sheet`, `storyboard`, `continuity`, `production-lint`, `benchmark`.
 
 ### 3.4 Check a real artifact
 
@@ -160,7 +158,38 @@ node skills/video-evaluate/scripts/sample-frames.ts <shot.mp4> <dir> --every 4
 `--count N` spreads a handful of frames across the clip. That answers staging questions and
 nothing else; it is not a motion check.
 
-### 3.5 Triage
+### 3.5 The defect benchmark
+
+Cases live in `tests/fixtures/defects/taxonomy.json`, each declaring its class, tier, fixture
+and the diagnosis it must produce. Clean controls carry equal weight: a benchmark without
+negative cases measures eagerness, not discrimination.
+
+```bash
+node tools/run-benchmark.ts                       # deterministic tier, free, offline
+node tools/run-benchmark.ts --only continuity     # one class
+RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --json   # both tiers, costs money
+```
+
+The semantic tier puts each artifact to a reviewer twice and scores the passes separately:
+
+- **open** — *"Describe any problems with this artifact."* Does the reviewer name the defect
+  unprompted? The model's own words are kept in the report so every scoring decision can be
+  audited rather than trusted.
+- **closed** — the criteria list, returning PASS/FAIL/NA per criterion. Does the **right**
+  criterion fail, and only that one?
+
+Without `REPLICATE_API_TOKEN` the tier reports **NOT RUN**. It never reports a score it did not
+obtain.
+
+Update the baseline deliberately, never as a side effect of a passing run:
+
+```bash
+RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --update-baseline
+```
+
+A case that previously passed and now fails is reported as a `REGRESSION` and fails the run.
+
+### 3.6 Triage
 
 | Symptom | Owning layer | Likely cause | Action |
 |---|---|---|---|
@@ -203,7 +232,73 @@ This gives `CONTRIBUTING.md`'s question *"How is the change evaluated?"* a concr
 
 ---
 
-## 5. Prior art
+## 5. Measured results and known blind spots
+
+First recorded baseline, 2026-08-24, `google/gemini-3-pro`. Reported as measured. The criteria
+were not reworded and the scorer was not loosened after seeing these numbers.
+
+| Tier | Score |
+|---|---|
+| deterministic | **13/13**, no false positives on clean controls |
+| semantic — open (unprompted recall) | **8/8** |
+| semantic — closed (checklist competence) | **3/8** |
+
+### The checklist made the reviewer worse
+
+This is the headline finding and it was not the expected result. Asked simply *"describe any
+problems"*, the reviewer named every seeded defect, including ones not in the taxonomy — it
+spotted that two approved frames disagree about the number of departure-board panels and about
+the background archway, which no human review of this production had caught.
+
+Handed the same image and the documented criteria, it contradicted itself. On the frame whose
+subject is posed standing still, the open pass said:
+
+> "The woman in the teal coat is standing completely still. Her feet are planted side-by-side
+> on the floor, her posture is static."
+
+and the closed pass marked `subject-posed-for-action` as **PASS**.
+
+On the abstract control carrying an extra pillar, the open pass said *"the image displays four
+landmarks in total, which includes two grey columns instead of one"* — and the closed pass
+returned `NA` for every criterion.
+
+**Consequence for the workflow:** the open pass is the primary gate. A criteria checklist is a
+structuring device for reporting, not a detector, and a reviewer given only a checklist will
+miss defects it would otherwise have named. `video-evaluate` now asks for the open pass first.
+
+### Known blind spots
+
+| Case | Outcome | Reading |
+|---|---|---|
+| `semantic-control-extra-pillar` | closed miss | criterion returned NA on a schematic image; the checklist does not transfer to abstract artifacts |
+| `creative-subject-static` | closed miss | criterion marked PASS while the open pass described the defect in detail |
+| `creative-pseudo-text` | closed miss | **a defect in the benchmark, not the reviewer** — see below |
+| `continuity-pillar-real` | closed miss | correct criterion failed, but two others were also flagged; scored strictly as a miss |
+| `creative-storyboard-contradicts-references` | closed miss | as above, and the extra flag was arguably correct |
+
+Two of the five closed misses are strictness, not blindness: the reviewer failed the right
+criterion and additional ones. The scorer counts any spurious failure as a miss. That rule was
+written before the run and has been left alone.
+
+### The benchmark found a contradiction in our own criteria
+
+`creative-pseudo-text` expects garbled signage to be reported as a defect. The reviewer instead
+observed that the frame *satisfies* its stated visual direction, which bans **readable** text —
+and then listed several real generation artifacts it had noticed instead.
+
+It is right. The visual direction says "no readable signage text"; the post-mortem calls
+illegible pseudo-text a defect. Those two rules contradict each other, and the case is
+mis-specified until they are reconciled. Recorded rather than quietly rewritten.
+
+### Variance
+
+Two consecutive runs at temperature 0 scored closed competence 4/8 and 3/8. The tier is not
+deterministic, so a single case flipping should not be read as a regression on its own. The
+baseline records the second run.
+
+---
+
+## 6. Prior art
 
 The evaluation vocabulary here draws on existing work, recorded so the borrowing is visible:
 
@@ -220,7 +315,7 @@ self-contained, and `sample-frames.ts` already covers extraction. It is recorded
 
 ---
 
-## 6. Related documents
+## 7. Related documents
 
 - `docs/03` §13 *Eval Requirements*, §26 *Technical Acceptance Criteria* — packaging contracts.
 - `docs/02` §30 *Failure Taxonomy* — the production-side failure classification this triage mirrors.

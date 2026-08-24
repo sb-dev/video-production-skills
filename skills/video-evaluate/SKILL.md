@@ -262,7 +262,9 @@ Run shot and edit review in a fresh context, given only:
 
 Withhold the brief's intent, the prompts used, the candidates rejected, and the reasoning behind any choice. A reviewer that knows what the work was supposed to mean will read that meaning back out of it.
 
-The reviewer returns PASS/FAIL per criterion, a usable range, and keep/trim/regenerate. It does not negotiate, and it does not see the producer's justification.
+**Ask open-ended first.** Put the artifact to the reviewer with nothing but "describe any problems", and walk the criteria only afterwards. Measurement says the order matters: on the benchmark recorded in `docs/04` §5, the same reviewer named every seeded defect unprompted, then — handed the criteria for the same image — marked the corresponding criterion as passing. A checklist is a structuring device for reporting, not a detector, and a reviewer given only a checklist misses defects it would otherwise have named.
+
+The reviewer returns its open findings, then PASS/FAIL per criterion, a usable range, and keep/trim/regenerate. It does not negotiate, and it does not see the producer's justification.
 
 This applies to the producing agent's own work most of all. Evaluating something you designed, in the context in which you designed it, is not evaluation.
 
