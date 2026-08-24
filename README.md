@@ -297,7 +297,8 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
   - [Testing Layers](docs/04-testing-and-benchmark-spec.md#2-testing-layers)
   - [Runbook](docs/04-testing-and-benchmark-spec.md#3-runbook)
   - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#4-adding-coverage)
-  - [Prior Art](docs/04-testing-and-benchmark-spec.md#5-prior-art)
+  - [Measured Results and Known Blind Spots](docs/04-testing-and-benchmark-spec.md#5-measured-results-and-known-blind-spots)
+  - [Prior Art](docs/04-testing-and-benchmark-spec.md#6-prior-art)
 
 ### Process and reports
 

@@ -43,7 +43,75 @@ function movingBox(xExpression: string, seconds: number, width: number, height: 
   ];
 }
 
+interface Block {
+  readonly colour: string;
+  readonly width: number;
+  readonly height: number;
+  readonly x: number;
+  readonly y: number;
+}
+
+const SCENE_WIDTH = 960;
+const SCENE_HEIGHT = 540;
+
+// A scene reduced to its landmarks: three distinguishable blocks in a fixed
+// order along the axis. Abstract on purpose — these are the controls for the
+// grader itself. A reviewer that cannot separate the clean scene from the one
+// with an extra block has not earned any score on a real photograph.
+const KIOSK: Block = { colour: 'orange', width: 90, height: 150, x: 110, y: 300 };
+const BOARD: Block = { colour: 'black', width: 170, height: 70, x: 400, y: 120 };
+const COLUMN: Block = { colour: 'gray', width: 70, height: 280, x: 720, y: 190 };
+const EXTRA_PILLAR: Block = { colour: 'gray', width: 60, height: 300, x: 260, y: 180 };
+
+function sceneImage(blocks: readonly Block[], mirrored = false): readonly string[] {
+  const inputs: string[] = [
+    '-f', 'lavfi', '-i', `color=c=0x303030:s=${String(SCENE_WIDTH)}x${String(SCENE_HEIGHT)}:d=1`,
+  ];
+  for (const block of blocks) {
+    inputs.push('-f', 'lavfi', '-i', `color=c=${block.colour}:s=${String(block.width)}x${String(block.height)}:d=1`);
+  }
+
+  const steps: string[] = [];
+  let label = '[0]';
+  for (const [index, block] of blocks.entries()) {
+    const next = index === blocks.length - 1 && !mirrored ? '' : `[v${String(index)}]`;
+    steps.push(`${label}[${String(index + 1)}]overlay=${String(block.x)}:${String(block.y)}${next}`);
+    label = next;
+  }
+  if (mirrored) steps.push(`${label}hflip`);
+
+  return [...inputs, '-filter_complex', steps.join(';'), '-frames:v', '1'];
+}
+
 const FIXTURES: readonly Fixture[] = [
+  {
+    name: 'scene-clean',
+    file: 'scene-clean.png',
+    describes: 'three landmark blocks in axis order; the control every other scene is judged against',
+    build: () => sceneImage([KIOSK, BOARD, COLUMN]),
+  },
+  {
+    name: 'scene-extra-pillar',
+    file: 'scene-extra-pillar.png',
+    describes: 'the clean scene plus one undeclared block; the pillar that shipped',
+    build: () => sceneImage([KIOSK, EXTRA_PILLAR, BOARD, COLUMN]),
+  },
+  {
+    name: 'scene-order-inverted',
+    file: 'scene-order-inverted.png',
+    describes: 'first and last landmark swapped; axis order contradicted',
+    build: () => sceneImage([
+      { ...COLUMN, x: KIOSK.x },
+      BOARD,
+      { ...KIOSK, x: COLUMN.x },
+    ]),
+  },
+  {
+    name: 'scene-mirrored',
+    file: 'scene-mirrored.png',
+    describes: 'the clean scene flipped; screen direction reversed by crossing the axis',
+    build: () => sceneImage([KIOSK, BOARD, COLUMN], true),
+  },
   {
     name: 'clean',
     file: 'clean.mp4',

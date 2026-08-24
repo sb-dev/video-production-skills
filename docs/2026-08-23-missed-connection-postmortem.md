@@ -347,6 +347,7 @@ by `tests/fixtures/make-fixtures.ts`, so they reproduce without a provider.
 | Artifact governance | `tests/stages/production-lint.test.ts` | A, I |
 | Storyboard composition | `tests/stages/storyboard.test.ts` | G — board form |
 | Spatial continuity | `tests/stages/continuity.test.ts` | E — the pillar, the board, the kiosk |
+| Defect benchmark | `tests/stages/benchmark.test.ts` | all classes — see `docs/04` §5 for measured scores |
 
 Fixtures: `clean`, `seams`, `frozen`, `drift`, `offsize`, `silent`, `withaudio`, `corrupt`. The
 fixture directory is keyed on a hash of the generator, so editing a fixture definition
@@ -382,5 +383,7 @@ asserts the floor is load-bearing by showing the same clean clip reads as period
 - The example's media is unchanged and still carries the defects described here.
 - The example's directory layout still diverges from the house convention (M), so its 210 MB of
   rejected candidates remain uncommitted and outside `.gitignore`'s patterns.
-- Behavioural eval coverage is 48%. The remaining cases are judgement-shaped and currently
+- Behavioural eval coverage is 48%.
+- The semantic benchmark scores checklist competence at 3/8 against unprompted recall of 8/8;
+  the blind spots and one mis-specified case are recorded in `docs/04` §5 rather than tuned away. The remaining cases are judgement-shaped and currently
   unfalsifiable; the runner reports that rather than hiding it.

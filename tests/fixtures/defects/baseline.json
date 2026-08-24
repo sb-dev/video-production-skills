@@ -1,0 +1,75 @@
+{
+  "cases": {
+    "continuity-undeclared-landmark": {
+      "deterministic": true
+    },
+    "continuity-attachment-contradiction": {
+      "deterministic": true
+    },
+    "continuity-screen-order": {
+      "deterministic": true
+    },
+    "continuity-landmark-discontinuity": {
+      "deterministic": true
+    },
+    "continuity-axis-violation": {
+      "deterministic": true
+    },
+    "continuity-control-clean-scene": {
+      "deterministic": true
+    },
+    "generation-periodic-seams": {
+      "deterministic": true
+    },
+    "generation-frozen-frames": {
+      "deterministic": true
+    },
+    "generation-control-clean-motion": {
+      "deterministic": true
+    },
+    "technical-unreadable-media": {
+      "deterministic": true
+    },
+    "technical-aspect-mismatch": {
+      "deterministic": true
+    },
+    "technical-approval-without-approver": {
+      "deterministic": true
+    },
+    "technical-plan-delivery-mismatch": {
+      "deterministic": true
+    },
+    "semantic-control-clean-scene": {
+      "open": true,
+      "closed": true
+    },
+    "semantic-control-extra-pillar": {
+      "open": true,
+      "closed": false
+    },
+    "semantic-control-order-inverted": {
+      "open": true,
+      "closed": true
+    },
+    "continuity-pillar-real": {
+      "open": true,
+      "closed": false
+    },
+    "creative-subject-static": {
+      "open": true,
+      "closed": false
+    },
+    "creative-storyboard-contradicts-references": {
+      "open": true,
+      "closed": false
+    },
+    "creative-pseudo-text": {
+      "open": true,
+      "closed": false
+    },
+    "creative-annotations-in-panel": {
+      "open": true,
+      "closed": true
+    }
+  }
+}
