@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "fixture:scene-clean.png@artifact under review",
+  "prompts": {
+    "open": "c60dd7d06f87db89",
+    "closed": "7e4e3e350df363fc"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "This artifact is fine. The image accurately matches the description, showing an orange rectangle on the left, a dark rectangle suspended in the upper middle, and a tall grey rectangle on the right.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 1,
+      "open": "This artifact is fine. The image accurately matches the description, showing an orange rectangle on the left, a dark rectangle suspended in the upper middle, and a tall grey rectangle on the right.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 2,
+      "open": "This artifact is fine.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    }
+  ]
+}

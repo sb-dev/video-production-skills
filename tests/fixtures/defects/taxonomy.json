@@ -1,5 +1,5 @@
 {
-  "_comment": "Every defect class that has reached a deliverable, with the fixture that reproduces it and the diagnosis it must produce. Deterministic cases are scored by running the owning checker. Semantic cases are scored twice: once open-ended, measuring whether a reviewer names the defect unprompted, and once against the closed criteria list, measuring whether the right criterion fails. Clean controls exist so the benchmark measures discrimination rather than eagerness.",
+  "_comment": "Every defect class that has reached a deliverable, with the fixture that reproduces it and the diagnosis it must produce. Deterministic cases are scored by running the owning checker. Semantic cases are scored twice: once open-ended, measuring whether a reviewer names the defect unprompted, and once against the closed criteria list, which is scored on two axes — detection (the expected criterion failed) and precision (nothing else failed alongside it). Clean controls exist so the benchmark measures discrimination rather than eagerness. Editing a case's context, criteria or images invalidates its recorded transcripts; run-benchmark.ts will say so rather than score stale evidence.",
   "criteria": [
     "spatial-continuity",
     "subject-posed-for-action",
@@ -244,7 +244,7 @@
       "tier": "semantic",
       "summary": "garbled machine-generated lettering on signage, and a clock face that does not read",
       "images": [{ "example": "production/06-reference-frames/selected/SH01-wide.jpg" }],
-      "context": "A reference frame for a photorealistic documentary-register shot. Its visual direction forbids readable signage text.",
+      "context": "A reference frame for a photorealistic documentary-register shot. Text in frame has exactly two acceptable states: readable and plausible, spelled correctly and consistent across frames; or genuinely defocused, abstract, or out of frame, with no glyph shapes resolving at all. Garbled pseudo-lettering that reads as text but does not resolve into words is neither, and is a defect. This scene's visual direction chose the defocused state.",
       "criterion": "text-legibility",
       "keywords": ["text", "illegible", "garbled", "gibberish", "unreadable", "nonsense", "sign", "lettering", "clock", "letters"],
       "expect": { "detects": true },

@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "example:production/06-reference-frames/selected/SH01-establish-v2.jpg@approved reference frame, shot 1|example:production/06-reference-frames/selected/SH02-crossing.jpg@approved reference frame, shot 2",
+  "prompts": {
+    "open": "201700537b865552",
+    "closed": "d5d7aea7c82edc08"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "There are major architectural inconsistencies between the two images. They do not represent the same physical space. \n\nHere are the specific problems:\n\n*   **The Missing Coffee Shop:** In Image 1, there is a large, brightly lit, wooden-clad coffee kiosk on the left side of the concourse. In Image 2, the camera has moved closer, but the space where the kiosk should be (to the left of the central pillar) is now completely empty open space.\n*   **The Sudden Appearance of a Massive Pillar:** Image 2 features a massive, thick stone pillar taking up the right foreground. Based on the position of the central clock pillar and the background, this massive pillar would be located in the middle-right of the concourse. However, looking at Image 1, that area of the concourse is completely open, with a clear view to the train platforms in the distance. \n*   **The Background Roof Structure:** In Image 1, the glass and steel arched roof forms a continuous, open tunnel extending far into the background behind the central clock pillar. In Image 2, the architecture behind the clock pillar changes completely; it appears to terminate in a flat wall featuring a distinct, separate arched window, rather than continuing as an open tunnel.",
+      "closed": "{\n  \"spatial-continuity\": \"FAIL\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"FAIL\",\n  \"text-legibility\": \"FAIL\",\n  \"annotations-outside-frame\": \"PASS\"\n}"
+    },
+    {
+      "index": 1,
+      "open": "There are several major architectural inconsistencies between the two images. They do not represent the same physical space.\n\nHere are the specific problems:\n\n*   **The Departure Boards:** In Image 1, there are **four** distinct black departure board panels mounted above the clock on the central pillar. In Image 2, there are only **three** panels.\n*   **The Background Archway:** In Image 1, the far end of the station features a massive, wide, gently curving glass archway that spans the width of the concourse. In Image 2, the archway behind the central pillar is a much smaller, narrower, and steeper semi-circle.\n*   **The Right Foreground Pillar:** Image 2 introduces a massive, thick stone pillar taking up the right edge of the frame. Based on the positioning of the central clock pillar and the people, this large structure is completely missing from the spatial layout shown in Image 1.\n*   **The Left Side Kiosk:** Image 1 features a large, wooden-paneled coffee kiosk on the left side of the concourse. In Image 2, despite the camera moving closer and looking in the same general direction, the kiosk is gone, replaced by open floor space and distant background arches.",
+      "closed": "{\n  \"spatial-continuity\": \"FAIL\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"FAIL\",\n  \"text-legibility\": \"FAIL\",\n  \"annotations-outside-frame\": \"PASS\"\n}"
+    },
+    {
+      "index": 2,
+      "open": "There are several major architectural inconsistencies between the two images. They do not represent the same physical space.\n\nHere are the specific problems:\n\n*   **The Departure Boards:** In Image 1, there are **four** distinct black departure board panels mounted above the clock on the central pillar. In Image 2, there are only **three** panels.\n*   **The Background Archway:** In Image 1, the far end of the station features a massive, wide, gently curving glass archway that spans the width of the concourse. In Image 2, the archway behind the central pillar is a much smaller, narrower, and steeper semi-circle.\n*   **The Right Foreground Pillar:** Image 2 introduces a massive, thick stone pillar taking up the right edge of the frame. Based on the positioning of the central clock pillar and the people, this large structure is completely missing from the spatial layout shown in Image 1.\n*   **The Left Side Kiosk:** Image 1 features a large, wooden-paneled coffee kiosk on the left side of the concourse. In Image 2, despite the camera moving closer and looking in the same general direction, the kiosk is gone, replaced by open floor space and distant background arches.",
+      "closed": "{\n  \"spatial-continuity\": \"FAIL\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"FAIL\",\n  \"text-legibility\": \"FAIL\",\n  \"annotations-outside-frame\": \"PASS\"\n}"
+    }
+  ]
+}

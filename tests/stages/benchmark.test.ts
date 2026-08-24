@@ -7,17 +7,23 @@
  * and never reports a semantic score it did not actually obtain.
  */
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { isRecord, parseJson, runScript } from './harness.ts';
+import { ROOT, isRecord, parseJson, runScript } from './harness.ts';
 
 const SCRIPT = 'tools/run-benchmark.ts';
 
 interface CaseRow {
   readonly id: string;
   readonly deterministic?: boolean;
+  readonly open?: boolean;
+  readonly closedDetection?: boolean;
+  readonly closedPrecision?: boolean;
+  readonly closed?: boolean;
+  readonly rates?: Record<string, string>;
+  readonly unstable?: boolean;
   readonly skipped?: string;
 }
 
@@ -131,4 +137,320 @@ test('a class filter narrows the run', () => {
   const only = results(['--only', 'generation']);
   assert.ok(only.length > 0);
   assert.ok(only.every((row) => row.id.startsWith('generation-')), 'filter must exclude other classes');
+});
+
+// ------------------------------------------------------------- semantic
+//
+// The semantic tier used to be untestable: scoring happened inline against a
+// live model and the answers were thrown away. Recording transcripts makes the
+// *scorer* offline and deterministic, so everything below runs for free. Only
+// collecting answers costs money.
+
+const CRITERIA = ['spatial-continuity', 'text-legibility'];
+
+const DEFECT_CASE = {
+  id: 'bench-defect',
+  class: 'continuity',
+  tier: 'semantic',
+  summary: 'synthetic defect case',
+  images: [{ fixture: 'scene-extra-pillar.png' }],
+  context: 'A synthetic case used to test the scorer.',
+  criterion: 'spatial-continuity',
+  keywords: ['pillar'],
+  expect: { detects: true },
+};
+
+const CONTROL_CASE = {
+  id: 'bench-control',
+  class: 'continuity',
+  tier: 'semantic',
+  summary: 'synthetic clean control',
+  images: [{ fixture: 'scene-clean.png' }],
+  context: 'A synthetic clean control.',
+  expect: { clean: true },
+};
+
+interface PromptMeta {
+  readonly model: string;
+  readonly imagesKey: string;
+  readonly open: string;
+  readonly closed: string;
+}
+
+interface Bench {
+  readonly taxonomy: string;
+  readonly transcripts: string;
+  readonly baseline: string;
+  readonly meta: ReadonlyMap<string, PromptMeta>;
+}
+
+function bench(cases: readonly unknown[]): Bench {
+  const directory = workspace();
+  const taxonomy = join(directory, 'taxonomy.json');
+  const transcripts = join(directory, 'transcripts');
+  writeFileSync(taxonomy, JSON.stringify({ criteria: CRITERIA, cases }));
+  mkdirSync(transcripts, { recursive: true });
+
+  // The digests a transcript is keyed on come from the runner itself rather than
+  // being reimplemented here; a test that recomputed them would agree with a
+  // broken implementation.
+  const printed = runScript(SCRIPT, ['--taxonomy', taxonomy, '--print-prompts']);
+  assert.equal(printed.status, 0, printed.stderr);
+  const parsed = parseJson(printed.stdout);
+  assert.ok(isRecord(parsed) && Array.isArray(parsed.cases));
+
+  const meta = new Map<string, PromptMeta>();
+  for (const entry of parsed.cases.filter(isRecord)) {
+    assert.ok(isRecord(entry.prompts) && isRecord(entry.prompts.open) && isRecord(entry.prompts.closed));
+    meta.set(String(entry.id), {
+      model: String(parsed.model),
+      imagesKey: String(entry.imagesKey),
+      open: String(entry.prompts.open.sha),
+      closed: String(entry.prompts.closed.sha),
+    });
+  }
+
+  return { taxonomy, transcripts, baseline: join(directory, 'baseline.json'), meta };
+}
+
+function record(
+  target: Bench,
+  id: string,
+  repeats: readonly { open: string; closed: string }[],
+  override: Partial<PromptMeta> = {},
+): void {
+  const meta = target.meta.get(id);
+  assert.ok(meta !== undefined, `no prompt metadata for ${id}`);
+  writeFileSync(
+    join(target.transcripts, `${id}.json`),
+    JSON.stringify({
+      model: override.model ?? meta.model,
+      imagesKey: override.imagesKey ?? meta.imagesKey,
+      prompts: { open: override.open ?? meta.open, closed: override.closed ?? meta.closed },
+      repeats: repeats.map((repeat, index) => ({ index, ...repeat })),
+    }),
+  );
+}
+
+function rescore(target: Bench, args: readonly string[] = []): { rows: readonly CaseRow[]; status: number | null; stdout: string } {
+  const outcome = runScript(SCRIPT, [
+    '--rescore', '--json',
+    '--taxonomy', target.taxonomy,
+    '--transcripts', target.transcripts,
+    '--baseline', target.baseline,
+    ...args,
+  ]);
+  const parsed = parseJson(outcome.stdout);
+  assert.ok(isRecord(parsed), outcome.stdout + outcome.stderr);
+  const rows = parsed.results;
+  assert.ok(Array.isArray(rows));
+  return { rows: rows.filter(isRecord) as unknown as readonly CaseRow[], status: outcome.status, stdout: outcome.stdout };
+}
+
+/** Verdicts in the shape the closed pass returns them. */
+function verdict(entries: Record<string, string>): string {
+  return JSON.stringify(entries);
+}
+
+const NAMES_THE_DEFECT = 'There is an extra grey pillar that the scene does not declare.';
+
+test('detection and precision are scored independently', () => {
+  const target = bench([DEFECT_CASE]);
+  record(target, 'bench-defect', [
+    { open: NAMES_THE_DEFECT, closed: verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'FAIL' }) },
+  ]);
+
+  const row = rescore(target).rows[0];
+  assert.ok(row !== undefined);
+  assert.equal(row.open, true, 'the defect was named unprompted');
+  assert.equal(row.closedDetection, true, 'the expected criterion failed');
+  assert.equal(row.closedPrecision, false, 'a criterion failed that should not have');
+  assert.equal(row.closed, false, 'the strict verdict is unchanged by the split');
+});
+
+test('precision is not scored on a case whose defect was never detected', () => {
+  const target = bench([DEFECT_CASE]);
+  record(target, 'bench-defect', [
+    { open: 'Looks fine to me.', closed: verdict({ 'spatial-continuity': 'PASS', 'text-legibility': 'PASS' }) },
+  ]);
+
+  const row = rescore(target).rows[0];
+  assert.ok(row !== undefined);
+  assert.equal(row.closedDetection, false);
+  assert.equal(
+    row.closedPrecision,
+    undefined,
+    'a miss must not count as precise, or the denominator flatters the reviewer',
+  );
+});
+
+test('a clean control fails when the reviewer manufactures a criterion failure', () => {
+  const target = bench([CONTROL_CASE]);
+  record(target, 'bench-control', [
+    { open: 'Nothing wrong, the layout is consistent.', closed: verdict({ 'spatial-continuity': 'FAIL' }) },
+  ]);
+
+  const row = rescore(target).rows[0];
+  assert.ok(row !== undefined);
+  assert.equal(row.open, true);
+  assert.equal(row.closedPrecision, false, 'a false failure on a control is an imprecision');
+  assert.equal(row.closedDetection, undefined, 'a control has no criterion to detect');
+});
+
+test('repeats aggregate by majority and record the observed rate', () => {
+  const target = bench([DEFECT_CASE]);
+  const precise = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'PASS' });
+  const noisy = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'FAIL' });
+  record(target, 'bench-defect', [
+    { open: NAMES_THE_DEFECT, closed: precise },
+    { open: NAMES_THE_DEFECT, closed: noisy },
+    { open: NAMES_THE_DEFECT, closed: precise },
+  ]);
+
+  const row = rescore(target, ['--repeat', '3']).rows[0];
+  assert.ok(row !== undefined);
+  assert.equal(row.closedPrecision, true, 'two of three repeats were precise');
+  assert.equal(row.rates?.closedPrecision, '2/3');
+  assert.equal(row.rates?.open, '3/3');
+  assert.equal(row.unstable, true, 'disagreement across repeats must be visible');
+});
+
+/**
+ * Scoring one sample of a baseline recorded from three would disagree with it
+ * for no reason but sampling, and the disagreement would read as a regression.
+ */
+test('re-scoring defaults to every repeat that was recorded', () => {
+  const target = bench([DEFECT_CASE]);
+  const precise = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'PASS' });
+  const noisy = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'FAIL' });
+  record(target, 'bench-defect', [
+    { open: NAMES_THE_DEFECT, closed: noisy },
+    { open: NAMES_THE_DEFECT, closed: precise },
+    { open: NAMES_THE_DEFECT, closed: precise },
+  ]);
+
+  const row = rescore(target).rows[0];
+  assert.ok(row !== undefined);
+  assert.equal(row.rates?.closed, '2/3', 'all three recorded repeats must be scored without asking');
+  assert.equal(row.closed, true);
+
+  const one = rescore(target, ['--repeat', '1']).rows[0];
+  assert.ok(one !== undefined);
+  assert.equal(one.rates?.closed, '0/1', 'an explicit --repeat still narrows the sample to repeat 0');
+  assert.equal(one.closed, false);
+});
+
+test('a case that passed the baseline and now flips is FLAKY, not a regression', () => {
+  const target = bench([DEFECT_CASE]);
+  writeFileSync(target.baseline, JSON.stringify({ cases: { 'bench-defect': { closed: true } } }));
+
+  const strict = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'PASS' });
+  const noisy = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'FAIL' });
+  record(target, 'bench-defect', [
+    { open: NAMES_THE_DEFECT, closed: strict },
+    { open: NAMES_THE_DEFECT, closed: noisy },
+    { open: NAMES_THE_DEFECT, closed: noisy },
+  ]);
+
+  const outcome = rescore(target, ['--repeat', '3']);
+  assert.equal(outcome.status, 0, 'one flip must not fail the run — the tier is not deterministic');
+  const parsed = parseJson(outcome.stdout);
+  assert.ok(isRecord(parsed));
+  assert.deepEqual(parsed.flaky, ['bench-defect.closed']);
+  assert.deepEqual(parsed.regressions, []);
+});
+
+test('a case that passed the baseline and now fails every repeat is a regression', () => {
+  const target = bench([DEFECT_CASE]);
+  writeFileSync(target.baseline, JSON.stringify({ cases: { 'bench-defect': { closed: true } } }));
+
+  const noisy = verdict({ 'spatial-continuity': 'FAIL', 'text-legibility': 'FAIL' });
+  record(target, 'bench-defect', [
+    { open: NAMES_THE_DEFECT, closed: noisy },
+    { open: NAMES_THE_DEFECT, closed: noisy },
+  ]);
+
+  const outcome = rescore(target, ['--repeat', '2']);
+  assert.equal(outcome.status, 1, 'a uniform failure against the baseline must fail the run');
+  const parsed = parseJson(outcome.stdout);
+  assert.ok(isRecord(parsed));
+  assert.deepEqual(parsed.regressions, ['bench-defect.closed']);
+});
+
+/**
+ * The cache must never score evidence gathered under a different question. This
+ * is the standing rule that a stage which cannot run skips loudly, applied to
+ * recorded answers.
+ */
+test('a transcript recorded against a different prompt is refused, not scored', () => {
+  const target = bench([DEFECT_CASE]);
+  record(
+    target,
+    'bench-defect',
+    [{ open: NAMES_THE_DEFECT, closed: verdict({ 'spatial-continuity': 'FAIL' }) }],
+    { open: 'aaaaaaaaaaaaaaaa' },
+  );
+
+  const outcome = runScript(SCRIPT, [
+    '--rescore', '--taxonomy', target.taxonomy, '--transcripts', target.transcripts, '--baseline', target.baseline,
+  ]);
+  assert.equal(outcome.status, 1, 'a stale transcript must fail the run');
+  assert.match(outcome.stdout, /STALE TRANSCRIPT: bench-defect: the open prompt changed/);
+});
+
+test('a stale transcript blocks a baseline update', () => {
+  const target = bench([DEFECT_CASE]);
+  record(
+    target,
+    'bench-defect',
+    [{ open: NAMES_THE_DEFECT, closed: verdict({ 'spatial-continuity': 'FAIL' }) }],
+    { imagesKey: 'fixture:something-else.png@artifact under review' },
+  );
+
+  const outcome = runScript(SCRIPT, [
+    '--rescore', '--update-baseline',
+    '--taxonomy', target.taxonomy, '--transcripts', target.transcripts, '--baseline', target.baseline,
+  ]);
+  assert.equal(outcome.status, 1);
+  assert.match(outcome.stderr, /refusing to update the baseline while transcripts are stale/);
+  assert.throws(() => readFileSync(target.baseline, 'utf8'), 'no baseline may be written from stale evidence');
+});
+
+test('a case with no recorded transcript skips loudly rather than scoring', () => {
+  const target = bench([DEFECT_CASE]);
+  const row = rescore(target).rows[0];
+  assert.ok(row !== undefined);
+  assert.match(String(row.skipped), /no recorded transcript/);
+  assert.equal(row.closed, undefined, 'a skipped case must not carry a score');
+});
+
+/**
+ * The committed transcripts are the evidence behind the published baseline. If
+ * re-scoring them no longer reproduces it, either the scorer changed or the
+ * numbers in docs/04 no longer describe this repository.
+ */
+test('re-scoring the committed transcripts reproduces the committed baseline', (t) => {
+  const directory = join(ROOT, 'tests/fixtures/defects/transcripts');
+  if (!existsSync(directory)) {
+    t.skip('no transcripts committed yet — run the collection first');
+    return;
+  }
+
+  const outcome = runScript(SCRIPT, ['--rescore', '--json']);
+  const parsed = parseJson(outcome.stdout);
+  assert.ok(isRecord(parsed) && Array.isArray(parsed.results));
+  assert.deepEqual(parsed.stale, [], 'committed transcripts must match the committed cases');
+
+  const baseline = parseJson(readFileSync(join(ROOT, 'tests/fixtures/defects/baseline.json'), 'utf8'));
+  assert.ok(isRecord(baseline) && isRecord(baseline.cases));
+  const cases: Record<string, unknown> = baseline.cases;
+
+  for (const row of parsed.results.filter(isRecord) as unknown as readonly CaseRow[]) {
+    const recorded = cases[row.id];
+    if (!isRecord(recorded) || row.skipped !== undefined) continue;
+    for (const key of ['open', 'closedDetection', 'closedPrecision', 'closed'] as const) {
+      if (recorded[key] === undefined) continue;
+      assert.equal(row[key], recorded[key], `${row.id}.${key} no longer matches the committed baseline`);
+    }
+  }
 });

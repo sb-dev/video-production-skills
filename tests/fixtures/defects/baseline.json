@@ -41,35 +41,93 @@
     },
     "semantic-control-clean-scene": {
       "open": true,
-      "closed": true
+      "closed": true,
+      "closedPrecision": true,
+      "rates": {
+        "open": "3/3",
+        "closedPrecision": "3/3",
+        "closed": "3/3"
+      }
     },
     "semantic-control-extra-pillar": {
       "open": true,
-      "closed": false
+      "closed": false,
+      "closedDetection": false,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "0/3",
+        "closed": "0/3"
+      }
     },
     "semantic-control-order-inverted": {
       "open": true,
-      "closed": true
+      "closed": true,
+      "closedDetection": true,
+      "closedPrecision": true,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "3/3",
+        "closedPrecision": "3/3",
+        "closed": "3/3"
+      }
     },
     "continuity-pillar-real": {
       "open": true,
-      "closed": false
+      "closed": false,
+      "closedDetection": true,
+      "closedPrecision": false,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "3/3",
+        "closedPrecision": "0/3",
+        "closed": "0/3"
+      }
     },
     "creative-subject-static": {
       "open": true,
-      "closed": false
+      "closed": false,
+      "closedDetection": false,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "0/3",
+        "closed": "0/3"
+      }
     },
     "creative-storyboard-contradicts-references": {
       "open": true,
-      "closed": false
+      "closed": true,
+      "closedDetection": true,
+      "closedPrecision": true,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "3/3",
+        "closedPrecision": "2/3",
+        "closed": "2/3"
+      }
     },
     "creative-pseudo-text": {
       "open": true,
-      "closed": false
+      "closed": true,
+      "closedDetection": true,
+      "closedPrecision": true,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "3/3",
+        "closedPrecision": "3/3",
+        "closed": "3/3"
+      }
     },
     "creative-annotations-in-panel": {
       "open": true,
-      "closed": true
+      "closed": true,
+      "closedDetection": true,
+      "closedPrecision": true,
+      "rates": {
+        "open": "3/3",
+        "closedDetection": "3/3",
+        "closedPrecision": "3/3",
+        "closed": "3/3"
+      }
     }
   }
 }

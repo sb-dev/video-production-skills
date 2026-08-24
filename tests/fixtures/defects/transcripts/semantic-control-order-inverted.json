@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "fixture:scene-clean.png@approved reference|fixture:scene-order-inverted.png@frame under review",
+  "prompts": {
+    "open": "a981b60b29b07ec3",
+    "closed": "36a4ea6f1b4fe51e"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "The positions of the orange and gray rectangles have been swapped. In the reference image, the orange rectangle is on the left and the gray rectangle is on the right. In the new frame, the gray rectangle is on the left and the orange rectangle is on the right.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"FAIL\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"NA\"\n}\n```"
+    },
+    {
+      "index": 1,
+      "open": "The orange and gray rectangles have swapped positions.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"FAIL\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"NA\"\n}\n```"
+    },
+    {
+      "index": 2,
+      "open": "The positions of the orange and gray rectangles have been swapped. In the reference image, the orange rectangle is on the left and the gray rectangle is on the right. In the new frame, the gray rectangle is on the left and the orange rectangle is on the right.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"FAIL\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"NA\"\n}\n```"
+    }
+  ]
+}
