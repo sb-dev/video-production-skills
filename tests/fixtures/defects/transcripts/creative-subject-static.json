@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "example:production/06-reference-frames/selected/SH02-crossing.jpg@artifact under review",
+  "prompts": {
+    "open": "c3d7e41dfc7ea369",
+    "closed": "e8c72c624642bdd8"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "Based on the requirements for the shot, there is a significant problem with this artifact:\n\n**The woman in the teal coat is not walking.**\n\nWhile the man in the rust jacket is clearly in mid-stride (evidenced by his posture and the motion blur on his legs), the woman is standing completely still. Both of her feet are planted flat on the ground, and she is looking up and slightly away, appearing stationary. Because this is meant to be the first frame establishing that *both* characters are walking, her static pose fails to meet the prompt's requirements.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"PASS\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 1,
+      "open": "Based on the requirements for the shot, there are significant problems with this image serving as the first frame:\n\n1.  **The woman is not walking:** The woman in the teal coat is standing completely still. Her feet are planted side-by-side on the floor, her posture is static, and she is looking up (likely at a departure board).\n2.  **Incorrect orientation for \"opposite directions\":** The man in the rust jacket is walking toward the left side of the frame. To walk in the opposite direction, the woman would need to be walking toward the right side of the frame. However, her body is facing forward, directly toward the camera.\n\nBecause she is stationary and facing the wrong way, an AI video generator will struggle to make her immediately walk to the right to fulfill the \"opposite directions\" prompt based on this starting frame.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"NA\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 2,
+      "open": "Based on the requirements for the shot, there are significant problems with this image serving as the first frame:\n\n1.  **The woman is not walking:** The woman in the teal coat is standing completely still. Her feet are planted side-by-side on the floor, her posture is static, and she is looking up (likely at a departure board).\n2.  **Incorrect orientation for \"opposite directions\":** The man in the rust jacket is walking toward the left side of the frame. To walk in the opposite direction, the woman would need to be walking toward the right side of the frame. However, her body is facing forward, directly toward the camera.\n\nBecause she is stationary and facing the wrong way, an AI video generator will struggle to make her immediately walk to the right to fulfill the \"opposite directions\" prompt based on this starting frame.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"NA\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    }
+  ]
+}

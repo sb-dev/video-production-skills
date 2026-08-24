@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "example:production/06-reference-frames/selected/SH01-wide.jpg@artifact under review",
+  "prompts": {
+    "open": "6ee190ed76da52db",
+    "closed": "bd84fed418349a23"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "The image contains a defect based on the provided rules. \n\nThe coffee kiosk on the left side of the frame features garbled pseudo-lettering. Specifically, the vertical sign under the coffee cup icon and the text on the menu board resolve into distinct, unreadable glyph shapes. Because they form fake letters rather than being completely defocused or forming actual words, this violates the requirement.",
+      "closed": "{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"FAIL\",\n  \"annotations-outside-frame\": \"PASS\"\n}"
+    },
+    {
+      "index": 1,
+      "open": "The image contains defects based on your text constraints. \n\nSpecifically, the coffee kiosk on the left features garbled pseudo-lettering on its exterior sign and interior menu boards. Additionally, the central clock face displays distorted, unreadable glyphs instead of numbers. Both instances fail the requirement; they resolve into fake letter/number shapes rather than being genuinely defocused and abstract.",
+      "closed": "{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"FAIL\",\n  \"annotations-outside-frame\": \"PASS\"\n}"
+    },
+    {
+      "index": 2,
+      "open": "The image contains a defect based on the provided rules. \n\nThe coffee kiosk on the left side of the frame features garbled pseudo-lettering. Specifically, the vertical sign under the coffee cup icon and the text on the menu board resolve into distinct, unreadable glyph shapes. Because they form fake letters rather than being completely defocused or forming actual words, this violates the requirement.",
+      "closed": "{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"FAIL\",\n  \"annotations-outside-frame\": \"PASS\"\n}"
+    }
+  ]
+}

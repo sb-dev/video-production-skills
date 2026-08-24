@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "fixture:scene-extra-pillar.png@artifact under review",
+  "prompts": {
+    "open": "c245e03c426ef143",
+    "closed": "8123dcd264a6bb1e"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "Based on the description provided, there is a problem with the artifact. \n\nThe description states there are \"exactly three landmarks\" and specifies \"one grey column.\" However, the image contains **four** landmarks in total, specifically showing **two** grey columns instead of one.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"NA\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"NA\"\n}\n```"
+    },
+    {
+      "index": 1,
+      "open": "Based on the description provided, there is a problem with the image. \n\nThe description states there are **exactly three landmarks**, including **one grey column**. However, the image displays **four landmarks** in total, which includes **two grey columns** instead of one.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 2,
+      "open": "Based on the description provided, there is a problem with the artifact. \n\nThe description states there are \"exactly three landmarks\" and specifies \"one grey column.\" However, the image contains **four** landmarks in total, specifically showing **two** grey columns instead of one.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"NA\",\n  \"subject-posed-for-action\": \"NA\",\n  \"character-reference-fidelity\": \"NA\",\n  \"text-legibility\": \"NA\",\n  \"annotations-outside-frame\": \"NA\"\n}\n```"
+    }
+  ]
+}
