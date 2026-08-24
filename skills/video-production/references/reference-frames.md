@@ -38,4 +38,11 @@ Check the frame for artifacts that will persist into motion, and record any you 
 - illegible clock or instrument faces;
 - landmark relationships that contradict another approved frame.
 
-Illegible text is not a safe substitute for readable text. Shifting glyphs are a visible artifact, and describing them as a continuity safeguard is a rationalisation. If text must not be legible, keep it out of frame or defocus it deliberately.
+Illegible text is not a safe substitute for readable text. Shifting glyphs are a visible artifact, and describing them as a continuity safeguard is a rationalisation.
+
+Text in frame has exactly two acceptable states, and the visual direction picks one per scene:
+
+- **readable and plausible** — the words are legible, spelled correctly, and consistent across every frame that shows them;
+- **genuinely defocused, abstract, or out of frame** — no glyph shapes resolve at all.
+
+Garbled pseudo-lettering is neither. It reads as text, invites the eye to parse it, and then fails — which is why it survives review as "illegible enough" and shows up as an artifact in the finished shot. A scene that bans readable signage has not thereby permitted garbled signage; it has committed to keeping the text out of focus or out of shot.

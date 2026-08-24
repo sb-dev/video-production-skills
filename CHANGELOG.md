@@ -39,6 +39,8 @@ All notable changes to this project will be documented here.
 - Synthetic scene fixtures acting as controls for the grader itself.
 - `docs/04-testing-and-benchmark-spec.md` specifying the testing layers and serving as the runbook for running them.
 - `make-storyboard.ts` composing storyboard panels into a numbered, keylined board sheet, with defaults that produce the expected form and `--print-command` for hosts without ImageMagick.
+- Committed semantic transcripts under `tests/fixtures/defects/transcripts/`, with `--rescore` scoring them offline and `--print-prompts` showing exactly what the reviewer was asked. Re-scoring after a scorer change costs nothing, and a transcript recorded against a changed prompt, model or image set is refused rather than scored.
+- `--repeat N` sampling each semantic case several times: verdicts are the majority across repeats, the observed rate is recorded beside them, and a case that passes some repeats and fails others is reported `FLAKY` instead of failing the run as a regression.
 
 ### Changed
 
@@ -49,3 +51,6 @@ All notable changes to this project will be documented here.
 - Shot selection is gated on motion quality; still frames resolve staging, not motion.
 - Media QC covers temporal integrity and sampling adequacy alongside container validity.
 - Storyboard guidance specifies board form: one sheet of small numbered keylined sketch panels, more panels than the sequence has shots, panels generated individually and composed deterministically.
+- Closed-pass benchmark scoring is reported on two axes — detection (the expected criterion failed) and precision (nothing else failed alongside it) — with the original combined verdict kept as `strict`. A reviewer that finds the defect and is noisy about it is no longer scored as though it had found nothing.
+- The semantic scorer is covered by `npm test` without a provider token, since it runs against recorded answers.
+- Reference-frame guidance states the two acceptable states for text in frame — readable and plausible, or genuinely defocused, abstract or out of frame — and that banning readable signage does not thereby permit garbled signage.

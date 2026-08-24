@@ -29,7 +29,8 @@ Criteria*; it does not restate them.
 | stage | Does each workflow stage behave correctly in isolation? | no | `npm run test:stages` |
 | evals | Do the skills' declared behaviours actually hold? | no (structural), opt-in (behavioural) | `npm run test:evals` |
 | benchmark — deterministic | Are declared defects detected, and clean artifacts left alone? | no | `npm run test:benchmark` |
-| benchmark — semantic | Does judgement catch defects only visible in the image? | opt-in | `RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts` |
+| benchmark — semantic, scoring | Does the scorer read the recorded answers correctly? | no | `node tools/run-benchmark.ts --rescore` |
+| benchmark — semantic, collection | Does judgement catch defects only visible in the image? | opt-in | `RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3` |
 
 ### 2.1 What each layer cannot do
 
@@ -45,7 +46,13 @@ a layer that was never able to see it.
 - **benchmark, deterministic** checks *declarations*. It catches a landmark nobody declared; it
   cannot see a landmark that is in the picture but absent from the declaration.
 - **benchmark, semantic** is the only layer that judges an image against its declaration, and
-  it is the only layer that costs money.
+  the only layer that costs money — but only when *collecting* answers. Scoring them is free and
+  offline, and runs in `npm test`. What it cannot do is tell you the reviewer is reliable: it is
+  not deterministic even at `temperature: 0`, which is why a verdict is a majority of repeats
+  and never a single sample.
+- **transcripts** prove what was asked and answered. They cannot prove the *images* have not
+  changed underneath them: staleness is keyed on the model, the prompt text and which artifacts
+  a case points at, none of which notice a regenerated file at the same path.
 
 ### 2.2 Standing rules
 
@@ -60,6 +67,17 @@ a layer that was never able to see it.
 4. **Fixtures are synthesised, not committed.** `tests/fixtures/make-fixtures.ts` builds media
    with ffmpeg `lavfi` at run time. The fixture directory is keyed on a hash of the generator,
    so editing a fixture definition invalidates the cache rather than silently serving a stale clip.
+5. **Answers are kept; evidence is never paid for twice.** Every semantic response is written to
+   `tests/fixtures/defects/transcripts/` and committed. Changing the scorer is re-scored for
+   nothing, which is what makes it possible to fix a scorer *after* publishing a baseline
+   without the fix being suspected of chasing the numbers.
+6. **A transcript recorded against a different question is refused, not scored.** Editing a
+   case's context, criteria or images invalidates its transcripts; the run says `STALE
+   TRANSCRIPT` and exits non-zero rather than scoring stale evidence, and it will not write a
+   baseline from it.
+7. **One sample is not a measurement.** Verdicts are the majority across repeats, the observed
+   rate travels with them, and a case that passes some repeats and fails others is reported
+   `FLAKY` rather than failing the run as a regression.
 
 ---
 
@@ -167,27 +185,74 @@ negative cases measures eagerness, not discrimination.
 ```bash
 node tools/run-benchmark.ts                       # deterministic tier, free, offline
 node tools/run-benchmark.ts --only continuity     # one class
-RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --json   # both tiers, costs money
+node tools/run-benchmark.ts --rescore             # semantic tier from recorded answers, free
 ```
 
 The semantic tier puts each artifact to a reviewer twice and scores the passes separately:
 
 - **open** — *"Describe any problems with this artifact."* Does the reviewer name the defect
-  unprompted? The model's own words are kept in the report so every scoring decision can be
-  audited rather than trusted.
-- **closed** — the criteria list, returning PASS/FAIL/NA per criterion. Does the **right**
-  criterion fail, and only that one?
+  unprompted?
+- **closed** — the criteria list, returning PASS/FAIL/NA per criterion. Scored on two axes,
+  because they are two abilities: **detection** (the expected criterion failed) and
+  **precision** (nothing else failed alongside it). The original combined verdict survives as
+  **strict**, so nothing here lowered the bar — it stopped reporting a correct-but-noisy answer
+  as though the reviewer had seen nothing.
+
+Precision is only scored on cases where detection succeeded. Counting a miss as precise would
+pad the denominator with cases that never had the chance to be imprecise.
 
 Without `REPLICATE_API_TOKEN` the tier reports **NOT RUN**. It never reports a score it did not
 obtain.
 
+#### Collecting answers
+
+Collection is the only part that costs money. It prints the number of paid calls before
+spending anything:
+
+```bash
+RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3
+# collecting 48 paid calls (3 repeat(s) × 2 passes per uncached case)
+```
+
+Answers already recorded are reused, so raising `--repeat` pays only for the new samples and
+re-running after an interruption resumes where it stopped. `--refresh` forces re-collection.
+
+#### Re-scoring for free
+
+Every answer is committed under `tests/fixtures/defects/transcripts/`. Changing the scorer costs
+nothing to re-measure:
+
+```bash
+node tools/run-benchmark.ts --rescore          # scores every recorded repeat
+node tools/run-benchmark.ts --print-prompts    # exactly what the reviewer was asked
+```
+
+Editing a case's `context`, the `criteria` list, or which images it points at changes the
+question, so its recorded answers no longer bear on it. The run says so and exits non-zero:
+
+```
+STALE TRANSCRIPT: creative-pseudo-text: the open prompt changed
+re-collect with --refresh, or revert the change to the case
+```
+
+This is the standing rule about loud skips applied to recorded evidence — and it is why the
+benchmark can be corrected after publication without the correction being able to quietly
+inherit the old numbers.
+
+#### Baselines, regressions and flakes
+
 Update the baseline deliberately, never as a side effect of a passing run:
 
 ```bash
-RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --update-baseline
+RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3 --update-baseline
 ```
 
-A case that previously passed and now fails is reported as a `REGRESSION` and fails the run.
+A verdict is the **majority** across repeats and the observed rate is recorded beside it. Ties
+fail: a case that passes half the time has not demonstrated the ability.
+
+- a case that previously passed and now fails **every** repeat is a `REGRESSION` and fails the run;
+- a case that still passes **some** repeats is `FLAKY` and does not. The tier is not
+  deterministic even at `temperature: 0`, and a gate that fires on sampling noise stops being read.
 
 ### 3.6 Triage
 
@@ -228,73 +293,155 @@ When a defect reaches a deliverable, it becomes a fixture. The sequence:
    honest outcome, not a failure.
 6. **Re-run `npm test`.**
 
+A semantic benchmark case needs one extra step: collect its answers once
+(`RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3`) and commit the transcript
+alongside the case. Until it has one, the case reports as skipped rather than passing.
+
+Changing an existing case is the same work in reverse: the edit invalidates its transcripts, the
+run refuses to score them, and the case must be re-collected before it counts again. That
+friction is deliberate. Rewording a case until the reviewer passes it is the failure mode this
+whole layer exists to prevent, and it should cost something.
+
 This gives `CONTRIBUTING.md`'s question *"How is the change evaluated?"* a concrete answer.
 
 ---
 
 ## 5. Measured results and known blind spots
 
-First recorded baseline, 2026-08-24, `google/gemini-3-pro`. Reported as measured. The criteria
-were not reworded and the scorer was not loosened after seeing these numbers.
+Recorded 2026-08-24, `google/gemini-3-pro`, three repeats per case, 48 paid calls. Reported as
+measured: the criteria were not reworded and the scorer was not loosened after seeing these
+numbers. Every answer behind them is committed under `tests/fixtures/defects/transcripts/` and
+re-derivable for free with `node tools/run-benchmark.ts --rescore`.
 
 | Tier | Score |
 |---|---|
 | deterministic | **13/13**, no false positives on clean controls |
-| semantic — open (unprompted recall) | **8/8** |
-| semantic — closed (checklist competence) | **3/8** |
+| semantic — open, unprompted recall | **8/8** (24 of 24 samples) |
+| semantic — closed, detection (the right criterion failed) | **5/7** |
+| semantic — closed, precision (nothing else failed) | **5/6** |
+| semantic — closed, strict (both) | **5/8** |
 
-### The checklist made the reviewer worse
+Detection has seven cases rather than eight because the clean control has no criterion to
+detect. Precision has six because it is only scored where detection succeeded — crediting a
+case that found nothing with having been precise about it would flatter the denominator.
 
-This is the headline finding and it was not the expected result. Asked simply *"describe any
-problems"*, the reviewer named every seeded defect, including ones not in the taxonomy — it
-spotted that two approved frames disagree about the number of departure-board panels and about
-the background archway, which no human review of this production had caught.
+### The checklist still makes the reviewer worse
 
-Handed the same image and the documented criteria, it contradicted itself. On the frame whose
-subject is posed standing still, the open pass said:
+This was the headline of the previous run, and repeating each case three times has confirmed it
+rather than softened it. Asked simply *"describe any problems"*, the reviewer named every seeded
+defect in every repeat. Handed the same image and the documented criteria, it contradicts
+itself, and it does so consistently.
 
-> "The woman in the teal coat is standing completely still. Her feet are planted side-by-side
-> on the floor, her posture is static."
+On the frame whose subject is posed standing still, the open pass says:
 
-and the closed pass marked `subject-posed-for-action` as **PASS**.
+> "The woman in the teal coat is not walking. While the man in the rust jacket is clearly in
+> mid-stride, the woman is standing completely still. Both of her feet are planted flat on the
+> ground... her static pose fails to meet the prompt's requirements."
 
-On the abstract control carrying an extra pillar, the open pass said *"the image displays four
-landmarks in total, which includes two grey columns instead of one"* — and the closed pass
-returned `NA` for every criterion.
+and the closed pass marks `subject-posed-for-action` as **PASS** — in all three repeats. This is
+not sampling noise. It is what the checklist does to the reviewer.
 
-**Consequence for the workflow:** the open pass is the primary gate. A criteria checklist is a
-structuring device for reporting, not a detector, and a reviewer given only a checklist will
-miss defects it would otherwise have named. `video-evaluate` now asks for the open pass first.
+**Consequence for the workflow, unchanged:** the open pass is the primary gate. A criteria
+checklist is a structuring device for reporting, not a detector.
+
+### Per case
+
+| Case | open | detect | precise | Reading |
+|---|---|---|---|---|
+| `semantic-control-clean-scene` | 3/3 | — | 3/3 | control held; no defect manufactured |
+| `semantic-control-extra-pillar` | 3/3 | **0/3** | — | open names "two grey columns instead of one"; closed returns `NA` for every criterion |
+| `semantic-control-order-inverted` | 3/3 | 3/3 | 3/3 | clean pass on both axes |
+| `continuity-pillar-real` | 3/3 | 3/3 | **0/3** | finds the pillar every time, and flags two further criteria alongside it |
+| `creative-subject-static` | 3/3 | **0/3** | — | describes the defect in detail, then passes the criterion for it |
+| `creative-storyboard-contradicts-references` | 3/3 | 3/3 | 2/3 | detected every time; one repeat added an extra flag — **FLAKY** |
+| `creative-pseudo-text` | 3/3 | 3/3 | 3/3 | passes once the case states the rule correctly — see below |
+| `creative-annotations-in-panel` | 3/3 | 3/3 | 3/3 | clean pass on both axes |
+
+### Splitting the axes changed what three of the five old misses meant
+
+The previous baseline recorded five closed misses and could not distinguish between them.
+Scored on two axes, they turn out to be three different things:
+
+- **two were the scorer, not the reviewer.** `continuity-pillar-real` and
+  `creative-storyboard-contradicts-references` fail the *correct* criterion in every repeat.
+  They were being recorded as though the reviewer had seen nothing.
+- **one was the benchmark's own brief.** `creative-pseudo-text`, below.
+- **two are real, and repetition confirms it.** `semantic-control-extra-pillar` and
+  `creative-subject-static` fail detection 0/3. Consistent blindness, not a bad sample.
+
+The strict figure moved 3/8 → 5/8, but **the two runs are not comparable**: the scorer changed
+and one case's brief changed between them. The superseded table is kept below for the record,
+not for arithmetic.
+
+| Superseded — single run, old scorer | Score |
+|---|---|
+| semantic — open | 8/8 |
+| semantic — closed (combined) | 3/8 |
+
+### The pseudo-text case was the benchmark's fault, and is fixed
+
+The previous run recorded this as *"a contradiction in our own criteria"*: the reviewer argued
+the frame **satisfies** its stated visual direction, which bans readable text.
+
+On re-reading, the criteria never contradicted each other — the *case* misquoted them.
+`references/reference-frames.md` already said illegible text is not a safe substitute for
+readable text. Text in frame has two acceptable states, chosen per scene: readable and
+plausible, or genuinely defocused, abstract or out of frame. Garbled pseudo-lettering is
+neither. The case's context line said only *"its visual direction forbids readable signage
+text"*, which invited exactly the answer it got.
+
+Given the rule as it actually stands, the reviewer applies it precisely:
+
+> "the vertical sign under the coffee cup icon and the text on the menu board resolve into
+> distinct, unreadable glyph shapes. Because they form fake letters rather than being completely
+> defocused or forming actual words, this violates the requirement."
+
+3/3 on both axes. The reviewer was never wrong here; the question was. Recorded as a correction
+rather than deleted, because "the benchmark was mis-briefed" is a failure mode worth being able
+to recognise a second time.
 
 ### Known blind spots
 
 | Case | Outcome | Reading |
 |---|---|---|
-| `semantic-control-extra-pillar` | closed miss | criterion returned NA on a schematic image; the checklist does not transfer to abstract artifacts |
-| `creative-subject-static` | closed miss | criterion marked PASS while the open pass described the defect in detail |
-| `creative-pseudo-text` | closed miss | **a defect in the benchmark, not the reviewer** — see below |
-| `continuity-pillar-real` | closed miss | correct criterion failed, but two others were also flagged; scored strictly as a miss |
-| `creative-storyboard-contradicts-references` | closed miss | as above, and the extra flag was arguably correct |
+| `semantic-control-extra-pillar` | detection 0/3 | every criterion returns `NA` on a schematic image; the checklist does not transfer to abstract artifacts |
+| `creative-subject-static` | detection 0/3 | the criterion is marked PASS while the open pass describes the defect in detail |
+| `continuity-pillar-real` | precision 0/3 | see the caveat below — the extra flags may well be correct |
 
-Two of the five closed misses are strictness, not blindness: the reviewer failed the right
-criterion and additional ones. The scorer counts any spurious failure as a miss. That rule was
-written before the run and has been left alone.
-
-### The benchmark found a contradiction in our own criteria
-
-`creative-pseudo-text` expects garbled signage to be reported as a defect. The reviewer instead
-observed that the frame *satisfies* its stated visual direction, which bans **readable** text —
-and then listed several real generation artifacts it had noticed instead.
-
-It is right. The visual direction says "no readable signage text"; the post-mortem calls
-illegible pseudo-text a defect. Those two rules contradict each other, and the case is
-mis-specified until they are reconciled. Recorded rather than quietly rewritten.
+**A caveat against our own precision figure.** On `continuity-pillar-real` the reviewer also
+failed `text-legibility`, which is counted as imprecision. It is almost certainly *right*: the
+same production's signage is the subject of `creative-pseudo-text`, which the reviewer passes
+3/3. The precision axis penalises correct findings whenever a case declares only one expected
+criterion. That is a limitation of single-criterion case specs, not reviewer noise, and it is
+recorded rather than corrected here — changing the scorer twice in one pass, the second time
+after seeing the numbers, is how a benchmark stops meaning anything.
 
 ### Variance
 
-Two consecutive runs at temperature 0 scored closed competence 4/8 and 3/8. The tier is not
-deterministic, so a single case flipping should not be read as a regression on its own. The
-baseline records the second run.
+One case of eight was unstable across three repeats
+(`creative-storyboard-contradicts-references`, precision 2/3). Everything else scored 0/3 or
+3/3. The tier is more stable than the two earlier single runs suggested — those disagreed 4/8
+against 3/8 largely because a single sample of a flaky case decided a strict boolean.
+
+This is why a verdict is a majority and a partial failure is `FLAKY` rather than a regression.
+A gate that fires on one flipped sample gets ignored, and an ignored gate is worse than none.
+
+### Cost
+
+48 paid calls, in two attempts. The first died two cases in, when a prediction outran the
+`Prefer: wait` window and the runner treated a non-terminal status as fatal — since fixed with
+polling. The 12 calls already collected were served from the cache on the retry rather than
+paid for again, which is the whole argument for keeping the transcripts.
+
+### Next candidate change, deliberately not made yet
+
+The closed pass sends bare criterion names — `text-legibility`, `subject-posed-for-action` —
+with no definitions. The reviewer answered `NA` to every one on the schematic control, which
+suggests it did not know what they meant. Defining them is likely an improvement.
+
+It is not bundled here. Changing the scorer and the prompt in the same run would leave no way to
+attribute the movement to either. It is the next change, measured on its own, and the committed
+transcripts make the before-and-after comparison free.
 
 ---
 
