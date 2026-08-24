@@ -341,8 +341,38 @@ On the frame whose subject is posed standing still, the open pass says:
 and the closed pass marks `subject-posed-for-action` as **PASS** — in all three repeats. This is
 not sampling noise. It is what the checklist does to the reviewer.
 
-**Consequence for the workflow, unchanged:** the open pass is the primary gate. A criteria
-checklist is a structuring device for reporting, not a detector.
+**Consequence for the workflow, unchanged:** ask open-ended first, and treat the criteria walk
+as a way of organising what was found rather than a way of finding it.
+
+### What 8/8 recall does not establish
+
+Recall measures whether the reviewer **notices**. It says nothing about whether it then names
+the right owning artifact — and that is the answer that decides whether you regenerate one
+reference frame or fifteen shots.
+
+Nothing here measures that. Every case in `tests/fixtures/defects/taxonomy.json` carries
+`owningArtifact` and `correctiveAction` alongside `criterion`:
+
+```json
+"criterion": "subject-posed-for-action",
+"owningArtifact": "reference_frame",
+"correctiveAction": "revise-reference"
+```
+
+`criterion` is scored. The other two are recorded and never read. The ground truth for routing
+was written into the fixtures and then ignored by the scorer.
+
+That gap matters because routing, not detection, is what this benchmark was built in response
+to. On the production it draws its real artifacts from, the reversed screen direction on SH01
+**was** noticed. It was diagnosed as a prompt failure and the shot was re-run fifteen times; the
+cause was upstream, in an approved reference frame. §3.6 already warns about it —
+*"Taking them out of order is how a reference-frame failure gets misdiagnosed as a prompt
+failure and retried fifteen times"* — and no layer tests whether that warning is heeded.
+
+So read the semantic scores narrowly: **the reviewer sees what is in front of it, reliably.
+Whether it can say what to change is unmeasured.** Until it is, treat the corrective action in
+an `evaluation_report` as a suggestion to a human, not a decision. The retry limit in
+`skills/video-production/SKILL.md` bounds the cost of getting it wrong; it does not make it right.
 
 ### Per case
 

@@ -327,6 +327,10 @@ Correct the smallest production unit that owns the failure.
 
 Do not automatically increase cost for a structural production failure.
 
+**Two attempts, then stop.** A second failure carrying the same diagnosis means the diagnosis is wrong, not that the execution was unlucky. A third attempt on the same shot requires either a changed upstream artifact — a new reference frame, a revised shot plan — or a human decision to continue.
+
+Retrying against unchanged inputs is not a retry, it is the same experiment. Cost scales with attempts; the odds of a different outcome do not.
+
 ## Evaluation
 
 When installed alone, perform lightweight gates sufficient to operate safely:
