@@ -11,10 +11,11 @@
     "validate": "node tools/validate-repo.ts",
     "test:unit": "node --test tests/*.test.ts",
     "test:stages": "node --test tests/stages/*.test.ts",
+    "test:commands": "node tools/run-evals.ts --skill video-production && node tools/run-evals.ts --skill video-evaluate && node tools/run-evals.ts --skill video-extension-pack-creator",
     "test:evals": "node tools/run-evals.ts",
     "test:benchmark": "node tools/run-benchmark.ts && node tools/run-benchmark.ts --rescore",
-    "smoke:scripts": "node skills/video-production/scripts/inspect-media.ts --help && node skills/video-production/scripts/render-timeline.ts --help && node skills/video-production/scripts/make-contact-sheet.ts --help && node skills/video-production/scripts/make-storyboard.ts --help && node skills/video-evaluate/scripts/inspect-video.ts --help && node skills/video-evaluate/scripts/sample-frames.ts --help && node skills/video-evaluate/scripts/detect-motion-artifacts.ts --help && node skills/video-evaluate/scripts/preflight.ts --help && node skills/video-evaluate/scripts/validate-continuity.ts --help && node tools/validate-production.ts --help && node tools/run-evals.ts --help && node tools/run-benchmark.ts --help",
-    "test": "npm run typecheck && npm run validate && npm run test:unit && npm run test:stages && npm run test:evals && npm run test:benchmark && npm run smoke:scripts"
+    "smoke:scripts": "node skills/video-production/scripts/inspect-media.ts --help && node skills/video-production/scripts/render-timeline.ts --help && node skills/video-production/scripts/make-contact-sheet.ts --help && node skills/video-production/scripts/make-storyboard.ts --help && node skills/video-evaluate/scripts/inspect-video.ts --help && node skills/video-evaluate/scripts/sample-frames.ts --help && node skills/video-evaluate/scripts/detect-motion-artifacts.ts --help && node skills/video-evaluate/scripts/preflight.ts --help && node skills/video-evaluate/scripts/validate-continuity.ts --help && node skills/video-extension-pack-creator/scripts/validate-pack.ts --help && node tools/validate-production.ts --help && node tools/run-evals.ts --help && node tools/run-benchmark.ts --help",
+    "test": "npm run typecheck && npm run validate && npm run test:unit && npm run test:commands && npm run test:stages && npm run test:evals && npm run test:benchmark && npm run smoke:scripts"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

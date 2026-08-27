@@ -1,0 +1,175 @@
+{
+  "skill": "video-extension-pack-creator",
+  "cases": [
+    {
+      "id": "define-pack-reuse-existing",
+      "class": "failure-boundary",
+      "command": "define-pack",
+      "given": "a production request the catalogue already covers with an existing pack",
+      "expect": [
+        "inspect the catalogue before proposing anything",
+        "identify the existing pack that covers the grammar",
+        "recommend reuse"
+      ],
+      "forbid": [
+        "create a new pack skill",
+        "create a new catalogue entry"
+      ]
+    },
+    {
+      "id": "define-pack-project-override",
+      "class": "failure-boundary",
+      "command": "define-pack",
+      "given": "a request differing from an existing pack only by aspect ratio, duration or local tone",
+      "expect": [
+        "reuse or adapt the existing pack",
+        "express the difference as project-specific instruction"
+      ],
+      "forbid": [
+        "create a near-duplicate pack"
+      ]
+    },
+    {
+      "id": "derive-profile-style-only",
+      "class": "draft",
+      "command": "derive-production-profile",
+      "given": "a style-only brief with no format, genre, audience or evaluation requirements stated",
+      "expect": [
+        "derive only the fields needed for coherence",
+        "translate the style label into materials, motion, camera and evaluation behaviour",
+        "state which fields were derived rather than supplied"
+      ],
+      "forbid": [
+        "treat the style label as the profile",
+        "invent provider architecture"
+      ]
+    },
+    {
+      "id": "derive-profile-complete-brief",
+      "class": "normal",
+      "command": "derive-production-profile",
+      "given": "a brief supplying format, genre, style, audience, production traits and evaluation requirements",
+      "expect": [
+        "produce one coherent operational profile",
+        "separate hard constraints from softer defaults",
+        "state workflow, revision and evaluation effects"
+      ],
+      "forbid": [
+        "add provider architecture the brief did not require"
+      ]
+    },
+    {
+      "id": "derive-profile-adapt-existing",
+      "class": "refinement",
+      "command": "derive-production-profile",
+      "given": "an existing pack whose audience and duration change while its production identity is preserved",
+      "expect": [
+        "update only the affected constraints",
+        "preserve unrelated pack identity",
+        "update showcase and evals only where necessary"
+      ],
+      "forbid": [
+        "rewrite the pack identity",
+        "regenerate unaffected material"
+      ]
+    },
+    {
+      "id": "evaluation-intentional-vs-defect",
+      "class": "normal",
+      "command": "define-evaluation-profile",
+      "given": "a claymation pack whose stepped motion is intentional and whose smoothing is not",
+      "expect": [
+        "preserve deliberate stepped motion",
+        "reject accidental interpolation",
+        "declare preserve, do-not-penalise and reject semantics separately"
+      ],
+      "forbid": [
+        "excuse a real defect as style"
+      ]
+    },
+    {
+      "id": "voice-no-invented-id",
+      "class": "failure-boundary",
+      "command": "define-voice-profile",
+      "given": "a pack requiring a narrator and one character voice, with no provider configured",
+      "expect": [
+        "define roles and performance direction",
+        "keep provider references optional until supplied"
+      ],
+      "forbid": [
+        "invent a provider voice identifier",
+        "imitate an identifiable performer"
+      ]
+    },
+    {
+      "id": "package-self-contained",
+      "class": "normal",
+      "command": "create-skill-package",
+      "given": "an approved production profile ready to become an installable pack",
+      "expect": [
+        "produce a package that resolves after selective installation",
+        "keep every runtime resource inside the pack"
+      ],
+      "forbid": [
+        "reference a file outside the pack at runtime",
+        "add files the pack does not need"
+      ]
+    },
+    {
+      "id": "evals-cover-pack-behaviour",
+      "class": "normal",
+      "command": "create-evals",
+      "given": "a pack whose profile declares intentional traits and rejected defects",
+      "expect": [
+        "one case proving an intentional trait is accepted",
+        "one paired case proving a real defect is not excused by the same style",
+        "cases carry the repository eval schema"
+      ],
+      "forbid": [
+        "write cases that cannot fail"
+      ]
+    },
+    {
+      "id": "showcase-exact-prompt",
+      "class": "final",
+      "command": "create-showcase",
+      "given": "a validated pack that needs its canonical showcase",
+      "expect": [
+        "one authoritative showcase per pack",
+        "an exact fenced copy-ready prompt",
+        "a prompt that exercises the pack's own behaviour and failure modes"
+      ],
+      "forbid": [
+        "fabricate production results, provenance, costs or scores"
+      ]
+    },
+    {
+      "id": "catalogue-requires-validation",
+      "class": "final",
+      "command": "create-catalogue-entry",
+      "given": "a complete-looking pack whose validation has not been run",
+      "expect": [
+        "refuse registration until validate-pack succeeds",
+        "verify catalogue and benchmark cross-references"
+      ],
+      "forbid": [
+        "register a pack before validation"
+      ]
+    },
+    {
+      "id": "validation-blocked-not-pass",
+      "class": "failure-boundary",
+      "command": "validate-pack",
+      "given": "a pack with a showcase but no behavioural eval or benchmark coverage",
+      "expect": [
+        "fail the pack",
+        "name the missing acceptance requirement",
+        "report an unprovable required check as BLOCKED"
+      ],
+      "forbid": [
+        "report a required unprovable check as PASS",
+        "treat file existence alone as quality proof"
+      ]
+    }
+  ]
+}

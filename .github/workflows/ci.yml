@@ -49,6 +49,7 @@ jobs:
           npx -y "skills@${SKILLS_CLI_VERSION}" add . --list | tee /tmp/skills-list.txt
           grep -F 'video-production' /tmp/skills-list.txt
           grep -F 'video-evaluate' /tmp/skills-list.txt
+          grep -F 'video-extension-pack-creator' /tmp/skills-list.txt
 
   skill-install:
     runs-on: ubuntu-latest
@@ -69,6 +70,12 @@ jobs:
           - agent: codex
             skill: video-evaluate
             install_path: .agents/skills/video-evaluate
+          - agent: claude-code
+            skill: video-extension-pack-creator
+            install_path: .claude/skills/video-extension-pack-creator
+          - agent: codex
+            skill: video-extension-pack-creator
+            install_path: .agents/skills/video-extension-pack-creator
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -90,6 +97,7 @@ jobs:
 
           installed="$consumer/${{ matrix.install_path }}"
           test -f "$installed/SKILL.md"
+          test -d "$installed/commands"
           test -d "$installed/references"
           test -d "$installed/scripts"
           test -d "$installed/evals"

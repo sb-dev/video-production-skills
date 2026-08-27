@@ -49,6 +49,19 @@ Judge against the most specific available production expectations.
 
 Do not reduce evaluation to prompt compliance when more specific approved parents exist.
 
+## Commands
+
+Use the smallest evaluation command that answers the request:
+
+- `commands/evaluate.md` — identify material production findings;
+- `commands/diagnose.md` — identify owning layer, corrective action, and correction scope;
+- `commands/check-continuity.md` — inspect cross-artifact spatial/identity/state continuity;
+- `commands/check-motion.md` — inspect temporal integrity, action, camera behaviour, and usable range;
+- `commands/check-fidelity.md` — compare character, product, prop, environment, or pack traits against approved references;
+- `commands/qc.md` — run technical media and delivery checks.
+
+Commands may be composed for a full evaluation, but each remains independently testable.
+
 ## Evaluation principle
 
 Evaluate only the criteria relevant to the artifact's production role.

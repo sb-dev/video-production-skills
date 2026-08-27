@@ -4,6 +4,7 @@
     {
       "id": "normal-shot",
       "class": "normal",
+      "command": "check-motion",
       "given": "video shot + reference frame + shot plan",
       "expect": [
         "evaluate against production parents",
@@ -16,6 +17,7 @@
     {
       "id": "draft-storyboard",
       "class": "draft",
+      "command": "evaluate",
       "given": "rough storyboard",
       "expect": [
         "evaluate sequence",
@@ -31,6 +33,7 @@
     {
       "id": "refine-child",
       "class": "refinement",
+      "command": "check-fidelity",
       "given": "approved parent + refined child + requested changes",
       "expect": [
         "verify requested correction",
@@ -42,6 +45,7 @@
     {
       "id": "final-master",
       "class": "final",
+      "command": "evaluate",
       "given": "video master + technical requirements + brief",
       "expect": [
         "creative evaluation",
@@ -54,6 +58,7 @@
     {
       "id": "boundary-editorial",
       "class": "failure-boundary",
+      "command": "diagnose",
       "given": "good individual shots with poor sequence pacing",
       "expect": [
         "failure layer editorial",
@@ -66,6 +71,7 @@
     {
       "id": "boundary-corrupt-media",
       "class": "failure-boundary",
+      "command": "qc",
       "given": "corrupt video fixture",
       "expect": [
         "fail deterministic QC before semantic evaluation"
@@ -75,6 +81,7 @@
     {
       "id": "boundary-periodic-seams",
       "class": "failure-boundary",
+      "command": "check-motion",
       "given": "a shot that stages the intended action correctly but carries a discontinuity at a regular frame interval",
       "expect": [
         "fail motion quality",
@@ -90,6 +97,7 @@
     {
       "id": "boundary-frozen-frames",
       "class": "failure-boundary",
+      "command": "check-motion",
       "given": "a generated shot containing a run of duplicated frames",
       "expect": [
         "report the frozen run",
@@ -103,6 +111,7 @@
     {
       "id": "boundary-static-subject-reference",
       "class": "failure-boundary",
+      "command": "diagnose",
       "given": "a shot whose subject never moves, generated from a reference frame that posed that subject standing still",
       "expect": [
         "identify the reference frame as the owning artifact",
@@ -116,6 +125,7 @@
     {
       "id": "boundary-undeclared-landmark",
       "class": "failure-boundary",
+      "command": "check-continuity",
       "given": "a reference frame containing a landmark that appears in no other shot and in no scene manifest",
       "expect": [
         "classify the finding as a continuity defect",
@@ -131,6 +141,7 @@
     {
       "id": "boundary-attachment-contradiction",
       "class": "failure-boundary",
+      "command": "check-continuity",
       "given": "the same landmark mounted on another landmark in one shot and free-standing in the next",
       "expect": [
         "report an attachment contradiction",
@@ -144,6 +155,7 @@
     {
       "id": "normal-usable-range",
       "class": "normal",
+      "command": "check-motion",
       "given": "a generated shot considered for selection",
       "expect": [
         "report a recommended usable range",

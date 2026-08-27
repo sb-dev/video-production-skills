@@ -8,10 +8,25 @@ const REQUIRED_DOCS = [
   'docs/01-creative-skills-system-spec.md',
   'docs/02-creative-skills-workflows-and-artifacts-spec.md',
   'docs/03-creative-skills-repository-and-contracts-spec.md',
-  'docs/2026-08-20-extraction-candidates.md',
+  'docs/research-logs/2026-08-20-extraction-candidates.md',
 ] as const;
-const REQUIRED_SKILLS = ['video-production', 'video-evaluate'] as const;
+const REQUIRED_SKILLS = ['video-production', 'video-evaluate', 'video-extension-pack-creator'] as const;
 const REQUIRED_EVAL_CLASSES = ['normal', 'draft', 'refinement', 'final', 'failure-boundary'] as const;
+
+// The lightweight command contract from docs/03 §8.1. The headings are the
+// machine-checkable part: a command that does not state its preserve set or
+// where its failures route is not independently testable, whatever its prose says.
+const REQUIRED_COMMAND_HEADINGS = [
+  'Purpose',
+  'Inputs',
+  'Outputs',
+  'Preconditions',
+  'Invariants',
+  'Forbidden behaviour',
+  'Failure routing',
+  'Evaluation hooks',
+] as const;
+const OPTIONAL_COMMAND_HEADINGS = ['Procedure', 'External capabilities'] as const;
 const LEGACY_SKILLS = [
   'replicate-generate',
   'replicate-character',
@@ -60,6 +75,70 @@ function parseFrontmatter(skillFile: string): string {
   return match[1];
 }
 
+function validateCommands(name: string): readonly string[] {
+  const commandDirectory = join(ROOT, 'skills', name, 'commands');
+  if (!existsSync(commandDirectory)) fail(`missing skills/${name}/commands/`);
+
+  const files = readdirSync(commandDirectory)
+    .filter((entry) => extname(entry) === '.md')
+    .sort();
+  if (files.length === 0) fail(`skills/${name}/commands/: no command contracts`);
+
+  const allowed = new Set<string>([...REQUIRED_COMMAND_HEADINGS, ...OPTIONAL_COMMAND_HEADINGS]);
+  const commands: string[] = [];
+
+  for (const file of files) {
+    const path = join(commandDirectory, file);
+    const command = file.slice(0, -3);
+    const where = `skills/${name}/commands/${file}`;
+    const source = readFileSync(path, 'utf8');
+
+    const frontmatter = parseFrontmatter(path);
+    if (!new RegExp(`^id:\\s*${command}\\s*$`, 'm').test(frontmatter)) fail(`${where}: frontmatter id must be ${command}`);
+    if (!new RegExp(`^skill:\\s*${name}\\s*$`, 'm').test(frontmatter)) fail(`${where}: frontmatter skill must be ${name}`);
+    if (!new RegExp(`^# ${command}\\s*$`, 'm').test(source)) fail(`${where}: heading must be "# ${command}"`);
+
+    const headings = [...source.matchAll(/^## (.+?)\s*$/gm)].map((match) => match[1] ?? '');
+    for (const required of REQUIRED_COMMAND_HEADINGS) {
+      if (!headings.includes(required)) fail(`${where}: missing "## ${required}"`);
+    }
+    for (const heading of headings) {
+      if (!allowed.has(heading)) fail(`${where}: unexpected heading "## ${heading}"`);
+    }
+
+    // Order is part of the contract: a reader should find the preserve set and
+    // the failure routing in the same place in every command file.
+    const canonical = [
+      'Purpose', 'Inputs', 'Outputs', 'Preconditions', 'Procedure', 'Invariants',
+      'Forbidden behaviour', 'External capabilities', 'Failure routing', 'Evaluation hooks',
+    ] as const;
+    const expected = canonical.filter((heading) => headings.includes(heading));
+    if (headings.join('|') !== expected.join('|')) {
+      fail(`${where}: headings out of order; expected ${expected.join(', ')}`);
+    }
+
+    // A contract that names a script which does not exist is the failure this
+    // whole layer was written against: a check that reads as available and is not.
+    for (const match of source.matchAll(/`((?:references|scripts|evals|commands)\/[A-Za-z0-9._/-]+)`/g)) {
+      const referenced = match[1];
+      if (referenced === undefined) continue;
+      if (!existsSync(join(ROOT, 'skills', name, referenced))) {
+        fail(`${where}: references missing skill-local resource ${referenced}`);
+      }
+    }
+    for (const match of source.matchAll(/`((?:tools|tests)\/[A-Za-z0-9._/-]+)`/g)) {
+      const referenced = match[1];
+      if (referenced === undefined) continue;
+      if (!existsSync(join(ROOT, referenced))) fail(`${where}: references missing repository resource ${referenced}`);
+    }
+    if (source.includes('../')) fail(`${where}: command contracts must not reach outside their skill`);
+
+    commands.push(command);
+  }
+
+  return commands;
+}
+
 function validateSkill(name: string): void {
   const skillDirectory = join(ROOT, 'skills', name);
   const skillFile = join(skillDirectory, 'SKILL.md');
@@ -98,12 +177,20 @@ function validateSkill(name: string): void {
     fail(`skills/${name}/evals/evals.json: cases must be an array`);
   }
 
+  const commands = validateCommands(name);
   const classes = new Set<string>();
   for (const [index, value] of parsed.cases.entries()) {
     if (!isRecord(value) || typeof value.class !== 'string') {
       fail(`skills/${name}/evals/evals.json: cases[${index}].class must be a string`);
     }
     classes.add(value.class);
+
+    const command = value.command;
+    if (command !== undefined) {
+      if (typeof command !== 'string' || !commands.includes(command)) {
+        fail(`skills/${name}/evals/evals.json: cases[${index}].command must name a command contract`);
+      }
+    }
   }
 
   for (const required of REQUIRED_EVAL_CLASSES) {

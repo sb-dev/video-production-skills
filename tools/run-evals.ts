@@ -11,9 +11,9 @@
  * Coverage is reported explicitly: a suite where most cases are unfalsifiable
  * prose should say so out loud rather than look green.
  */
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
@@ -21,7 +21,13 @@ import { parseArgs } from 'node:util';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const EXIT_USAGE = 2;
 const EXIT_FAILED = 1;
-const SKILLS = ['video-production', 'video-evaluate'] as const;
+const SKILLS = ['video-production', 'video-evaluate', 'video-extension-pack-creator'] as const;
+
+type SkillName = (typeof SKILLS)[number];
+
+function isSkillName(value: string): value is SkillName {
+  return (SKILLS as readonly string[]).includes(value);
+}
 
 interface CheckResult {
   readonly ok: boolean;
@@ -31,11 +37,37 @@ interface CheckResult {
 interface EvalCase {
   readonly id: string;
   readonly class: string;
+  readonly command?: string;
   readonly check?: string;
 }
 
 function usage(): void {
-  console.log('Usage: run-evals.ts [--json]');
+  console.log('Usage: run-evals.ts [--json] [--skill <name>] [--command <name>]');
+  console.log('');
+  console.log(`  --skill    one of: ${SKILLS.join(', ')}`);
+  console.log('  --command  a command declared under skills/<skill>/commands/; requires --skill');
+}
+
+/**
+ * The command inventory is the directory, not a registry file. A command exists
+ * because its contract exists; there is nothing else to fall out of step with.
+ */
+const commandsCache = new Map<string, readonly string[]>();
+
+function commandsFor(skill: string): readonly string[] {
+  const cached = commandsCache.get(skill);
+  if (cached !== undefined) return cached;
+
+  const directory = join(ROOT, 'skills', skill, 'commands');
+  const names = existsSync(directory)
+    ? readdirSync(directory)
+        .filter((entry) => extname(entry) === '.md')
+        .map((entry) => basename(entry, '.md'))
+        .sort()
+    : [];
+
+  commandsCache.set(skill, names);
+  return names;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -238,14 +270,51 @@ function loadCases(skill: string): readonly EvalCase[] {
       throw new Error(`${skill}/${id}: unknown check "${String(check)}"`);
     }
 
-    return { id, class: className, ...(typeof check === 'string' ? { check } : {}) };
+    // A case may target one command. An unknown target is refused rather than
+    // ignored: a case pointing at a command that does not exist reports coverage
+    // for a behaviour nobody wrote a contract for.
+    const command = value.command;
+    if (command !== undefined) {
+      if (typeof command !== 'string' || command === '') throw new Error(`${skill}/${id}: command must be a string`);
+      if (!commandsFor(skill).includes(command)) {
+        throw new Error(`${skill}/${id}: unknown command "${command}"`);
+      }
+    }
+
+    return {
+      id,
+      class: className,
+      ...(typeof command === 'string' ? { command } : {}),
+      ...(typeof check === 'string' ? { check } : {}),
+    };
   });
+}
+
+/**
+ * Command coverage is reported separately from case coverage, because a suite
+ * can be green on every case it happens to contain and still say nothing about
+ * a command nobody wrote a case for. `UNCOVERED` is the honest word for that.
+ */
+type CommandState = 'PASS' | 'FAIL' | 'MANUAL' | 'UNCOVERED';
+
+interface CommandCoverage {
+  readonly skill: string;
+  readonly command: string;
+  readonly state: CommandState;
+  readonly passed: number;
+  readonly executable: number;
+  readonly cases: number;
 }
 
 function main(): number {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
-    options: { json: { type: 'boolean' }, help: { type: 'boolean', short: 'h' } },
+    options: {
+      json: { type: 'boolean' },
+      help: { type: 'boolean', short: 'h' },
+      skill: { type: 'string' },
+      command: { type: 'string' },
+    },
     strict: true,
   });
 
@@ -258,13 +327,43 @@ function main(): number {
     return EXIT_USAGE;
   }
 
+  const requestedSkill = values.skill;
+  const commandFilter = values.command;
+
+  let skillFilter: SkillName | undefined;
+  if (requestedSkill !== undefined) {
+    if (!isSkillName(requestedSkill)) {
+      console.error(`unknown skill "${requestedSkill}"; expected one of: ${SKILLS.join(', ')}`);
+      return EXIT_USAGE;
+    }
+    skillFilter = requestedSkill;
+  }
+
+  // A command name is only meaningful inside one skill, so it is not a filter
+  // on its own. Guessing which skill was meant is how a typo runs the wrong set.
+  if (commandFilter !== undefined && skillFilter === undefined) {
+    console.error('--command requires --skill');
+    return EXIT_USAGE;
+  }
+  if (commandFilter !== undefined && skillFilter !== undefined && !commandsFor(skillFilter).includes(commandFilter)) {
+    console.error(`unknown command "${commandFilter}" for ${skillFilter}`);
+    return EXIT_USAGE;
+  }
+
+  const selectedSkills: readonly SkillName[] = skillFilter === undefined ? SKILLS : [skillFilter];
+
   const canExecute = ffmpegAvailable();
-  const results: { skill: string; id: string; check: string; ok: boolean; skipped?: boolean; detail: string }[] = [];
+  const results: { skill: string; id: string; command?: string; check: string; ok: boolean; skipped?: boolean; detail: string }[] = [];
+  const coverageBySkill: CommandCoverage[] = [];
   let total = 0;
   let executable = 0;
 
-  for (const skill of SKILLS) {
-    for (const evalCase of loadCases(skill)) {
+  for (const skill of selectedSkills) {
+    const cases = loadCases(skill).filter(
+      (evalCase) => commandFilter === undefined || evalCase.command === commandFilter,
+    );
+
+    for (const evalCase of cases) {
       total += 1;
       if (evalCase.check === undefined) continue;
       executable += 1;
@@ -272,33 +371,101 @@ function main(): number {
       // A check that could not run has not passed. ffmpeg is a hard dependency
       // of this gate; its absence fails the run rather than greening it.
       if (!canExecute) {
-        results.push({ skill, id: evalCase.id, check: evalCase.check, ok: false, skipped: true, detail: 'skipped: ffmpeg unavailable' });
+        results.push({
+          skill,
+          id: evalCase.id,
+          ...(evalCase.command === undefined ? {} : { command: evalCase.command }),
+          check: evalCase.check,
+          ok: false,
+          skipped: true,
+          detail: 'skipped: ffmpeg unavailable',
+        });
         continue;
       }
 
       const check = CHECKS[evalCase.check];
       if (check === undefined) continue;
       const outcome = check();
-      results.push({ skill, id: evalCase.id, check: evalCase.check, ok: outcome.ok, detail: outcome.detail });
+      results.push({
+        skill,
+        id: evalCase.id,
+        ...(evalCase.command === undefined ? {} : { command: evalCase.command }),
+        check: evalCase.check,
+        ok: outcome.ok,
+        detail: outcome.detail,
+      });
     }
+
+    const commands = commandsFor(skill).filter((name) => commandFilter === undefined || name === commandFilter);
+    for (const command of commands) {
+      const owned = cases.filter((evalCase) => evalCase.command === command);
+      const runnable = owned.filter((evalCase) => evalCase.check !== undefined);
+      const passed = runnable.filter((evalCase) =>
+        results.some((result) => result.skill === skill && result.id === evalCase.id && result.ok),
+      ).length;
+
+      const state: CommandState =
+        owned.length === 0 ? 'UNCOVERED'
+        : runnable.length === 0 ? 'MANUAL'
+        : passed === runnable.length ? 'PASS'
+        : 'FAIL';
+
+      coverageBySkill.push({ skill, command, state, passed, executable: runnable.length, cases: owned.length });
+    }
+  }
+
+  // An explicit selection that matches nothing is a typo, not a green run.
+  if (total === 0 && (skillFilter !== undefined || commandFilter !== undefined)) {
+    console.error('no eval cases matched the selection');
+    return EXIT_USAGE;
   }
 
   const failed = results.filter((result) => !result.ok);
   const skipped = results.filter((result) => result.skipped === true);
   const coverage = total === 0 ? 0 : Math.round((executable / total) * 100);
+  const uncovered = coverageBySkill.filter((entry) => entry.state === 'UNCOVERED');
 
   if (values.json) {
     console.log(JSON.stringify(
-      { total, executable, coverage, ffmpeg: canExecute, skipped: skipped.length, results, ok: failed.length === 0 },
+      {
+        total,
+        executable,
+        coverage,
+        ffmpeg: canExecute,
+        skipped: skipped.length,
+        results,
+        commands: coverageBySkill,
+        ok: failed.length === 0,
+      },
       null,
       2,
     ));
   } else {
     for (const result of results) {
-      console.log(`${result.ok ? 'ok  ' : 'FAIL'} ${result.skill}/${result.id} [${result.check}] ${result.detail}`);
+      const where = result.command === undefined ? result.id : `${result.command}/${result.id}`;
+      console.log(`${result.ok ? 'ok  ' : 'FAIL'} ${result.skill}/${where} [${result.check}] ${result.detail}`);
     }
+
+    if (coverageBySkill.length > 0) {
+      console.log('');
+      let current = '';
+      for (const entry of coverageBySkill) {
+        if (entry.skill !== current) {
+          current = entry.skill;
+          console.log(current);
+        }
+        const evidence = entry.state === 'PASS' || entry.state === 'FAIL'
+          ? ` ${String(entry.passed)}/${String(entry.executable)}`
+          : '';
+        console.log(`  ${entry.command.padEnd(28)} ${entry.state}${evidence}`);
+      }
+    }
+
     console.log('');
     console.log(`${String(total)} cases, ${String(executable)} executable (${String(coverage)}% behavioural coverage)`);
+    if (uncovered.length > 0) {
+      console.log(`${String(uncovered.length)} command(s) UNCOVERED: no targeted eval case`);
+    }
     if (!canExecute) {
       console.log(`ffmpeg unavailable: ${String(skipped.length)} behavioural checks could NOT be verified`);
     }
