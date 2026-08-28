@@ -1,0 +1,25 @@
+{
+  "model": "google/gemini-3-pro",
+  "imagesKey": "example:production/03-characters/selected/CHAR-M-elias.jpg@approved character sheet, man|example:production/03-characters/selected/CHAR-F-nora.jpg@approved character sheet, woman|example:production/04-storyboard/frames/sb-01.jpg@storyboard panel under review",
+  "prompts": {
+    "open": "86791ab084b6a369",
+    "closed": "aa8122383bed5e9d"
+  },
+  "repeats": [
+    {
+      "index": 0,
+      "open": "The storyboard panel does not match the approved character sheets or wardrobes. \n\n*   **Man (left):** He is drawn wearing a suit jacket and collared shirt. He is missing the approved casual jacket, crewneck sweater, and messenger bag. \n*   **Woman (right):** She is drawn wearing a wide-brimmed hat, a textured coat, a skirt, and heels. She is missing the approved smooth coat, thick scarf, jeans, boots, and crossbody bag.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"FAIL\",\n  \"text-legibility\": \"PASS\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 1,
+      "open": "The storyboard panel does not match the approved character sheets or wardrobes. \n\n*   **Man (left):** He is drawn wearing a suit jacket and collared shirt. He is missing the approved casual jacket, crewneck sweater, and messenger bag. \n*   **Woman (right):** She is drawn wearing a wide-brimmed hat, a textured coat, a skirt, and heels. She is missing the approved smooth coat, thick scarf, jeans, boots, and crossbody bag.",
+      "closed": "```json\n{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"FAIL\",\n  \"text-legibility\": \"PASS\",\n  \"annotations-outside-frame\": \"PASS\"\n}\n```"
+    },
+    {
+      "index": 2,
+      "open": "The storyboard panel does not match the approved character designs or wardrobes. \n\n*   **Man (Left):** Depicted wearing a suit jacket and collared shirt, and is missing his bag. The approved design requires a rust-colored casual jacket, a crewneck shirt, and a brown messenger bag.\n*   **Woman (Right):** Depicted wearing a hat, a heavy textured coat, and heels. The approved design requires no hat, a smooth teal coat, a prominent cream scarf, flat black boots, and a small crossbody bag.",
+      "closed": "{\n  \"spatial-continuity\": \"PASS\",\n  \"subject-posed-for-action\": \"PASS\",\n  \"character-reference-fidelity\": \"FAIL\",\n  \"text-legibility\": \"PASS\",\n  \"annotations-outside-frame\": \"FAIL\"\n}"
+    }
+  ]
+}

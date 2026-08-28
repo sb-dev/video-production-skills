@@ -1,0 +1,268 @@
+{
+  "_comment": "Every defect class that has reached a deliverable, with the fixture that reproduces it and the diagnosis it must produce. Deterministic cases are scored by running the owning checker. Semantic cases are scored twice: once open-ended, measuring whether a reviewer names the defect unprompted, and once against the closed criteria list, which is scored on two axes — detection (the expected criterion failed) and precision (nothing else failed alongside it). Clean controls exist so the benchmark measures discrimination rather than eagerness. Editing a case's context, criteria or images invalidates its recorded transcripts; run-benchmark.ts will say so rather than score stale evidence.",
+  "criteria": [
+    "spatial-continuity",
+    "subject-posed-for-action",
+    "character-reference-fidelity",
+    "text-legibility",
+    "annotations-outside-frame"
+  ],
+  "cases": [
+    {
+      "id": "continuity-undeclared-landmark",
+      "class": "continuity",
+      "tier": "deterministic",
+      "summary": "a landmark present in a shot and in no scene declaration",
+      "checker": "continuity",
+      "scene": "extra-landmark",
+      "expect": { "rule": "unknown-landmark" },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "continuity-attachment-contradiction",
+      "class": "continuity",
+      "tier": "deterministic",
+      "summary": "the same landmark mounted in one shot and free-standing in the next",
+      "checker": "continuity",
+      "scene": "attachment-conflict",
+      "expect": { "rule": "attachment-contradiction" },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "continuity-screen-order",
+      "class": "continuity",
+      "tier": "deterministic",
+      "summary": "landmark order across frame contradicts the scene axis",
+      "checker": "continuity",
+      "scene": "order-inverted",
+      "expect": { "rule": "screen-order-contradiction" },
+      "owningArtifact": "shot_plan",
+      "correctiveAction": "revise-shot-plan"
+    },
+    {
+      "id": "continuity-landmark-discontinuity",
+      "class": "continuity",
+      "tier": "deterministic",
+      "summary": "a landmark vanishes between two shots that both contain it",
+      "checker": "continuity",
+      "scene": "vanishing-landmark",
+      "expect": { "rule": "landmark-discontinuity" },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "continuity-axis-violation",
+      "class": "continuity",
+      "tier": "deterministic",
+      "summary": "the camera crosses the axis without declaring it",
+      "checker": "continuity",
+      "scene": "undeclared-crossing",
+      "expect": { "rule": "axis-violation" },
+      "owningArtifact": "shot_plan",
+      "correctiveAction": "revise-shot-plan"
+    },
+    {
+      "id": "continuity-control-clean-scene",
+      "class": "continuity",
+      "tier": "deterministic",
+      "summary": "a consistent scene must produce no findings",
+      "checker": "continuity",
+      "scene": "clean",
+      "expect": { "clean": true },
+      "owningArtifact": "scene_manifest",
+      "correctiveAction": "accept"
+    },
+    {
+      "id": "generation-periodic-seams",
+      "class": "generation",
+      "tier": "deterministic",
+      "summary": "a clip assembled from fixed-length chunks, seaming at a regular interval",
+      "checker": "motion",
+      "fixture": "seams.mp4",
+      "expect": { "periodic": true },
+      "owningArtifact": "video_shot",
+      "correctiveAction": "retry-execution"
+    },
+    {
+      "id": "generation-frozen-frames",
+      "class": "generation",
+      "tier": "deterministic",
+      "summary": "a run of duplicated frames where the subject stops",
+      "checker": "motion",
+      "fixture": "frozen.mp4",
+      "expect": { "frozen": true },
+      "owningArtifact": "video_shot",
+      "correctiveAction": "retry-execution"
+    },
+    {
+      "id": "generation-control-clean-motion",
+      "class": "generation",
+      "tier": "deterministic",
+      "summary": "smooth motion must not be flagged",
+      "checker": "motion",
+      "fixture": "clean.mp4",
+      "expect": { "clean": true },
+      "owningArtifact": "video_shot",
+      "correctiveAction": "accept"
+    },
+    {
+      "id": "technical-unreadable-media",
+      "class": "technical",
+      "tier": "deterministic",
+      "summary": "a file that is not decodable media",
+      "checker": "media-qc",
+      "fixture": "corrupt.mp4",
+      "expect": { "unreadable": true },
+      "owningArtifact": "video_shot",
+      "correctiveAction": "retry-execution"
+    },
+    {
+      "id": "technical-aspect-mismatch",
+      "class": "technical",
+      "tier": "deterministic",
+      "summary": "a source whose aspect differs from the render aspect, silently letterboxed",
+      "checker": "timeline",
+      "fixture": "offsize.mp4",
+      "expect": { "warns": true },
+      "owningArtifact": "edit_timeline",
+      "correctiveAction": "refine-current"
+    },
+    {
+      "id": "technical-approval-without-approver",
+      "class": "technical",
+      "tier": "deterministic",
+      "summary": "a creative artifact marked approved with nobody recorded as approving it",
+      "checker": "production",
+      "production": "self-approved",
+      "expect": { "rule": "approval-without-approver" },
+      "owningArtifact": "provenance_record",
+      "correctiveAction": "reject"
+    },
+    {
+      "id": "technical-plan-delivery-mismatch",
+      "class": "technical",
+      "tier": "deterministic",
+      "summary": "a master that no longer matches the timeline that claims to describe it",
+      "checker": "production",
+      "production": "plan-drift",
+      "expect": { "rule": "plan-delivery-mismatch" },
+      "owningArtifact": "edit_timeline",
+      "correctiveAction": "revise-edit"
+    },
+
+    {
+      "id": "semantic-control-clean-scene",
+      "class": "continuity",
+      "tier": "semantic",
+      "summary": "an abstract clean scene; the grader must not invent a defect",
+      "images": [{ "fixture": "scene-clean.png" }],
+      "context": "A schematic reference frame. Landmarks left to right: an orange kiosk, a dark suspended board, a grey column.",
+      "expect": { "clean": true },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "accept"
+    },
+    {
+      "id": "semantic-control-extra-pillar",
+      "class": "continuity",
+      "tier": "semantic",
+      "summary": "an abstract scene carrying one landmark the declaration does not contain",
+      "images": [{ "fixture": "scene-extra-pillar.png" }],
+      "context": "A schematic reference frame. The scene declares exactly three landmarks: an orange kiosk, a dark suspended board, and one grey column.",
+      "criterion": "spatial-continuity",
+      "keywords": ["extra", "additional", "second", "fourth", "undeclared", "not declared", "pillar", "column", "grey block", "gray block"],
+      "expect": { "detects": true },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "semantic-control-order-inverted",
+      "class": "continuity",
+      "tier": "semantic",
+      "summary": "an abstract scene with the axis order reversed against a reference",
+      "images": [
+        { "fixture": "scene-clean.png", "role": "approved reference" },
+        { "fixture": "scene-order-inverted.png", "role": "frame under review" }
+      ],
+      "context": "The first image is the approved scene. The second is a new frame that must match its landmark layout.",
+      "criterion": "spatial-continuity",
+      "keywords": ["order", "swapped", "reversed", "left", "right", "position", "moved", "opposite"],
+      "expect": { "detects": true },
+      "owningArtifact": "shot_plan",
+      "correctiveAction": "revise-shot-plan"
+    },
+    {
+      "id": "continuity-pillar-real",
+      "class": "continuity",
+      "tier": "semantic",
+      "summary": "the shipped defect: a pillar in one approved frame and not the other, and a board mounted in one and free-hanging in the other",
+      "images": [
+        { "example": "production/06-reference-frames/selected/SH01-establish-v2.jpg", "role": "approved reference frame, shot 1" },
+        { "example": "production/06-reference-frames/selected/SH02-crossing.jpg", "role": "approved reference frame, shot 2" }
+      ],
+      "context": "Two approved reference frames for consecutive shots in one railway station concourse. They must agree about the architecture.",
+      "criterion": "spatial-continuity",
+      "keywords": ["pillar", "column", "board", "differ", "inconsistent", "contradict", "not present", "missing", "attached", "mounted"],
+      "expect": { "detects": true },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "creative-subject-static",
+      "class": "creative",
+      "tier": "semantic",
+      "summary": "a subject posed standing still in a frame whose shot requires her to walk",
+      "images": [{ "example": "production/06-reference-frames/selected/SH02-crossing.jpg" }],
+      "context": "A reference frame for a shot in which BOTH the man in the rust jacket and the woman in the teal coat must be walking, in opposite directions. The frame becomes the first frame of the generated shot.",
+      "criterion": "subject-posed-for-action",
+      "keywords": ["standing", "still", "static", "stationary", "not walking", "not moving", "feet", "planted", "mid-stride", "stride"],
+      "expect": { "detects": true },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "creative-storyboard-contradicts-references",
+      "class": "creative",
+      "tier": "semantic",
+      "summary": "a storyboard panel showing different characters and wardrobe than the approved character sheets",
+      "images": [
+        { "example": "production/03-characters/selected/CHAR-M-elias.jpg", "role": "approved character sheet, man" },
+        { "example": "production/03-characters/selected/CHAR-F-nora.jpg", "role": "approved character sheet, woman" },
+        { "example": "production/04-storyboard/frames/sb-01.jpg", "role": "storyboard panel under review" }
+      ],
+      "context": "The first two images are the approved character sheets. The third is a storyboard panel that must depict those same two characters in that same wardrobe.",
+      "criterion": "character-reference-fidelity",
+      "keywords": ["hat", "different", "wardrobe", "contradict", "does not match", "doesn't match", "suit", "period", "clothing", "not the same"],
+      "expect": { "detects": true },
+      "owningArtifact": "storyboard",
+      "correctiveAction": "revise-storyboard"
+    },
+    {
+      "id": "creative-pseudo-text",
+      "class": "creative",
+      "tier": "semantic",
+      "summary": "garbled machine-generated lettering on signage, and a clock face that does not read",
+      "images": [{ "example": "production/06-reference-frames/selected/SH01-wide.jpg" }],
+      "context": "A reference frame for a photorealistic documentary-register shot. Text in frame has exactly two acceptable states: readable and plausible, spelled correctly and consistent across frames; or genuinely defocused, abstract, or out of frame, with no glyph shapes resolving at all. Garbled pseudo-lettering that reads as text but does not resolve into words is neither, and is a defect. This scene's visual direction chose the defocused state.",
+      "criterion": "text-legibility",
+      "keywords": ["text", "illegible", "garbled", "gibberish", "unreadable", "nonsense", "sign", "lettering", "clock", "letters"],
+      "expect": { "detects": true },
+      "owningArtifact": "reference_frame",
+      "correctiveAction": "revise-reference"
+    },
+    {
+      "id": "creative-annotations-in-panel",
+      "class": "creative",
+      "tier": "semantic",
+      "summary": "direction arrows and sight-lines drawn inside a storyboard panel, obscuring the composition it exists to test",
+      "images": [{ "example": "production/04-storyboard/frames/sb-02.jpg" }],
+      "context": "A storyboard panel. Annotations belong beside a panel, never inside it, because they obscure the composition the panel exists to test.",
+      "criterion": "annotations-outside-frame",
+      "keywords": ["arrow", "annotation", "dashed", "line", "diagram", "overlay", "marking", "drawn on"],
+      "expect": { "detects": true },
+      "owningArtifact": "storyboard",
+      "correctiveAction": "revise-storyboard"
+    }
+  ]
+}

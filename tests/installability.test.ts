@@ -19,6 +19,18 @@ function referencedLocalResources(skillMarkdown: string): readonly string[] {
     .filter((value): value is string => value !== undefined);
 }
 
+/**
+ * docs/03 §20 requires that repository-level docs are not runtime dependencies
+ * of an installed skill. A backticked path into docs/, examples/, or a parent
+ * directory is exactly such a dependency, and the resource sweep above cannot
+ * see it because it only matches skill-local prefixes.
+ */
+function repositoryLevelReferences(skillMarkdown: string): readonly string[] {
+  return [...skillMarkdown.matchAll(/`((?:docs|examples|\.\.)\/[^`]*)`/g)]
+    .map((match) => match[1])
+    .filter((value): value is string => value !== undefined);
+}
+
 for (const agent of AGENTS) {
   for (const skill of SKILLS) {
     test(`${skill} is self-contained when copied for ${agent.name}`, () => {
@@ -37,6 +49,12 @@ for (const agent of AGENTS) {
           assert.ok(!resource.includes('..'), `skill-local reference escapes installed root: ${resource}`);
           assert.ok(existsSync(join(targetRoot, resource)), `broken installed reference: ${resource}`);
         }
+
+        assert.deepEqual(
+          repositoryLevelReferences(skillMarkdown),
+          [],
+          'an installed skill must not depend on repository-level docs, examples, or parent paths',
+        );
 
         const scriptsDir = join(targetRoot, 'scripts');
         const scripts = readdirSync(scriptsDir)

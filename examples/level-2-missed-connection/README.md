@@ -45,19 +45,17 @@ Optimise for:
 
 ## What happened
 
-_To be filled in after the production run._
+A production run was made and failed. It self-declared **ACCEPT / QC PASS** and shipped a sequence
+carrying visible generation seams, a pillar present in one approved reference frame and in no other
+shot, and creative direction nobody had approved. The run is not kept here.
+`docs/2026-08-23-missed-connection-postmortem.md` records the failure chain, and
+`docs/04-testing-and-benchmark-spec.md` specifies the testing layers it produced.
 
-- Visual direction:
-- Character reference:
-- Storyboard and shot plan:
-- Reference frames:
-- Candidates and selection:
-- Edit:
-- Evaluation and technical QC:
-- What was retried:
+The brief above is unchanged and still open.
 
 ## Files
 
-_To be filled in after the production run._
-
-Expected: `visual-direction.md`, `storyboard/`, `shot-plan.json`, `shots/`, `edit/`, the master video, and `preview.gif`.
+Seven stills from the failed run are retained under `production/`, and nothing else is. They are
+inputs to the defect benchmark: `tests/fixtures/defects/taxonomy.json` scores the evaluation against
+them, because artifacts whose defects are known in advance are what make a detection score mean
+anything. They are not an example of what the workflow should produce.

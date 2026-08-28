@@ -57,6 +57,17 @@ A draft should be useful for its current decision.
 
 A final artifact should satisfy all applicable production and technical requirements.
 
+## Classify every finding
+
+Every finding carries one class. Do not collapse them into a single quality score.
+
+```text
+technical defect | creative defect | continuity defect | generation/model defect
+```
+
+The class determines who owns the fix. A generation defect is not corrected by rewriting the
+brief, and a creative defect is not corrected by changing model.
+
 ## Evidence first
 
 Prefer:
@@ -68,6 +79,16 @@ Prefer:
 5. recommended corrective action.
 
 Skill-local deterministic scripts are TypeScript and require Node.js 24.12+ for stable native TypeScript execution. They have no npm runtime dependency. Use FFmpeg/ffprobe for objective media evidence before expensive semantic analysis.
+
+Run `scripts/preflight.ts` first. A declared dependency that is missing does not announce itself; it turns into ad-hoc substitute tooling and a review method that quietly stops matching the one specified.
+
+Deterministic scripts available here:
+
+- `scripts/inspect-video.ts` — container, streams and stated requirements;
+- `scripts/sample-frames.ts` — still sampling for staging review;
+- `scripts/detect-motion-artifacts.ts` — temporal integrity and usable range;
+- `scripts/validate-continuity.ts` — scene-manifest spatial continuity;
+- `scripts/preflight.ts` — external dependency availability.
 
 ## Draft evaluation
 
@@ -131,14 +152,29 @@ Check:
 
 ## Video-shot evaluation
 
+Evaluate the shot as start state → motion → end state, not as unrelated pictures.
+
 Check:
 
 - intended action exists;
 - shot purpose achieved;
 - media technically usable;
-- identity/product constraints preserved where relevant;
-- continuity acceptable;
-- editorially usable.
+- **motion plausible** — run `scripts/detect-motion-artifacts.ts` for periodic seams, frozen frames and drift;
+- common-sense and physics violations;
+- visible generation defects;
+- repeated or looping action;
+- identity drift;
+- prop drift;
+- unexpected jumps;
+- narrative continuity;
+- spatial continuity — run `scripts/validate-continuity.ts` against the scene manifest;
+- pacing;
+- **recommended usable range** — the longest span free of defects, reported by `detect-motion-artifacts.ts`;
+- verdict: **keep / trim / regenerate**.
+
+Report the usable range even when the verdict is keep. Editorial otherwise chooses an out-point by eye, and a take whose usable range is far shorter than its duration was never usable at the length it was cut to.
+
+Still frames resolve staging, not motion. Do not conclude a shot is usable from contact sheets alone, and do not sample stills at an interval near a suspected artifact period.
 
 ## Edit evaluation
 
@@ -150,7 +186,13 @@ Check:
 - pacing;
 - rhythm;
 - transitions;
-- missing coverage.
+- missing coverage;
+- are cuts motivated, or do they feel random;
+- are subject changes motivated;
+- are spatial jumps physically plausible;
+- does cause and effect survive across shots;
+- do emotional beats have enough duration to land;
+- does a montage actually read as montage.
 
 ## Master evaluation
 
@@ -177,7 +219,11 @@ Check only applicable requirements such as:
 - audio presence;
 - gross sync;
 - obvious corruption;
-- specified delivery requirements.
+- specified delivery requirements;
+- temporal integrity — periodic seams, frozen frames and drift, via `scripts/detect-motion-artifacts.ts`;
+- unintended letterboxing introduced by unconformed sources.
+
+Container validity is not picture validity. A file can pass every container check and still carry visible generation seams.
 
 Do not implement a broadcast-grade QC system unless the project later requires it.
 
@@ -206,6 +252,34 @@ Recommend one of:
 
 Identify the layer that owns the failure.
 
+## Disposable reviewer
+
+Run shot and edit review in a fresh context, given only:
+
+- the dense frame pack;
+- the approved parent artifacts and their constraints;
+- the criteria checklist.
+
+Withhold the brief's intent, the prompts used, the candidates rejected, and the reasoning behind any choice. A reviewer that knows what the work was supposed to mean will read that meaning back out of it.
+
+**Ask open-ended first.** Put the artifact to the reviewer with nothing but "describe any problems", and walk the criteria only afterwards. Measurement says the order matters: on a recorded defect benchmark for this workflow, the same reviewer named every seeded defect unprompted, then — handed the criteria for the same image — marked the corresponding criterion as passing. A checklist is a structuring device for reporting, not a detector, and a reviewer given only a checklist misses defects it would otherwise have named.
+
+The reviewer returns its open findings, then PASS/FAIL per criterion, a usable range, and keep/trim/regenerate. It does not negotiate, and it does not see the producer's justification.
+
+This applies to the producing agent's own work most of all. Evaluating something you designed, in the context in which you designed it, is not evaluation.
+
+## Ordered diagnosis
+
+Work the causes in order. Stopping at the first plausible one, out of order, is how a reference failure gets misdiagnosed as a prompt failure and retried fifteen times.
+
+1. asset mismatch — is the input reference actually what the shot needs;
+2. overloaded prompt — is it asking for more than one thing;
+3. weak or unclear action — is the intended motion actually specified;
+4. missing end state — does the shot know where it finishes;
+5. incorrect camera logic — does the described camera match the framing;
+6. continuity gap — does it contradict an approved parent or the scene manifest;
+7. capability mismatch — is the requested behaviour beyond the model.
+
 ## Failure diagnosis
 
 Examples:
@@ -221,6 +295,18 @@ good shots but weak pacing
 
 corrupt media
 → retry-execution or repair deterministic output
+
+periodic seams, frozen frames or implausible gait
+→ retry-execution, or change-capability when the model reproduces it
+
+subject static in the shot because the reference frame posed it static
+→ revise-reference, never revise the prompt
+
+landmark present in a shot but absent from the scene manifest
+→ revise-reference, and declare the scene before regenerating
+
+creative artifact marked approved with no approver recorded
+→ reject pending human approval
 
 unsupported required capability
 → change-capability

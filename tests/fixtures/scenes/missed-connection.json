@@ -1,0 +1,32 @@
+{
+  "_comment": "The concourse from examples/level-2-missed-connection, declared as it was actually built. This is the manifest that never existed, reconstructed from the approved reference frames. It reproduces the two continuity defects that shipped: a pillar present in SH02 and in no scene declaration, and a departure board mounted on the column in SH01 but hanging free in SH02.",
+  "sceneId": "concourse",
+  "cameraSide": "south",
+  "axis": {
+    "name": "west-east",
+    "order": ["kiosk", "board", "column", "gates"]
+  },
+  "landmarks": [
+    { "id": "kiosk", "description": "coffee kiosk, warm amber practical" },
+    { "id": "board", "description": "suspended departure board with clock beneath", "attachedTo": "column" },
+    { "id": "column", "description": "cylindrical stone column, mid-concourse" },
+    { "id": "gates", "description": "numbered platform gates along the north side" }
+  ],
+  "shots": {
+    "SH01": {
+      "present": ["kiosk", "board", "column", "gates"],
+      "screenOrder": ["kiosk", "board", "column", "gates"],
+      "attachments": { "board": "column" }
+    },
+    "SH02": {
+      "present": ["board", "column-foreground"],
+      "screenOrder": ["board", "column-foreground"],
+      "attachments": { "board": null }
+    },
+    "SH03": {
+      "present": ["kiosk", "board"],
+      "screenOrder": ["kiosk", "board"],
+      "attachments": { "board": null }
+    }
+  }
+}

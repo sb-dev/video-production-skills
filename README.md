@@ -16,6 +16,19 @@ It supports the full production process:
 
 The workflow is designed to plan cheaply, approve creative decisions, preserve continuity, select shots, edit, evaluate, and retry only what failed.
 
+## Approval and cost control
+
+Creative decisions are approved by you, not by the agent.
+
+- **Selection is the agent's.** It may advance an artifact to `selected` — "keep developing this".
+- **Approval is yours.** Only you move an artifact to `approved` or `locked`, and the approver is recorded in `approvedBy`. An artifact marked approved with nobody recorded as approving it is treated as unapproved, and `tools/validate-production.ts` reports it.
+
+Approval is requested before expensive generation for visual direction, character and identity references, environment references, the shot plan, and picture lock.
+
+The agent asks before inventing a story-changing parameter it was not given — who the characters are, where the piece is set, which props carry meaning — because the cheapest representation that resolves a creative question is a question.
+
+Retries and spend are bounded. When corrective attempts at one layer hit the agreed ceiling, or generation passes the agreed budget, the run stops and reports rather than escalating cost quietly.
+
 ## Install
 
 ```bash
@@ -280,6 +293,12 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
   - [Eval Requirements](docs/03-creative-skills-repository-and-contracts-spec.md#13-eval-requirements)
   - [Installation Expectations](docs/03-creative-skills-repository-and-contracts-spec.md#19-installation-expectations)
   - [Technical Acceptance Criteria](docs/03-creative-skills-repository-and-contracts-spec.md#26-technical-acceptance-criteria)
+- [Testing and Benchmark Specification](docs/04-testing-and-benchmark-spec.md)
+  - [Testing Layers](docs/04-testing-and-benchmark-spec.md#2-testing-layers)
+  - [Runbook](docs/04-testing-and-benchmark-spec.md#3-runbook)
+  - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#4-adding-coverage)
+  - [Measured Results and Known Blind Spots](docs/04-testing-and-benchmark-spec.md#5-measured-results-and-known-blind-spots)
+  - [Prior Art](docs/04-testing-and-benchmark-spec.md#6-prior-art)
 
 ### Process and reports
 
