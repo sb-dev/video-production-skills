@@ -134,6 +134,31 @@ test('the semantic tier reports not run rather than passing quietly', () => {
 });
 
 /**
+ * The taxonomy points five semantic cases at real artifacts from the failed
+ * run. The transcript key is a path descriptor, not a content hash, so deleting
+ * the images leaves --rescore green while making re-collection impossible —
+ * exactly how the seven stills once vanished without anything noticing.
+ */
+test('every taxonomy-referenced example image exists on disk', () => {
+  const taxonomy = parseJson(readFileSync(join(ROOT, 'tests/fixtures/defects/taxonomy.json'), 'utf8'));
+  assert.ok(isRecord(taxonomy) && Array.isArray(taxonomy.cases));
+
+  const referenced: string[] = [];
+  for (const entry of taxonomy.cases.filter(isRecord)) {
+    const images = Array.isArray(entry.images) ? entry.images : [];
+    for (const spec of images.filter(isRecord)) {
+      if (typeof spec.example === 'string') referenced.push(spec.example);
+    }
+  }
+  assert.ok(referenced.length > 0, 'the taxonomy is expected to score against real artifacts');
+
+  const missing = referenced.filter(
+    (path) => !existsSync(join(ROOT, 'examples/level-2-missed-connection', path)),
+  );
+  assert.deepEqual(missing, [], 'benchmark evidence must not be deleted out from under the taxonomy');
+});
+
+/**
  * A transcript collector's shell exports the opt-in variables. The harness must
  * not let them leak into test subprocesses, or `npm test` on that machine turns
  * into a paid collection run.
