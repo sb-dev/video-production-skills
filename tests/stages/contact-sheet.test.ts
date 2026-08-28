@@ -15,6 +15,14 @@ import { commandAvailable, fixture, runScript } from './harness.ts';
 const SCRIPT = 'skills/video-production/scripts/make-contact-sheet.ts';
 const IMAGEMAGICK = commandAvailable('magick') || commandAvailable('convert');
 
+// On a developer machine a visible TAP skip is loud enough; in CI, where the
+// dependency is provisioned, its absence is an environment regression and must
+// fail rather than skip.
+const SKIP_REASON =
+  IMAGEMAGICK || process.env.CI !== undefined
+    ? false
+    : 'ImageMagick is not installed; make-contact-sheet.ts cannot run here';
+
 test('argument validation runs without ImageMagick', () => {
   const result = runScript(SCRIPT, ['out.jpg', 'image.jpg', '--columns', '0']);
   assert.equal(result.status, 2);
@@ -23,8 +31,9 @@ test('argument validation runs without ImageMagick', () => {
 
 test(
   'a contact sheet is produced from sampled frames',
-  { skip: IMAGEMAGICK ? false : 'ImageMagick is not installed; make-contact-sheet.ts cannot run here' },
+  { skip: SKIP_REASON },
   () => {
+    assert.ok(IMAGEMAGICK, 'ImageMagick is required in CI but was not found');
     const frames = mkdtempSync(join(tmpdir(), 'vps-frames-'));
     const sampled = runScript('skills/video-evaluate/scripts/sample-frames.ts', [fixture('clean.mp4'), frames]);
     assert.equal(sampled.status, 0, sampled.stderr);

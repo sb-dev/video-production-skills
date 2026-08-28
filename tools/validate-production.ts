@@ -5,6 +5,10 @@
  * edit decisions that no longer describe the delivered master.
  *
  * Reads artifacts only. Generates nothing, calls no provider.
+ *
+ * `candidates/` and `review/` are deliberately not audited: they hold working
+ * copies and review packs whose canonical artifacts live at their selected
+ * locations, and auditing the copies double-reports every finding.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
@@ -49,12 +53,29 @@ function walk(directory: string): readonly string[] {
 }
 
 /**
+ * Values that spell out the absence of an approver rather than naming one. The
+ * artifact specification's own unapproved example writes `approvedBy: null`, so
+ * a lint that reads "null" as a person defeats itself.
+ */
+const ABSENT_APPROVERS = new Set(['', 'null', '~', 'none', 'n/a', 'tbd', '-', 'false', '[]', '{}']);
+
+function normalizeApprover(raw: string | undefined): string | undefined {
+  if (raw === undefined) return undefined;
+  const cleaned = raw
+    .replace(/[`*]/g, '')
+    .trim()
+    .replace(/^["']+|["']+$/g, '')
+    .trim();
+  return ABSENT_APPROVERS.has(cleaned.toLowerCase()) ? undefined : cleaned;
+}
+
+/**
  * Accepts both the YAML frontmatter form from the artifact specification and
  * the `- **key:** value` form documents use when the same fields are written
  * for a human reader.
  */
-function readMetadata(file: string): ArtifactMetadata {
-  const text = readFileSync(file, 'utf8');
+function readMarkdownMetadata(file: string): ArtifactMetadata {
+  const text = readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
   const metadata: Record<string, string> = {};
 
   const frontmatter = /^---\n([\s\S]*?)\n---/.exec(text);
@@ -79,13 +100,43 @@ function readMetadata(file: string): ArtifactMetadata {
     .trim()
     .split(/[\s(|]/, 1)[0]
     ?.toLowerCase();
-  const approvedBy = metadata.approvedBy?.replace(/[`*]/g, '').trim();
+  const approvedBy = normalizeApprover(metadata.approvedBy);
 
   return {
     ...(decisionState === undefined ? {} : { decisionState }),
-    ...(approvedBy === undefined || approvedBy === '' ? {} : { approvedBy }),
+    ...(approvedBy === undefined ? {} : { approvedBy }),
   };
 }
+
+/** Timelines and manifests carry the same decision metadata as top-level JSON keys. */
+function readJsonMetadata(file: string): ArtifactMetadata {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(readFileSync(file, 'utf8')) as unknown;
+  } catch {
+    return {};
+  }
+  if (!isRecord(parsed)) return {};
+  const decisionState =
+    typeof parsed.decisionState === 'string' ? parsed.decisionState.trim().toLowerCase() : undefined;
+  const approvedBy = normalizeApprover(
+    typeof parsed.approvedBy === 'string' ? parsed.approvedBy : undefined,
+  );
+  return {
+    ...(decisionState === undefined || decisionState === '' ? {} : { decisionState }),
+    ...(approvedBy === undefined ? {} : { approvedBy }),
+  };
+}
+
+function readArtifactMetadata(file: string): ArtifactMetadata | null {
+  if (file.endsWith('.md')) return readMarkdownMetadata(file);
+  if (file.endsWith('.json')) return readJsonMetadata(file);
+  return null;
+}
+
+// A missing ffprobe must surface as a finding, not as silently skipped
+// cross-checks — a gate that cannot gather evidence has not passed.
+let ffprobeMissing = false;
 
 function probe(video: string, entries: string): readonly string[] {
   const result = spawnSync(
@@ -93,6 +144,10 @@ function probe(video: string, entries: string): readonly string[] {
     ['-v', 'error', '-select_streams', 'v:0', '-show_entries', entries, '-of', 'csv=p=0', video],
     { encoding: 'utf8' },
   );
+  if (result.error !== undefined) {
+    ffprobeMissing = true;
+    return [];
+  }
   if (result.status !== 0) return [];
   return result.stdout.trim().split(',');
 }
@@ -103,6 +158,10 @@ function mediaDuration(video: string): number | null {
     ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', video],
     { encoding: 'utf8' },
   );
+  if (result.error !== undefined) {
+    ffprobeMissing = true;
+    return null;
+  }
   if (result.status !== 0) return null;
   const duration = Number(result.stdout.trim());
   return Number.isFinite(duration) ? duration : null;
@@ -117,9 +176,8 @@ function checkApprovals(files: readonly string[], root: string): readonly Findin
   let sawDecisionState = false;
 
   for (const file of files) {
-    if (!file.endsWith('.md')) continue;
-    const metadata = readMetadata(file);
-    if (metadata.decisionState === undefined) continue;
+    const metadata = readArtifactMetadata(file);
+    if (metadata === null || metadata.decisionState === undefined) continue;
     sawDecisionState = true;
 
     if (!APPROVED_STATES.has(metadata.decisionState)) continue;
@@ -137,7 +195,7 @@ function checkApprovals(files: readonly string[], root: string): readonly Findin
   if (!sawDecisionState) {
     findings.push({
       rule: 'no-artifact-metadata',
-      file: root.slice(root.length),
+      file: basename(root),
       message:
         'no artifact declares a decisionState, so approval cannot be audited. ' +
         'Record decisionState and approvedBy on creative artifacts.',
@@ -147,15 +205,24 @@ function checkApprovals(files: readonly string[], root: string): readonly Findin
   return findings;
 }
 
+interface TimelinePlan {
+  readonly file: string;
+  readonly plannedDuration: number;
+  readonly render?: Record<string, unknown>;
+  readonly renderOutput?: string;
+  readonly decisionState?: string;
+}
+
 function checkTimelines(files: readonly string[], root: string): readonly Finding[] {
   const findings: Finding[] = [];
 
-  const timelines = files.filter((file) => basename(file).startsWith('timeline') && file.endsWith('.json'));
+  const timelineFiles = files.filter((file) => basename(file).startsWith('timeline') && file.endsWith('.json'));
   const masters = files.filter(
     (file) => /master/i.test(basename(file)) && /\.(mp4|mov|mkv)$/i.test(file),
   );
 
-  for (const timelineFile of timelines) {
+  const plans: TimelinePlan[] = [];
+  for (const timelineFile of timelineFiles) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(readFileSync(timelineFile, 'utf8')) as unknown;
@@ -186,38 +253,83 @@ function checkTimelines(files: readonly string[], root: string): readonly Findin
     }
 
     const render = isRecord(parsed.render) ? parsed.render : undefined;
+    plans.push({
+      file: timelineFile,
+      plannedDuration,
+      ...(render === undefined ? {} : { render }),
+      ...(render !== undefined && typeof render.output === 'string' ? { renderOutput: render.output } : {}),
+      ...(typeof parsed.decisionState === 'string'
+        ? { decisionState: parsed.decisionState.trim().toLowerCase() }
+        : {}),
+    });
+  }
 
-    for (const master of masters) {
-      const [widthText, heightText] = probe(master, 'stream=width,height');
-      const width = Number(widthText);
-      const height = Number(heightText);
+  if (plans.length === 0 || masters.length === 0) return findings;
 
-      if (render !== undefined && Number.isFinite(width) && Number.isFinite(height)) {
-        if (render.width !== width || render.height !== height) {
+  // Probe each master exactly once rather than per (timeline, master) pair.
+  const probed = new Map<string, { width: number; height: number; duration: number | null }>();
+  for (const master of masters) {
+    const [widthText, heightText] = probe(master, 'stream=width,height');
+    probed.set(master, {
+      width: Number(widthText),
+      height: Number(heightText),
+      duration: mediaDuration(master),
+    });
+  }
+
+  for (const plan of plans) {
+    // A superseded draft left at the top level must not indict the master the
+    // current plan produced. A timeline that names its render output is checked
+    // against that file alone; with several timelines and no named outputs,
+    // only the ones a human approved or locked speak for the delivery.
+    const targets =
+      plan.renderOutput !== undefined
+        ? masters.filter((master) => basename(master) === basename(String(plan.renderOutput)))
+        : plans.length === 1 || APPROVED_STATES.has(plan.decisionState ?? '')
+          ? masters
+          : [];
+
+    const timelinePath = plan.file.slice(root.length + 1);
+
+    for (const master of targets) {
+      const info = probed.get(master);
+      if (info === undefined) continue;
+
+      if (plan.render !== undefined && Number.isFinite(info.width) && Number.isFinite(info.height)) {
+        if (plan.render.width !== info.width || plan.render.height !== info.height) {
           findings.push({
             rule: 'plan-delivery-mismatch',
             file: master.slice(root.length + 1),
             message:
-              `master is ${String(width)}x${String(height)} but ${basename(timelineFile)} ` +
-              `renders ${String(render.width)}x${String(render.height)}`,
+              `master is ${String(info.width)}x${String(info.height)} but ${timelinePath} ` +
+              `renders ${String(plan.render.width)}x${String(plan.render.height)}`,
           });
         }
       }
 
-      const actualDuration = mediaDuration(master);
-      if (actualDuration !== null && plannedDuration > 0) {
-        const drift = Math.abs(actualDuration - plannedDuration);
+      if (info.duration !== null && plan.plannedDuration > 0) {
+        const drift = Math.abs(info.duration - plan.plannedDuration);
         if (drift > DURATION_TOLERANCE_SECONDS) {
           findings.push({
             rule: 'plan-delivery-mismatch',
             file: master.slice(root.length + 1),
             message:
-              `master runs ${actualDuration.toFixed(2)}s but ${basename(timelineFile)} ` +
-              `plans ${plannedDuration.toFixed(2)}s. Reconcile the plan or record an explicit reopening.`,
+              `master runs ${info.duration.toFixed(2)}s but ${timelinePath} ` +
+              `plans ${plan.plannedDuration.toFixed(2)}s. Reconcile the plan or record an explicit reopening.`,
           });
         }
       }
     }
+  }
+
+  if (ffprobeMissing) {
+    findings.push({
+      rule: 'ffprobe-unavailable',
+      file: basename(root),
+      message:
+        'ffprobe is required but was not found in PATH; plan-delivery cross-checks did not run. ' +
+        'A gate that cannot gather evidence has not passed.',
+    });
   }
 
   return findings;
