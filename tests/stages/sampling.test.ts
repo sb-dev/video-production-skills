@@ -63,3 +63,26 @@ test('the temporal pass finds what the still pass structurally cannot', () => {
   const result = runScript('skills/video-evaluate/scripts/detect-motion-artifacts.ts', [fixture('seams.mp4')]);
   assert.equal(result.status, 1, 'the seamed clip must fail the motion gate');
 });
+
+/**
+ * The reported pack is a directory listing. Leftovers from a previous run at a
+ * different density would be folded in and scramble the temporal order, so a
+ * dirty output directory is refused rather than silently absorbed.
+ */
+test('a dense pack refuses an output directory holding a previous pack', () => {
+  const video = fixture('clean.mp4');
+  const directory = mkdtempSync(join(tmpdir(), 'vps-sampling-'));
+
+  const first = runScript('skills/video-evaluate/scripts/sample-frames.ts', [video, directory, '--every', '10']);
+  assert.equal(first.status, 0, first.stderr);
+
+  const second = runScript('skills/video-evaluate/scripts/sample-frames.ts', [video, directory, '--every', '30']);
+  assert.equal(second.status, 2, 'a stale pack must not be reported as part of the current one');
+  assert.match(second.stderr, /already contains/);
+});
+
+test('an unreadable input is a runtime failure, not a usage error', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'vps-sampling-'));
+  const result = runScript('skills/video-evaluate/scripts/sample-frames.ts', [fixture('corrupt.mp4'), directory]);
+  assert.equal(result.status, 3, result.stderr);
+});

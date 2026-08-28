@@ -17,6 +17,8 @@ import { parseArgs } from 'node:util';
 
 const EXIT_USAGE = 2;
 const EXIT_FINDINGS = 1;
+/** An I/O failure while reading the production — distinct from misuse. */
+const EXIT_RUNTIME = 3;
 
 const APPROVED_STATES = new Set(['approved', 'locked']);
 const SKIP_DIRECTORIES = new Set(['node_modules', '.git', 'candidates', 'review']);
@@ -34,7 +36,10 @@ interface ArtifactMetadata {
 }
 
 function usage(): void {
-  console.log('Usage: validate-production.ts <production-dir> [--json]');
+  console.log(
+    'Usage: validate-production.ts <production-dir> [--json]\n' +
+      'Exit codes: 0 no findings, 1 findings, 2 usage error, 3 runtime failure (I/O)',
+  );
 }
 
 function walk(directory: string): readonly string[] {
@@ -383,5 +388,7 @@ try {
   process.exitCode = main();
 } catch (error: unknown) {
   console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = EXIT_USAGE;
+  // Filesystem failures carry a code; misuse and validation errors do not.
+  const io = error instanceof Error && typeof (error as NodeJS.ErrnoException).code === 'string';
+  process.exitCode = io ? EXIT_RUNTIME : EXIT_USAGE;
 }
