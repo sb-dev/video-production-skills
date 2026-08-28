@@ -21,7 +21,7 @@ When continuity fails, correct the smallest artifact that owns the failure. Do n
 Before generating reference frames for any multi-shot production sharing a location, declare a **scene manifest**:
 
 - **landmarks** — the fixed features that recur, each with an id and, where it matters, what it is attached to;
-- **axis order** — the order landmarks occupy along the location's long axis;
+- **axis order** — the order landmarks occupy along the location's long axis, written left-to-right as seen from the declared camera side; a shot taken from the opposite side sees the same landmarks right-to-left;
 - **camera side** — which side of that axis the camera works from;
 - **per shot** — which landmarks are present, their screen order, and any attachment.
 
