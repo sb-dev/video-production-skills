@@ -46,11 +46,42 @@ test('periodic seams are detected at the seeded period and gate non-zero', () =>
   assert.equal(parsed.verdict, 'artifacts');
 });
 
+/**
+ * A boundary that includes a blended or duplicated transition frame raises two
+ * adjacent spikes. Fed to the periodicity test raw, the gaps alternate 1 and
+ * P−1, the mean lands near P/2, and the confidence collapses — a perfectly
+ * periodic seam read as clean, for being twice as visible.
+ */
+test('a seam spanning two frames is still detected as periodic', () => {
+  const result = runScript(SCRIPT, [fixture('seams-2f.mp4'), '--json']);
+  assert.equal(result.status, 1, 'a two-frame seam must fail the gate');
+
+  const parsed = parseJson(result.stdout);
+  assert.ok(isRecord(parsed));
+  const periodic = parsed.periodic;
+  assert.ok(isRecord(periodic));
+  assert.equal(periodic.detected, true, 'adjacent spikes must merge into one boundary event');
+  assert.ok(
+    Math.abs((periodic.periodFrames as number) - SEEDED_PERIOD_FRAMES) <= 1,
+    `expected a period near ${String(SEEDED_PERIOD_FRAMES)} frames, got ${String(periodic.periodFrames)}`,
+  );
+});
+
 test('a held section is reported as a frozen run', () => {
   const parsed = report(fixture('frozen.mp4'));
   const frozenRuns = parsed.frozenRuns;
   assert.ok(Array.isArray(frozenRuns) && frozenRuns.length > 0, 'frozen frames must be reported');
   assert.equal(parsed.verdict, 'artifacts');
+
+  // The fixture moves until t=2s at 24fps, so the first duplicated frame is
+  // source frame 49. Reported numbers are source frames, not diff indices — an
+  // editor trimming at the reported boundary must land on the hold itself.
+  const first = frozenRuns[0];
+  assert.ok(isRecord(first));
+  assert.ok(
+    Math.abs((first.startFrame as number) - 49) <= 2,
+    `expected the hold to start near source frame 49, got ${String(first.startFrame)}`,
+  );
 });
 
 test('accelerating motion reports positive drift without false artifacts', () => {
@@ -105,9 +136,24 @@ test('usable range spans a clean take and collapses on a seamed one', () => {
   );
 });
 
+test('skipped head samples are not counted usable', () => {
+  const full = report(fixture('clean.mp4'));
+  const narrowed = report(fixture('clean.mp4'), ['--skip-head', '100']);
+  assert.ok(isRecord(full.usableRange) && isRecord(narrowed.usableRange));
+  assert.ok(
+    (narrowed.usableRange.seconds as number) < (full.usableRange.seconds as number),
+    'samples the detectors never examined are unknown, not clean',
+  );
+});
+
 test('a missing input is rejected before ffmpeg is invoked', () => {
   const result = runScript(SCRIPT, ['definitely-missing.mp4']);
   assert.equal(result.status, 2);
+});
+
+test('an unreadable input is a runtime failure, not a usage error', () => {
+  const result = runScript(SCRIPT, [fixture('corrupt.mp4')]);
+  assert.equal(result.status, 3, 'ffmpeg failing on real media must not read as operator error');
 });
 
 test('an invalid spike ratio is rejected', () => {

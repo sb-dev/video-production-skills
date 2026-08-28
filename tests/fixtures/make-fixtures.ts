@@ -107,12 +107,6 @@ const FIXTURES: readonly Fixture[] = [
     ]),
   },
   {
-    name: 'scene-mirrored',
-    file: 'scene-mirrored.png',
-    describes: 'the clean scene flipped; screen direction reversed by crossing the axis',
-    build: () => sceneImage([KIOSK, BOARD, COLUMN], true),
-  },
-  {
     name: 'clean',
     file: 'clean.mp4',
     describes: 'smooth constant-velocity motion; must pass every check',
@@ -123,6 +117,25 @@ const FIXTURES: readonly Fixture[] = [
     file: 'seams.mp4',
     describes: `discontinuity every ${String(SEAM_PERIOD_FRAMES)} frames; the shipped seedance failure`,
     build: () => movingBox(`mod(t*600,500)`, SECONDS, WIDTH, HEIGHT),
+  },
+  {
+    // The box advances 4px per frame for 19 frames, spends the cycle's last
+    // frame at an intermediate position, then wraps: two large consecutive
+    // diffs at every boundary. This is the common shape of latent-chunk
+    // assembly, where the cut includes a blended transition frame. The frame
+    // index is rounded so float error at a cycle boundary cannot flip the
+    // branch and turn the two-frame seam back into a one-frame one.
+    name: 'seams-2f',
+    file: 'seams-2f.mp4',
+    describes: `a two-frame boundary every ${String(SEAM_PERIOD_FRAMES)} frames; a seam that spans the cut`,
+    build: () =>
+      movingBox(
+        `st(0,mod(floor(t*${String(FPS)}+0.5),${String(SEAM_PERIOD_FRAMES)}));` +
+          `if(lt(ld(0),${String(SEAM_PERIOD_FRAMES - 1)}),ld(0)*4,237)`,
+        SECONDS,
+        WIDTH,
+        HEIGHT,
+      ),
   },
   {
     name: 'frozen',
