@@ -8,7 +8,7 @@
  *   structural  - every case is well formed and uniquely identified.
  *   behavioural - a case may name a `check`, which the runner executes.
  *
- * Coverage is reported explicitly: a suite where most cases are unfalfisiable
+ * Coverage is reported explicitly: a suite where most cases are unfalsifiable
  * prose should say so out loud rather than look green.
  */
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -259,7 +259,7 @@ function main(): number {
   }
 
   const canExecute = ffmpegAvailable();
-  const results: { skill: string; id: string; check: string; ok: boolean; detail: string }[] = [];
+  const results: { skill: string; id: string; check: string; ok: boolean; skipped?: boolean; detail: string }[] = [];
   let total = 0;
   let executable = 0;
 
@@ -269,8 +269,10 @@ function main(): number {
       if (evalCase.check === undefined) continue;
       executable += 1;
 
+      // A check that could not run has not passed. ffmpeg is a hard dependency
+      // of this gate; its absence fails the run rather than greening it.
       if (!canExecute) {
-        results.push({ skill, id: evalCase.id, check: evalCase.check, ok: true, detail: 'skipped: ffmpeg unavailable' });
+        results.push({ skill, id: evalCase.id, check: evalCase.check, ok: false, skipped: true, detail: 'skipped: ffmpeg unavailable' });
         continue;
       }
 
@@ -282,17 +284,24 @@ function main(): number {
   }
 
   const failed = results.filter((result) => !result.ok);
+  const skipped = results.filter((result) => result.skipped === true);
   const coverage = total === 0 ? 0 : Math.round((executable / total) * 100);
 
   if (values.json) {
-    console.log(JSON.stringify({ total, executable, coverage, results, ok: failed.length === 0 }, null, 2));
+    console.log(JSON.stringify(
+      { total, executable, coverage, ffmpeg: canExecute, skipped: skipped.length, results, ok: failed.length === 0 },
+      null,
+      2,
+    ));
   } else {
     for (const result of results) {
       console.log(`${result.ok ? 'ok  ' : 'FAIL'} ${result.skill}/${result.id} [${result.check}] ${result.detail}`);
     }
     console.log('');
     console.log(`${String(total)} cases, ${String(executable)} executable (${String(coverage)}% behavioural coverage)`);
-    if (!canExecute) console.log('ffmpeg unavailable: behavioural checks were skipped, not verified');
+    if (!canExecute) {
+      console.log(`ffmpeg unavailable: ${String(skipped.length)} behavioural checks could NOT be verified`);
+    }
     if (failed.length > 0) console.log(`${String(failed.length)} failing`);
   }
 
