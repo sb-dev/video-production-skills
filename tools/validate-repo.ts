@@ -28,7 +28,12 @@ function fail(message: string): never {
 function filesUnder(directory: string): string[] {
   const results: string[] = [];
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if (entry.name === '.git' || entry.name === 'node_modules') continue;
+    // .claude and .agents hold agent skill packs installed from elsewhere;
+    // their contents are configuration, not this repository's tooling, so the
+    // house rules (no Python, no committed binaries) do not apply to them.
+    if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === '.claude' || entry.name === '.agents') {
+      continue;
+    }
     const path = join(directory, entry.name);
     if (entry.isDirectory()) results.push(...filesUnder(path));
     else if (entry.isFile()) results.push(path);

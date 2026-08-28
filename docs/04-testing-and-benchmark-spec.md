@@ -239,6 +239,12 @@ This is the standing rule about loud skips applied to recorded evidence — and 
 benchmark can be corrected after publication without the correction being able to quietly
 inherit the old numbers.
 
+One limitation is deliberate: the image identity a transcript is keyed on is a path descriptor,
+not a content hash, so `--rescore` stays runnable with no filesystem or ffmpeg access. Re-pointing
+a case at different artifacts is detected; editing the bytes behind an unchanged path is not. A
+stage test compensates for the sharpest edge of that gap by asserting every taxonomy-referenced
+example image exists on disk.
+
 #### Baselines, regressions and flakes
 
 Update the baseline deliberately, never as a side effect of a passing run:
