@@ -6,7 +6,7 @@
  *
  * Each fixture reproduces one failure class that has actually shipped.
  */
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
@@ -175,16 +175,23 @@ function ffmpegAvailable(): boolean {
   return result.status === 0 && result.error === undefined;
 }
 
+// The fixture directory is shared between concurrently running test processes,
+// so nothing may ever be observable at its final path half-written: encode into
+// a per-process staging name and rename into place, which is atomic on the same
+// volume. The staging name keeps the extension so ffmpeg picks the right muxer.
 function build(fixture: Fixture, directory: string, force: boolean): string {
   const output = join(directory, fixture.file);
   if (existsSync(output) && !force) return output;
 
-  const result = spawnSync('ffmpeg', ['-y', '-v', 'error', ...fixture.build(output), output], {
+  const staging = join(directory, `.${String(process.pid)}.${fixture.file}`);
+  const result = spawnSync('ffmpeg', ['-y', '-v', 'error', ...fixture.build(staging), staging], {
     encoding: 'utf8',
   });
   if (result.status !== 0) {
+    rmSync(staging, { force: true });
     throw new Error(`failed to build fixture ${fixture.name}: ${result.stderr.trim()}`);
   }
+  renameSync(staging, output);
   return output;
 }
 
@@ -245,7 +252,9 @@ function main(): number {
   if (requested === undefined || requested.includes('corrupt')) {
     const corrupt = join(directory, CORRUPT_FILE);
     if (!existsSync(corrupt) || force) {
-      writeFileSync(corrupt, Buffer.from('not a video, deliberately', 'utf8'));
+      const staging = join(directory, `.${String(process.pid)}.${CORRUPT_FILE}`);
+      writeFileSync(staging, Buffer.from('not a video, deliberately', 'utf8'));
+      renameSync(staging, corrupt);
     }
     console.log(corrupt);
   }
