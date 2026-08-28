@@ -22,6 +22,14 @@ import { commandAvailable, runScript } from './harness.ts';
 const SCRIPT = 'skills/video-production/scripts/make-storyboard.ts';
 const IMAGEMAGICK = commandAvailable('magick') || commandAvailable('montage');
 
+// On a developer machine a visible TAP skip is loud enough; in CI, where the
+// dependency is provisioned, its absence is an environment regression and must
+// fail rather than skip.
+const SKIP_REASON =
+  IMAGEMAGICK || process.env.CI !== undefined
+    ? false
+    : 'ImageMagick is not installed; make-storyboard.ts cannot run here';
+
 function panels(count: number): { directory: string; files: string[] } {
   const directory = mkdtempSync(join(tmpdir(), 'vps-storyboard-'));
   const files: string[] = [];
@@ -111,8 +119,9 @@ test('panels with no output path are rejected', () => {
 
 test(
   'panels compose into a board sheet',
-  { skip: IMAGEMAGICK ? false : 'ImageMagick is not installed; make-storyboard.ts cannot run here' },
+  { skip: SKIP_REASON },
   () => {
+    assert.ok(IMAGEMAGICK, 'ImageMagick is required in CI but was not found');
     const { directory, files } = panels(6);
     const output = join(directory, 'board.png');
 
