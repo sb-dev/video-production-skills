@@ -14,6 +14,8 @@ import { parseArgs } from 'node:util';
 
 const EXIT_USAGE = 2;
 const EXIT_FINDINGS = 1;
+/** An I/O failure while reading the manifest — distinct from misuse. */
+const EXIT_RUNTIME = 3;
 
 interface Landmark {
   readonly id: string;
@@ -45,7 +47,10 @@ interface Finding {
 }
 
 function usage(): void {
-  console.log('Usage: validate-continuity.ts <scene-manifest.json> [--json]');
+  console.log(
+    'Usage: validate-continuity.ts <scene-manifest.json> [--json]\n' +
+      'Exit codes: 0 no findings, 1 findings, 2 usage error, 3 runtime failure (I/O)',
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -377,5 +382,7 @@ try {
   process.exitCode = main();
 } catch (error: unknown) {
   console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = EXIT_USAGE;
+  // Filesystem failures carry a code; misuse and manifest-shape errors do not.
+  const io = error instanceof Error && typeof (error as NodeJS.ErrnoException).code === 'string';
+  process.exitCode = io ? EXIT_RUNTIME : EXIT_USAGE;
 }
