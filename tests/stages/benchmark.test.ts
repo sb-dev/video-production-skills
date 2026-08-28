@@ -133,6 +133,34 @@ test('the semantic tier reports not run rather than passing quietly', () => {
   }
 });
 
+/**
+ * A transcript collector's shell exports the opt-in variables. The harness must
+ * not let them leak into test subprocesses, or `npm test` on that machine turns
+ * into a paid collection run.
+ */
+test('the semantic opt-in does not leak from the ambient environment', () => {
+  const saved = {
+    RUN_SEMANTIC_BENCHMARK: process.env.RUN_SEMANTIC_BENCHMARK,
+    REPLICATE_API_TOKEN: process.env.REPLICATE_API_TOKEN,
+  };
+  process.env.RUN_SEMANTIC_BENCHMARK = '1';
+  process.env.REPLICATE_API_TOKEN = 'deliberately-unused';
+  try {
+    const outcome = runScript(SCRIPT, []);
+    assert.match(outcome.stdout, /semantic\s+NOT RUN/, 'ambient credentials must not start a collection');
+    const skipped = results().filter((row) => row.skipped !== undefined);
+    assert.ok(skipped.length > 0);
+    for (const row of skipped) {
+      assert.match(String(row.skipped), /semantic tier not requested/);
+    }
+  } finally {
+    for (const [key, value] of Object.entries(saved)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+});
+
 test('a class filter narrows the run', () => {
   const only = results(['--only', 'generation']);
   assert.ok(only.length > 0);

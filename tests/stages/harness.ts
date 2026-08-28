@@ -12,10 +12,25 @@ export interface ScriptResult {
   readonly stderr: string;
 }
 
-export function runScript(relativePath: string, args: readonly string[]): ScriptResult {
+/**
+ * The default environment scrubs the semantic-benchmark opt-in variables: a
+ * transcript collector's shell exports them, and inheriting them would turn
+ * `npm test` into paid API calls. Tests that need a specific environment pass
+ * an overlay via `options.env`.
+ */
+export function runScript(
+  relativePath: string,
+  args: readonly string[],
+  options?: { readonly env?: Record<string, string | undefined> },
+): ScriptResult {
   const result = spawnSync(process.execPath, [resolve(ROOT, relativePath), ...args], {
     encoding: 'utf8',
-    env: process.env,
+    env: {
+      ...process.env,
+      RUN_SEMANTIC_BENCHMARK: undefined,
+      REPLICATE_API_TOKEN: undefined,
+      ...options?.env,
+    },
     maxBuffer: 64 * 1024 * 1024,
   });
   return { status: result.status, stdout: result.stdout ?? '', stderr: result.stderr ?? '' };
@@ -32,7 +47,10 @@ export function commandAvailable(command: string): boolean {
  * fixture definition invalidates the cache automatically — caching on filename
  * alone silently serves a stale fixture and the test then measures the wrong clip.
  */
+let fixturesDirCache: string | null = null;
+
 export function fixturesDir(): string {
+  if (fixturesDirCache !== null) return fixturesDirCache;
   const generator = resolve(ROOT, 'tests/fixtures/make-fixtures.ts');
   const key = createHash('sha256').update(readFileSync(generator)).digest('hex').slice(0, 12);
   const directory = join(tmpdir(), `video-production-skills-fixtures-${key}`);
@@ -42,6 +60,7 @@ export function fixturesDir(): string {
   if (result.status !== 0) {
     throw new Error(`fixture generation failed: ${result.stderr.trim()}`);
   }
+  fixturesDirCache = directory;
   return directory;
 }
 
