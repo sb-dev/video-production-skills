@@ -5,6 +5,11 @@ import { parseArgs } from 'node:util';
 
 const EXIT_USAGE = 2;
 const EXIT_ARTIFACTS = 1;
+/** ffmpeg failed at runtime — distinct from misuse, distinct from a verdict. */
+const EXIT_RUNTIME = 3;
+
+/** A runtime failure of the measurement itself, not of the invocation. */
+class RuntimeFailure extends Error {}
 
 const DEFAULT_SPIKE_RATIO = 1.3;
 const DEFAULT_HARD_SPIKE_RATIO = 2.5;
@@ -65,7 +70,8 @@ interface Report {
 function usage(): void {
   console.log(
     'Usage: detect-motion-artifacts.ts <input> [--json] [--spike-ratio N] ' +
-      '[--hard-spike-ratio N] [--min-spike-diff N] [--period-tolerance N] [--skip-head N]',
+      '[--hard-spike-ratio N] [--min-spike-diff N] [--period-tolerance N] [--skip-head N]\n' +
+      'Exit codes: 0 clean, 1 artifacts detected, 2 usage error, 3 runtime failure (ffmpeg)',
   );
 }
 
@@ -106,9 +112,9 @@ function measure(input: string): readonly Sample[] {
     const message = result.error.message.includes('ENOENT')
       ? 'ffmpeg is required but was not found in PATH'
       : result.error.message;
-    throw new Error(message);
+    throw new RuntimeFailure(message);
   }
-  if (result.status !== 0) throw new Error(result.stderr.trim() || 'ffmpeg failed');
+  if (result.status !== 0) throw new RuntimeFailure(result.stderr.trim() || 'ffmpeg failed');
 
   const samples: Sample[] = [];
   let frame: number | null = null;
@@ -130,7 +136,7 @@ function measure(input: string): readonly Sample[] {
     }
   }
 
-  if (samples.length === 0) throw new Error('no frame statistics were produced; is the input a video?');
+  if (samples.length === 0) throw new RuntimeFailure('no frame statistics were produced; is the input a video?');
   return samples;
 }
 
@@ -170,6 +176,31 @@ function findSpikes(
 }
 
 /**
+ * A seam spanning several consecutive frames raises one spike per frame. Fed to
+ * the periodicity test raw, the gaps alternate between one frame and the true
+ * period, the mean lands near half of it, and a perfectly periodic seam reads
+ * as noise — the more pronounced the defect, the less periodic it looks. Each
+ * contiguous run is one boundary event; keep its strongest sample.
+ */
+function mergeSpikeRuns(spikes: readonly Spike[]): readonly Spike[] {
+  const events: Spike[] = [];
+  let runEnd: number | null = null;
+
+  for (const spike of spikes) {
+    const last = events[events.length - 1];
+    if (last !== undefined && runEnd !== null && spike.frame === runEnd + 1) {
+      runEnd = spike.frame;
+      if (spike.ratio > last.ratio) events[events.length - 1] = spike;
+      continue;
+    }
+    events.push(spike);
+    runEnd = spike.frame;
+  }
+
+  return events;
+}
+
+/**
  * Evenly spaced spikes are the signature of chunked generation. Random spikes
  * from fast motion or a real cut are not evenly spaced.
  */
@@ -191,17 +222,23 @@ function findPeriodicity(spikes: readonly Spike[], tolerance: number): Periodic 
   const meanFrameGap = frameGaps.reduce((total, gap) => total + gap, 0) / frameGaps.length;
   if (meanFrameGap <= 0) return absent;
 
-  const withinTolerance = frameGaps.filter(
-    (gap) => Math.abs(gap - meanFrameGap) / meanFrameGap <= tolerance,
-  ).length;
+  const inTolerance = frameGaps.map((gap) => Math.abs(gap - meanFrameGap) / meanFrameGap <= tolerance);
+  const withinTolerance = inTolerance.filter(Boolean).length;
   const confidence = withinTolerance / frameGaps.length;
   if (confidence < 0.75) return absent;
 
-  const meanTimeGap = timeGaps.reduce((total, gap) => total + gap, 0) / timeGaps.length;
+  // The period is reported from the in-tolerance gaps only. Editorial picks a
+  // sampling interval from this number; one real cut among the seams must not
+  // be allowed to stretch it.
+  const keptFrameGaps = frameGaps.filter((_, index) => inTolerance[index] === true);
+  const keptTimeGaps = timeGaps.filter((_, index) => inTolerance[index] === true);
+  const periodFrames = keptFrameGaps.reduce((total, gap) => total + gap, 0) / keptFrameGaps.length;
+  const periodSeconds = keptTimeGaps.reduce((total, gap) => total + gap, 0) / keptTimeGaps.length;
+
   return {
     detected: true,
-    periodFrames: Number(meanFrameGap.toFixed(2)),
-    periodSeconds: Number(meanTimeGap.toFixed(3)),
+    periodFrames: Number(periodFrames.toFixed(2)),
+    periodSeconds: Number(periodSeconds.toFixed(3)),
     confidence: Number(confidence.toFixed(2)),
   };
 }
@@ -240,6 +277,7 @@ function findUsableRange(
   samples: readonly Sample[],
   spikes: readonly Spike[],
   frozenRuns: readonly FrozenRun[],
+  skipHead: number,
 ): UsableRange {
   const damaged = new Set<number>();
   for (const spike of spikes) damaged.add(spike.frame);
@@ -252,7 +290,12 @@ function findUsableRange(
   let currentStart: number | null = null;
   let currentLength = 0;
 
-  for (const [index, sample] of samples.entries()) {
+  // Head samples below skipHead were never examined by the detectors, so they
+  // are unknown, not clean — counting them usable would let a large --skip-head
+  // inflate the exact number editorial trims against.
+  for (let index = Math.max(1, skipHead); index < samples.length; index += 1) {
+    const sample = samples[index];
+    if (sample === undefined) continue;
     if (damaged.has(sample.frame)) {
       currentStart = null;
       currentLength = 0;
@@ -375,20 +418,23 @@ function main(): number {
 
   const samples = measure(input);
   const spikes = findSpikes(samples, spikeRatio, minSpikeDiff, skipHead);
-  const periodic = findPeriodicity(spikes, periodTolerance);
+  const periodic = findPeriodicity(mergeSpikeRuns(spikes), periodTolerance);
   const frozenRuns = findFrozenRuns(samples, skipHead);
 
   const hasHardSpike = spikes.some((spike) => spike.ratio >= hardSpikeRatio);
   const verdict = periodic.detected || frozenRuns.length > 0 || hasHardSpike ? 'artifacts' : 'clean';
-  const usableRange = findUsableRange(samples, spikes, frozenRuns);
+  const usableRange = findUsableRange(samples, spikes, frozenRuns, skipHead);
 
+  // Internally every frame number is a diff-space index: sample N describes the
+  // transition into source frame N+1. Reported numbers are source frames, so an
+  // editor trimming at a reported boundary lands on the damaged frame itself.
   const report: Report = {
     input,
-    frames: samples.length,
+    frames: samples.length + 1,
     medianDiff: Number(median(samples.map((sample) => sample.diff)).toFixed(3)),
-    spikes,
+    spikes: spikes.map((spike) => ({ ...spike, frame: spike.frame + 1 })),
     periodic,
-    frozenRuns,
+    frozenRuns: frozenRuns.map((run) => ({ ...run, startFrame: run.startFrame + 1 })),
     driftPerSecond: driftPerSecond(samples),
     usableRange,
     verdict,
@@ -404,5 +450,5 @@ try {
   process.exitCode = main();
 } catch (error: unknown) {
   console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = EXIT_USAGE;
+  process.exitCode = error instanceof RuntimeFailure ? EXIT_RUNTIME : EXIT_USAGE;
 }
