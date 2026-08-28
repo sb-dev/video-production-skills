@@ -60,6 +60,8 @@ When corrective attempts at one layer reach the ceiling, or spend passes the bud
 
 Repeated retries at one layer are evidence that the owning decision is wrong, not that the next attempt will succeed.
 
+The negotiated ceiling bounds total spend across the production; it does not loosen the per-shot rule in "Retry and failure diagnosis". Two attempts on one shot with the same diagnosis is the hard stop regardless of how much ceiling remains.
+
 ## Determine the production path
 
 Identify:
@@ -328,6 +330,8 @@ Correct the smallest production unit that owns the failure.
 Do not automatically increase cost for a structural production failure.
 
 **Two attempts, then stop.** A second failure carrying the same diagnosis means the diagnosis is wrong, not that the execution was unlucky. A third attempt on the same shot requires either a changed upstream artifact — a new reference frame, a revised shot plan — or a human decision to continue.
+
+This cap binds regardless of any ceiling agreed under "Retry and spend ceiling" — the ceiling bounds spend, it does not buy extra attempts against an unchanged diagnosis. The single retry for a transient provider failure is a carve-out: it repeats the same experiment because the experiment never ran, and it does not count as an attempt.
 
 Retrying against unchanged inputs is not a retry, it is the same experiment. Cost scales with attempts; the odds of a different outcome do not.
 

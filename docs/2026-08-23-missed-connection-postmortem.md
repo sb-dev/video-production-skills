@@ -380,10 +380,15 @@ asserts the floor is load-bearing by showing the same clean clip reads as period
 
 ## What remains open
 
-- The example's media is unchanged and still carries the defects described here.
-- The example's directory layout still diverges from the house convention (M), so its 210 MB of
-  rejected candidates remain uncommitted and outside `.gitignore`'s patterns.
+- Of the example's media, only the seven stills the defect benchmark scores against are retained
+  under `production/`; the rest of the run — including the defective takes described here — has
+  been deleted, and the defects survive as committed reviewer transcripts and this record.
+- `.gitignore` now carries patterns for the rejected candidates (`examples/*/eval/`,
+  `examples/*/shots/cand*.mp4`, …), so the 210 MB of working media stays uncommitted by policy
+  rather than by accident.
 - Behavioural eval coverage is 48%.
-- The semantic benchmark scores checklist competence at 3/8 against unprompted recall of 8/8;
-  the blind spots and one mis-specified case are recorded in `docs/04` §5 rather than tuned away. The remaining cases are judgement-shaped and currently
-  unfalsifiable; the runner reports that rather than hiding it.
+- The semantic benchmark scores checklist competence at 5/8 strict against unprompted recall of
+  8/8; the blind spots and one mis-specified case are recorded in `docs/04` §5 rather than tuned
+  away (the earlier 3/8 figure is superseded there — the scorer and one case brief changed, so the
+  runs are not comparable). The remaining cases are judgement-shaped and currently unfalsifiable;
+  the runner reports that rather than hiding it.
