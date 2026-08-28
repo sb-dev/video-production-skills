@@ -96,6 +96,64 @@ test('screen order contradicting the axis is reported', () => {
   assert.ok(rules(path).includes('screen-order-contradiction'));
 });
 
+/**
+ * Axis order reads left-to-right from the declared camera side, so a shot from
+ * the opposite side must see it reversed. Mirror-image staging seen from across
+ * the axis used to pass, because ascending order was accepted before the
+ * camera side was ever consulted.
+ */
+test('ascending order from the opposite side is a contradiction', () => {
+  const path = scene({
+    shots: {
+      SH01: { present: ['kiosk', 'board'], screenOrder: ['kiosk', 'board'] },
+      SH02: {
+        present: ['kiosk', 'board'],
+        screenOrder: ['kiosk', 'board'],
+        cameraSide: 'north',
+        crossesAxis: true,
+      },
+    },
+  });
+  assert.ok(rules(path).includes('screen-order-contradiction'), 'across the axis the order must reverse');
+});
+
+test('descending order from a declared crossing is clean', () => {
+  const path = scene({
+    shots: {
+      SH01: { present: ['kiosk', 'board'], screenOrder: ['kiosk', 'board'] },
+      SH02: {
+        present: ['kiosk', 'board'],
+        screenOrder: ['board', 'kiosk'],
+        cameraSide: 'north',
+        crossesAxis: true,
+      },
+    },
+  });
+  assert.deepEqual(rules(path), [], 'a declared crossing legitimately reverses the order');
+});
+
+test('an attachment naming an undeclared landmark or anchor is reported', () => {
+  const phantom = scene({
+    shots: {
+      SH01: { present: ['board'], attachments: { 'phantom-pillar': 'board' } },
+    },
+  });
+  assert.ok(rules(phantom).includes('unknown-landmark'), 'an attached phantom is still an invention');
+
+  const ghostAnchor = scene({
+    shots: {
+      SH01: { present: ['board'], attachments: { board: 'ghost-column' } },
+    },
+  });
+  assert.ok(rules(ghostAnchor).includes('unknown-landmark'), 'an undeclared anchor is an invention too');
+
+  const sceneLevel = scene({
+    landmarks: [{ id: 'kiosk' }, { id: 'board', attachedTo: 'ghost' }, { id: 'column' }],
+    shots: { SH01: { present: ['board'] } },
+  });
+  assert.ok(rules(sceneLevel).includes('unknown-landmark'), 'a scene-level anchor must be declared');
+});
+
 test('a landmark vanishing between shots that both contain it is reported', () => {
   const path = scene({
     shots: {
@@ -157,4 +215,16 @@ test('a manifest missing required fields is rejected', () => {
 
   const result = runScript(SCRIPT, [path]);
   assert.equal(result.status, 2);
+});
+
+test('integer-like shot ids are rejected before they can reorder', () => {
+  const path = scene({
+    shots: {
+      '0': { present: ['board'] },
+      '1': { present: ['board'] },
+    } as Record<string, SceneShot>,
+  });
+  const result = runScript(SCRIPT, [path]);
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /must not be bare integers/);
 });

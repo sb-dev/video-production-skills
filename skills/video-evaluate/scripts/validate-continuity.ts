@@ -136,6 +136,16 @@ function parseManifest(value: unknown): SceneManifest {
   const landmarks = value.landmarks.map(parseLandmark);
 
   if (!isRecord(value.shots)) throw new Error('shots must be an object keyed by shot id');
+  // JavaScript hoists integer-like object keys to the front in numeric order,
+  // so a manifest keyed "10", "2" would be silently re-sequenced and every
+  // order-sensitive check below would examine the wrong neighbours.
+  const indexLike = Object.keys(value.shots).filter((key) => /^(0|[1-9]\d*)$/.test(key));
+  if (indexLike.length > 0) {
+    throw new Error(
+      `shot ids must not be bare integers (${indexLike.join(', ')}): JavaScript reorders ` +
+        'integer-like keys, so the declared shot order would not survive parsing. Use ids like "SH01".',
+    );
+  }
   const shots = Object.entries(value.shots).map(([id, shot]) => parseShot(id, shot));
 
   return { sceneId, cameraSide, axisOrder, landmarks, shots };
@@ -146,8 +156,23 @@ function checkUnknownLandmarks(manifest: SceneManifest): readonly Finding[] {
   const known = new Set(manifest.landmarks.map((landmark) => landmark.id));
   const findings: Finding[] = [];
 
+  // An anchor is a landmark reference like any other: a landmark declared as
+  // attached to something the scene never mentions is the same invention.
+  for (const landmark of manifest.landmarks) {
+    if (landmark.attachedTo === undefined || landmark.attachedTo === null) continue;
+    if (known.has(landmark.attachedTo)) continue;
+    findings.push({
+      rule: 'unknown-landmark',
+      shot: 'scene',
+      message:
+        `"${landmark.attachedTo}" is named as the anchor of "${landmark.id}" but is not ` +
+        'declared in the scene.',
+    });
+  }
+
   for (const shot of manifest.shots) {
-    for (const id of [...shot.present, ...(shot.screenOrder ?? [])]) {
+    const attachments = shot.attachments ?? {};
+    for (const id of [...shot.present, ...(shot.screenOrder ?? []), ...Object.keys(attachments)]) {
       if (known.has(id)) continue;
       findings.push({
         rule: 'unknown-landmark',
@@ -155,6 +180,14 @@ function checkUnknownLandmarks(manifest: SceneManifest): readonly Finding[] {
         message:
           `"${id}" is not declared in the scene. A landmark that appears in a shot but in no ` +
           'scene manifest is an invention, and downstream shots will not agree about it.',
+      });
+    }
+    for (const [id, anchor] of Object.entries(attachments)) {
+      if (anchor === null || known.has(anchor)) continue;
+      findings.push({
+        rule: 'unknown-landmark',
+        shot: shot.id,
+        message: `"${anchor}" is named as the anchor of "${id}" but is not declared in the scene.`,
       });
     }
   }
@@ -204,8 +237,10 @@ function checkAttachments(manifest: SceneManifest): readonly Finding[] {
 }
 
 /**
- * With the camera fixed to one side of the axis, landmarks must appear in axis
- * order across the frame. Reversed order means the camera crossed.
+ * Axis order reads left-to-right on screen from the scene's declared camera
+ * side; from the opposite side the same landmarks read right-to-left. A shot
+ * must match the direction its side implies — a mirror-image staging seen from
+ * across the axis is exactly as wrong as a reversed one seen from home.
  */
 function checkScreenOrder(manifest: SceneManifest): readonly Finding[] {
   const findings: Finding[] = [];
@@ -217,21 +252,21 @@ function checkScreenOrder(manifest: SceneManifest): readonly Finding[] {
     const indices = shot.screenOrder
       .map((id) => axisIndex.get(id))
       .filter((index): index is number => index !== undefined);
+    if (indices.length < 2) continue;
 
     const ascending = indices.every((value, position) => position === 0 || value > (indices[position - 1] ?? -1));
-    if (ascending) continue;
-
     const descending = indices.every((value, position) => position === 0 || value < (indices[position - 1] ?? Infinity));
     const side = shot.cameraSide ?? manifest.cameraSide;
 
-    if (descending && side !== manifest.cameraSide) continue;
+    if (side === manifest.cameraSide ? ascending : descending) continue;
 
     findings.push({
       rule: 'screen-order-contradiction',
       shot: shot.id,
       message:
         `screen order [${shot.screenOrder.join(', ')}] contradicts the scene axis ` +
-        `[${manifest.axisOrder.join(', ')}] from the ${side} side.`,
+        `[${manifest.axisOrder.join(', ')}] from the ${side} side` +
+        (side === manifest.cameraSide ? '.' : ' — across the axis the order must reverse.'),
     });
   }
 
