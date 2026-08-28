@@ -192,6 +192,13 @@ test('a class filter narrows the run', () => {
   assert.ok(only.every((row) => row.id.startsWith('generation-')), 'filter must exclude other classes');
 });
 
+test('a class filter that matches nothing is an error, not a green run', () => {
+  const outcome = runScript(SCRIPT, ['--only', 'genration']);
+  assert.equal(outcome.status, 2, 'a run over zero cases must not exit clean');
+  assert.match(outcome.stderr, /matches no case class/);
+  assert.match(outcome.stderr, /generation/, 'the error should list the known classes');
+});
+
 // ------------------------------------------------------------- semantic
 //
 // The semantic tier used to be untestable: scoring happened inline against a
@@ -469,12 +476,68 @@ test('a stale transcript blocks a baseline update', () => {
   assert.throws(() => readFileSync(target.baseline, 'utf8'), 'no baseline may be written from stale evidence');
 });
 
-test('a case with no recorded transcript skips loudly rather than scoring', () => {
+test('a case with no recorded transcript skips loudly and fails the run', () => {
   const target = bench([DEFECT_CASE]);
-  const row = rescore(target).rows[0];
+  const outcome = rescore(target);
+  const row = outcome.rows[0];
   assert.ok(row !== undefined);
   assert.match(String(row.skipped), /no recorded transcript/);
   assert.equal(row.closed, undefined, 'a skipped case must not carry a score');
+  assert.equal(outcome.status, 1, 'a case the run was asked to score produced no evidence');
+});
+
+test('missing evidence blocks a baseline update', () => {
+  const target = bench([DEFECT_CASE]);
+  const outcome = runScript(SCRIPT, [
+    '--rescore', '--update-baseline',
+    '--taxonomy', target.taxonomy, '--transcripts', target.transcripts, '--baseline', target.baseline,
+  ]);
+  assert.equal(outcome.status, 1);
+  assert.match(outcome.stderr, /refusing to update the baseline while cases skip without evidence/);
+  assert.throws(() => readFileSync(target.baseline, 'utf8'), 'no baseline may be written from missing evidence');
+});
+
+/**
+ * The baseline's rates blocks are the only record of how many samples each
+ * verdict rests on. A partial run that rewrites the file must carry them
+ * forward for the cases it did not score.
+ */
+test('a partial baseline update preserves the rates of unscored cases', () => {
+  const directory = workspace();
+  const baseline = join(directory, 'baseline.json');
+  writeFileSync(
+    baseline,
+    JSON.stringify({
+      cases: { 'semantic-untouched': { closed: true, rates: { closed: '3/3' }, note: 'load-bearing' } },
+    }),
+  );
+
+  const outcome = runScript(SCRIPT, ['--only', 'generation', '--baseline', baseline, '--update-baseline']);
+  assert.equal(outcome.status, 0, outcome.stderr);
+
+  const parsed = parseJson(readFileSync(baseline, 'utf8'));
+  assert.ok(isRecord(parsed) && isRecord(parsed.cases));
+  const untouched = parsed.cases['semantic-untouched'];
+  assert.ok(isRecord(untouched));
+  assert.deepEqual(
+    untouched,
+    { closed: true, rates: { closed: '3/3' }, note: 'load-bearing' },
+    'an entry the run did not score must survive verbatim',
+  );
+});
+
+test('a stray "fine" does not launder a claimed defect on a clean control', () => {
+  const target = bench([CONTROL_CASE]);
+  record(target, 'bench-control', [
+    {
+      open: 'There is an inconsistency in the layout, but the colors are fine.',
+      closed: verdict({ 'spatial-continuity': 'PASS' }),
+    },
+  ]);
+
+  const row = rescore(target).rows[0];
+  assert.ok(row !== undefined);
+  assert.equal(row.open, false, 'an invented inconsistency must fail the control even with "fine" nearby');
 });
 
 /**

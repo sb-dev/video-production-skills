@@ -46,6 +46,8 @@ const EXAMPLE_ROOT = join(ROOT, 'examples/level-2-missed-connection');
 
 const EXIT_USAGE = 2;
 const EXIT_FAILED = 1;
+/** The provider failed after retries — not a usage error, not a benchmark verdict. */
+const EXIT_PROVIDER = 3;
 
 const VISION_MODEL = 'google/gemini-3-pro';
 const MAX_IMAGE_WIDTH = 1024;
@@ -388,35 +390,73 @@ function pollUrl(prediction: Record<string, unknown>): string | null {
   return urls.get;
 }
 
+/** A provider failure that survived retries. Maps to EXIT_PROVIDER, not EXIT_USAGE. */
+class ProviderError extends Error {}
+
+/** Bounded backoff: a benchmark run is long enough that one 429 must not abort it. */
+const RETRY_DELAYS_MS = [2000, 8000];
+
+async function providerFetch(url: string, init: RequestInit, what: string): Promise<Response> {
+  for (let attempt = 0; ; attempt += 1) {
+    let response: Response | null = null;
+    let failure: unknown = null;
+    try {
+      response = await fetch(url, init);
+    } catch (error: unknown) {
+      failure = error;
+    }
+    if (response !== null && response.ok) return response;
+
+    // Auth and malformed-request failures will not improve with patience.
+    const retryable = response === null || response.status === 429 || response.status >= 500;
+    const detail =
+      response === null
+        ? failure instanceof Error
+          ? failure.message
+          : String(failure)
+        : `${String(response.status)}: ${await response.text()}`;
+    const delay = RETRY_DELAYS_MS[attempt];
+    if (!retryable || delay === undefined) {
+      throw new ProviderError(`${what} failed after ${String(attempt + 1)} attempt(s) — ${detail}`);
+    }
+    console.error(`${what} failed (${detail}); retrying in ${String(delay / 1000)}s`);
+    await sleep(delay);
+  }
+}
+
 async function askVision(prompt: string, images: readonly string[]): Promise<string> {
   const token = process.env.REPLICATE_API_TOKEN;
   if (token === undefined || token === '') throw new Error('REPLICATE_API_TOKEN is not set');
   const authorization = { Authorization: `Bearer ${token}` };
 
-  const response = await fetch(`https://api.replicate.com/v1/models/${VISION_MODEL}/predictions`, {
-    method: 'POST',
-    headers: { ...authorization, 'Content-Type': 'application/json', Prefer: 'wait' },
-    body: JSON.stringify({ input: { prompt, images: [...images], temperature: 0 } }),
-  });
-  if (!response.ok) throw new Error(`vision request failed ${String(response.status)}: ${await response.text()}`);
+  const response = await providerFetch(
+    `https://api.replicate.com/v1/models/${VISION_MODEL}/predictions`,
+    {
+      method: 'POST',
+      headers: { ...authorization, 'Content-Type': 'application/json', Prefer: 'wait' },
+      body: JSON.stringify({ input: { prompt, images: [...images], temperature: 0 } }),
+    },
+    'vision request',
+  );
 
   let prediction: unknown = await response.json();
-  if (!isRecord(prediction)) throw new Error('unexpected vision response');
+  if (!isRecord(prediction)) throw new ProviderError('unexpected vision response');
 
   const deadline = Date.now() + PREDICTION_TIMEOUT_MS;
   while (prediction.status === 'starting' || prediction.status === 'processing') {
     const url = pollUrl(prediction);
-    if (url === null) throw new Error(`vision ${String(prediction.status)} with no poll URL`);
-    if (Date.now() > deadline) throw new Error('vision prediction did not finish within ten minutes');
+    if (url === null) throw new ProviderError(`vision ${String(prediction.status)} with no poll URL`);
+    if (Date.now() > deadline) throw new ProviderError('vision prediction did not finish within ten minutes');
 
     await sleep(POLL_INTERVAL_MS);
-    const polled = await fetch(url, { headers: authorization });
-    if (!polled.ok) throw new Error(`vision poll failed ${String(polled.status)}: ${await polled.text()}`);
+    const polled = await providerFetch(url, { headers: authorization }, 'vision poll');
     prediction = await polled.json();
-    if (!isRecord(prediction)) throw new Error('unexpected vision poll response');
+    if (!isRecord(prediction)) throw new ProviderError('unexpected vision poll response');
   }
 
-  if (prediction.status !== 'succeeded') throw new Error(`vision ${String(prediction.status)}: ${String(prediction.error)}`);
+  if (prediction.status !== 'succeeded') {
+    throw new ProviderError(`vision ${String(prediction.status)}: ${String(prediction.error)}`);
+  }
 
   const output = prediction.output;
   return Array.isArray(output) ? output.join('') : String(output ?? '');
@@ -488,9 +528,12 @@ function scoreOpenAnswer(entry: Record<string, unknown>, answer: string): { pass
   const matched = keywords.find((keyword) => lower.includes(keyword.toLowerCase()));
 
   if (expect.clean === true) {
-    // A control passes when the reviewer does not manufacture a defect.
-    const invented = /\b(problem|issue|inconsist|wrong|missing|error|defect)\b/.test(lower) &&
-      !/\bno (problems|issues)\b|\bnothing (wrong|amiss)\b|\bfine\b|\bconsistent\b/.test(lower);
+    // A control passes when the reviewer does not manufacture a defect. Stems
+    // are left open on the right so plural and derived forms count, and only an
+    // explicit negation excuses a defect word — a stray "fine" elsewhere in the
+    // answer must not launder a claimed defect.
+    const invented = /\b(problem|issue|inconsisten|wrong|missing|error|defect)/.test(lower) &&
+      !/\bno (?:apparent |obvious )?(?:problems?|issues?|errors?|defects?|inconsistenc)|\bnothing (?:wrong|amiss|missing)\b|\bnot (?:a |an )?(?:problem|issue|error|defect)\b/.test(lower);
     return { pass: !invented, detail: invented ? 'invented a defect on a clean control' : 'no defect claimed' };
   }
 
@@ -663,16 +706,19 @@ function printReport(results: readonly CaseResult[], semanticRan: boolean, sourc
 
 // ------------------------------------------------------------ baseline
 
-function loadBaseline(path: string): Record<string, Record<string, boolean>> {
+/**
+ * Entries are kept whole, not reduced to their booleans: an offline or --only
+ * run that rewrites the baseline must not strip the recorded observed rates
+ * from cases it did not score — they are the only record of the sample counts.
+ */
+function loadBaseline(path: string): Record<string, Record<string, unknown>> {
   if (!existsSync(path)) return {};
   const parsed = parseJsonOrNull(readFileSync(path, 'utf8'));
   if (!isRecord(parsed) || !isRecord(parsed.cases)) return {};
-  const cases: Record<string, Record<string, boolean>> = {};
+  const cases: Record<string, Record<string, unknown>> = {};
   for (const [id, value] of Object.entries(parsed.cases)) {
     if (!isRecord(value)) continue;
-    const entry: Record<string, boolean> = {};
-    for (const [key, flag] of Object.entries(value)) if (typeof flag === 'boolean') entry[key] = flag;
-    cases[id] = entry;
+    cases[id] = { ...value };
   }
   return cases;
 }
@@ -685,7 +731,7 @@ function loadBaseline(path: string): Record<string, Record<string, boolean>> {
  */
 function compare(
   results: readonly CaseResult[],
-  baseline: Record<string, Record<string, boolean>>,
+  baseline: Record<string, Record<string, unknown>>,
 ): { regressed: readonly string[]; flaky: readonly string[] } {
   const regressed: string[] = [];
   const flaky: string[] = [];
@@ -750,6 +796,15 @@ async function runSemanticCase(
   const samples: { open: { pass: boolean; detail: string }; closed: ClosedScore }[] = [];
   let images: ResolvedImages | null = null;
 
+  // Every recorded repeat not yet scored travels with each flush, so a provider
+  // failure mid-case loses at most the call pair in flight — and repeats beyond
+  // the requested count survive lowering --repeat.
+  const flush = (): void => {
+    const scored = new Set(kept.map((repeat) => repeat.index));
+    const rest = (existing?.repeats ?? []).filter((repeat) => !scored.has(repeat.index));
+    writeTranscript(options.transcripts, id, { ...expected, repeats: [...kept, ...rest] });
+  };
+
   for (let index = 0; index < count; index += 1) {
     let recorded = existing?.repeats.find((repeat) => repeat.index === index);
 
@@ -766,21 +821,19 @@ async function runSemanticCase(
         open: await askVision(openPrompt(entry), images.uris),
         closed: await askVision(closedPrompt(entry, options.criteria), images.uris),
       };
+      kept.push(recorded);
+      flush();
+    } else {
+      kept.push(recorded);
     }
 
-    kept.push(recorded);
     samples.push({
       open: scoreOpenAnswer(entry, recorded.open),
       closed: scoreClosedAnswer(entry, recorded.closed, options.criteria),
     });
   }
 
-  // Repeats beyond the requested count are kept so lowering --repeat does not
-  // throw away answers that were paid for.
-  const surplus = (existing?.repeats ?? []).filter((repeat) => repeat.index >= count);
-  if (!options.rescore) {
-    writeTranscript(options.transcripts, id, { ...expected, repeats: [...kept, ...surplus] });
-  }
+  if (!options.rescore) flush();
 
   return {
     kind: 'scored',
@@ -841,6 +894,16 @@ async function main(): Promise<number> {
   const taxonomy = parseJsonOrNull(readFileSync(taxonomyPath, 'utf8'));
   if (!isRecord(taxonomy) || !Array.isArray(taxonomy.cases)) throw new Error('taxonomy.cases must be an array');
 
+  // A typo'd class would match nothing, and a run over nothing exits green —
+  // the worst possible answer to a misspelled question.
+  if (values.only !== undefined) {
+    const classes = new Set(taxonomy.cases.filter(isRecord).map((entry) => String(entry.class)));
+    if (!classes.has(values.only)) {
+      console.error(`--only ${values.only} matches no case class (known: ${[...classes].sort().join(', ')})`);
+      return EXIT_USAGE;
+    }
+  }
+
   const options: Options = {
     repeat,
     repeatExplicit: values.repeat !== undefined,
@@ -880,6 +943,10 @@ async function main(): Promise<number> {
 
   const results: CaseResult[] = [];
   const stale: string[] = [];
+  // Skips while the semantic tier is running are missing evidence, not a quiet
+  // environment: a deleted transcript or fixture must fail the run, or CI reads
+  // "still green" off a benchmark that no longer measured anything.
+  const evidential: string[] = [];
 
   for (const value of taxonomy.cases) {
     if (!isRecord(value)) continue;
@@ -909,6 +976,7 @@ async function main(): Promise<number> {
       continue;
     }
     if (outcome.kind === 'skip') {
+      evidential.push(`${id}: ${outcome.reason}`);
       results.push({ id, class: className, tier, detail: '', skipped: outcome.reason });
       continue;
     }
@@ -919,13 +987,20 @@ async function main(): Promise<number> {
   const { regressed, flaky } = compare(results, baseline);
   const source = options.rescore ? 'recorded transcripts' : 'live model';
 
-  if (values.json) console.log(JSON.stringify({ results, semanticRan, regressions: regressed, flaky, stale }, null, 2));
+  if (values.json) {
+    console.log(JSON.stringify({ results, semanticRan, regressions: regressed, flaky, stale, evidentialSkips: evidential }, null, 2));
+  }
   else printReport(results, semanticRan, source);
 
   if (values['update-baseline'] === true) {
     if (stale.length > 0) {
       console.error('refusing to update the baseline while transcripts are stale:');
       for (const line of stale) console.error(`  ${line}`);
+      return EXIT_FAILED;
+    }
+    if (evidential.length > 0) {
+      console.error('refusing to update the baseline while cases skip without evidence:');
+      for (const line of evidential) console.error(`  ${line}`);
       return EXIT_FAILED;
     }
     const cases: Record<string, Record<string, unknown>> = { ...baseline };
@@ -954,6 +1029,15 @@ async function main(): Promise<number> {
     return EXIT_FAILED;
   }
 
+  if (evidential.length > 0) {
+    if (narrate) {
+      console.log('');
+      for (const line of evidential) console.log(`SKIPPED WITHOUT EVIDENCE: ${line}`);
+      console.log('a case this run was asked to score produced no evidence; restore the artifact or collect the transcript');
+    }
+    return EXIT_FAILED;
+  }
+
   if (flaky.length > 0 && narrate) {
     console.log('');
     console.log(`FLAKY: ${flaky.join(', ')} — passed some repeats, not treated as a regression`);
@@ -975,5 +1059,5 @@ try {
   process.exitCode = await main();
 } catch (error: unknown) {
   console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = EXIT_USAGE;
+  process.exitCode = error instanceof ProviderError ? EXIT_PROVIDER : EXIT_USAGE;
 }
