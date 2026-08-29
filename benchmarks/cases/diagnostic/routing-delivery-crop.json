@@ -1,0 +1,27 @@
+{
+  "id": "routing-delivery-crop",
+  "suite": "diagnostic",
+  "capability": "routing",
+  "summary": "A valid master whose 9:16 variant crops the product out of frame. The delivery variant owns the defect; the master is untouched.",
+  "skills": [
+    "video-evaluate",
+    "video-production"
+  ],
+  "commands": [
+    "video-evaluate/diagnose",
+    "video-production/create-delivery"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "A 16:9 master has passed creative evaluation and technical QC. Its 9:16 social variant, derived by a centre crop, loses the product on the left third of frame in two shots. Diagnose: owning artifact, one corrective action, correction scope, and the command the fix routes to. State whether the master or any shot may be touched.",
+  "expectedRouting": {
+    "owningArtifact": "delivery_variant",
+    "correctiveAction": "refine-current",
+    "maxScope": "the 9:16 delivery variant"
+  }
+}

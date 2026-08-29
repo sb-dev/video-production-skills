@@ -1,0 +1,41 @@
+{
+  "id": "production-level-5-atlas-one",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "Atlas One: multi-video campaign. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-5-atlas-one",
+  "promptSource": {
+    "path": "examples/level-5-atlas-one/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "environment-continuity",
+    "spatial-continuity",
+    "editing-pacing",
+    "shot-selection",
+    "specificity-intentionality",
+    "visual-direction-adherence",
+    "product-fidelity",
+    "physical-interaction",
+    "audio-video-integration",
+    "graphics-typography",
+    "delivery-fit",
+    "production-discipline",
+    "character-fidelity"
+  ]
+}

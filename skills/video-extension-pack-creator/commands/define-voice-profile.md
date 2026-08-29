@@ -35,5 +35,5 @@ A voice requirement that contradicts the pack identity routes to `define-pack`.
 A performance trait that evaluation misjudges routes to `define-evaluation-profile`.
 
 ## Evaluation hooks
-Test voice-enabled packs; a voice-free pack is required coverage, not yet written.
-Case: `voice-no-invented-id`.
+Test voice-enabled and voice-free packs.
+Cases: `voice-no-invented-id`, `voice-free-pack-no-profile`.

@@ -1,0 +1,27 @@
+{
+  "id": "generation-control-clean-motion",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "smooth motion must not be flagged",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-motion"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "generation",
+  "tier": "deterministic",
+  "checker": "motion",
+  "fixture": "clean.mp4",
+  "expect": {
+    "clean": true
+  },
+  "owningArtifact": "video_shot",
+  "correctiveAction": "accept"
+}

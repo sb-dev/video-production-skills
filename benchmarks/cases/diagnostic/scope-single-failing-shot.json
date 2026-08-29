@@ -1,0 +1,28 @@
+{
+  "id": "scope-single-failing-shot",
+  "suite": "diagnostic",
+  "capability": "scope-preservation",
+  "summary": "One shot of three fails motion QC. The correction is that shot alone; approved references, plan and sibling shots survive verbatim.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-production/refine",
+    "video-production/generate-shot",
+    "video-evaluate/diagnose"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "A three-shot sequence has approved visual direction, an approved shot plan, and one approved reference frame per shot, each with approvedBy recorded. Shot SH02 fails detect-motion-artifacts with periodic seams; SH01 and SH03 are clean and selected. Plan the correction. List exactly which artifacts change and which are preserved unchanged, and name the command that performs the correction.",
+  "expectedRouting": {
+    "owningArtifact": "video_shot",
+    "correctiveAction": "retry-execution",
+    "maxScope": "SH02 only"
+  }
+}

@@ -2,6 +2,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadCatalogue, summaryLine, validateBenchmark } from './benchmark/manifest.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const REQUIRED_DOCS = [
@@ -266,6 +267,15 @@ function main(): void {
   }
 
   console.log(`repository structure: OK (${allFiles.length} files)`);
+
+  // The benchmark manifest is a repository contract: an advertised example or
+  // showcase without a benchmark case is a coverage gap, and a gap is not a pass.
+  const benchmark = validateBenchmark(ROOT);
+  if (benchmark.errors.length > 0) {
+    for (const error of benchmark.errors) console.error(`  ${error}`);
+    fail(summaryLine(benchmark, null));
+  }
+  console.log(summaryLine(benchmark, loadCatalogue(ROOT).manifest));
 }
 
 try {

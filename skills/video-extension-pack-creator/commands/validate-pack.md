@@ -52,4 +52,4 @@ voice safety to `define-voice-profile`, self-containment to `create-skill-packag
 
 ## Evaluation hooks
 Include deliberately invalid packs and blocked-environment cases.
-Case: `validation-blocked-not-pass`.
+Cases: `validation-blocked-not-pass`, `validation-passes-complete-pack`.

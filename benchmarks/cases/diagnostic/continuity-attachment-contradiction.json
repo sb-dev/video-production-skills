@@ -1,0 +1,27 @@
+{
+  "id": "continuity-attachment-contradiction",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "the same landmark mounted in one shot and free-standing in the next",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "continuity",
+  "tier": "deterministic",
+  "checker": "continuity",
+  "scene": "attachment-conflict",
+  "expect": {
+    "rule": "attachment-contradiction"
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

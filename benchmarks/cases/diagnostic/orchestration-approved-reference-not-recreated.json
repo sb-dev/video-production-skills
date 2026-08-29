@@ -1,0 +1,27 @@
+{
+  "id": "orchestration-approved-reference-not-recreated",
+  "suite": "diagnostic",
+  "capability": "orchestration",
+  "summary": "A production re-entered with approved reference frames must not recreate visual direction or the storyboard. Skipping correctly is the behaviour under test.",
+  "skills": [
+    "video-production"
+  ],
+  "commands": [
+    "video-production/generate-shot",
+    "video-production/create-reference",
+    "video-production/define-direction"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "A production directory is supplied with approved visual direction, an approved storyboard, an approved shot plan and approved reference frames for every shot, each recording approvedBy. No video shots exist yet. The user asks to continue the production. List the commands you run, in order, and the ones you deliberately skip, with the reason for each skip.",
+  "expectedRouting": {
+    "owningArtifact": "video_shot",
+    "correctiveAction": "accept",
+    "maxScope": "generate-shot onward; nothing upstream recreated"
+  }
+}

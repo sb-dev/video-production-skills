@@ -1,0 +1,27 @@
+{
+  "id": "technical-unreadable-media",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a file that is not decodable media",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/qc"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "technical",
+  "tier": "deterministic",
+  "checker": "media-qc",
+  "fixture": "corrupt.mp4",
+  "expect": {
+    "unreadable": true
+  },
+  "owningArtifact": "video_shot",
+  "correctiveAction": "retry-execution"
+}

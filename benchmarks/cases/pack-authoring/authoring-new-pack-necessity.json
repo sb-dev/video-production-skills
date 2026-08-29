@@ -1,0 +1,28 @@
+{
+  "id": "authoring-new-pack-necessity",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "New-pack necessity. A stable reusable production grammar absent from the catalogue justifies create, with the insufficiency of existing packs stated.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/define-pack",
+    "video-extension-pack-creator/derive-production-profile"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Create a paper-cutout historical mystery pack. Inspect the catalogue, decide reuse / adapt / create, and if create, proceed to derive the production profile.",
+  "requiredDimensions": [
+    "contract-completeness",
+    "operational-specificity"
+  ],
+  "hardGates": [
+    "necessity"
+  ]
+}

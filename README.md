@@ -300,13 +300,18 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
   - [Installation Expectations](docs/03-creative-skills-repository-and-contracts-spec.md#19-installation-expectations)
   - [Technical Acceptance Criteria](docs/03-creative-skills-repository-and-contracts-spec.md#26-technical-acceptance-criteria)
 - [Testing and Benchmark Specification](docs/04-testing-and-benchmark-spec.md)
-  - [Benchmark Scope and Capability Coverage](docs/04-testing-and-benchmark-spec.md#2-benchmark-scope-and-capability-coverage)
-  - [Testing Layers](docs/04-testing-and-benchmark-spec.md#3-testing-layers)
-  - [Runbook](docs/04-testing-and-benchmark-spec.md#4-runbook)
-  - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#5-adding-coverage)
-  - [Extension-Pack and Pack-Creator Benchmark Cases](docs/04-testing-and-benchmark-spec.md#6-extension-pack-and-pack-creator-benchmark-cases)
-  - [Measured Results and Known Blind Spots](docs/04-testing-and-benchmark-spec.md#7-measured-results-and-known-blind-spots)
-  - [Prior Art](docs/04-testing-and-benchmark-spec.md#8-prior-art)
+  - [Quality Model](docs/04-testing-and-benchmark-spec.md#2-quality-model)
+  - [Benchmark Suites](docs/04-testing-and-benchmark-spec.md#3-benchmark-suites)
+  - [Command Conformance](docs/04-testing-and-benchmark-spec.md#4-command-conformance)
+  - [Testing Layers](docs/04-testing-and-benchmark-spec.md#5-testing-layers)
+  - [Runbook](docs/04-testing-and-benchmark-spec.md#8-runbook)
+  - [Case Contract](docs/04-testing-and-benchmark-spec.md#9-case-contract)
+  - [Diagnostic Scoring](docs/04-testing-and-benchmark-spec.md#10-diagnostic-scoring)
+  - [Video-Quality Scoring](docs/04-testing-and-benchmark-spec.md#11-video-quality-scoring)
+  - [Fingerprints and Staleness](docs/04-testing-and-benchmark-spec.md#15-fingerprints-and-staleness)
+  - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#21-adding-coverage)
+  - [Measured Results](docs/04-testing-and-benchmark-spec.md#23-measured-results)
+  - [Prior Art](docs/04-testing-and-benchmark-spec.md#24-prior-art)
 - [Video Customisation Packs Specification](docs/05-video-customisation-packs-spec.md)
 - [Video Extension Pack Catalogue Specification](docs/06-video-extension-pack-catalogue-spec.md)
 
@@ -333,6 +338,10 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
 ### Evals
 
 - [End-to-End Evals](evals/end-to-end/README.md)
+
+### Benchmarks
+
+- [Benchmark runbook](benchmarks/README.md) — suites, `npm run benchmark:list`, preparing and scoring cases, coverage gates
 
 ### Examples
 

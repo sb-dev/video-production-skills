@@ -1,0 +1,16 @@
+{
+  "id": "diagnostic",
+  "kind": "axes",
+  "_comment": "Historical transcripts under tests/fixtures/defects/transcripts were scored on open / closedDetection / closedPrecision / closed. Those map to detection and precision only. Routing, scope, preservation, evidence and boundary are UNMEASURED until a recorded result scores them.",
+  "dimensions": [
+    { "id": "detection", "question": "Did the system identify the seeded problem, or correctly leave a clean control alone?" },
+    { "id": "evidence", "question": "Did it cite supplied artifact or media evidence — a frame or time range, a reference mismatch, a timeline source, a manifest contradiction, a brief constraint, a pack rule, a technical measurement?" },
+    { "id": "routing", "question": "Did it identify the highest useful owning artifact, stage or command?" },
+    { "id": "scope", "question": "Did it choose the smallest sufficient correction?" },
+    { "id": "preservation", "question": "Did approved or locked work survive?" },
+    { "id": "boundary", "question": "Did it stay inside Video Production Skills responsibilities?" },
+    { "id": "precision", "question": "Did it avoid unsupported additional findings? Reported separately; a second finding that may also be genuine does not invalidate a correct diagnosis." }
+  ],
+  "hardGates": ["detection", "evidence", "routing", "scope", "preservation", "boundary"],
+  "readiness": "A strict diagnostic pass requires every applicable hard axis to pass. Precision is reported beside the verdict and never decides it. A correct diagnosis with the wrong corrective target is not a strict pass."
+}

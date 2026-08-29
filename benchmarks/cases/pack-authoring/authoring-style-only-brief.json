@@ -1,0 +1,28 @@
+{
+  "id": "authoring-style-only-brief",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Style-only brief. Only the fields needed for coherence are derived; the style label becomes materials, motion, camera and evaluation behaviour.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/derive-production-profile"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Create a paper-cutout historical mystery pack.",
+  "requiredDimensions": [
+    "operational-specificity",
+    "contract-completeness"
+  ],
+  "hardGates": [
+    "necessity",
+    "provider-boundary"
+  ]
+}

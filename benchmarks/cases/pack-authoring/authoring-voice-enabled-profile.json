@@ -1,0 +1,28 @@
+{
+  "id": "authoring-voice-enabled-profile",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Voice-enabled profile: narrator plus one character voice, roles and performance direction defined, provider references optional, no invented IDs, no identifiable actor.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/define-voice-profile"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Define the voice profile for a pack that requires a narrator and one character voice. No provider is configured.",
+  "requiredDimensions": [
+    "contract-completeness"
+  ],
+  "hardGates": [
+    "necessity",
+    "voice-safety",
+    "provider-boundary"
+  ]
+}

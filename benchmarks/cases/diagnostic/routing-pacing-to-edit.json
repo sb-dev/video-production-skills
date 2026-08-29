@@ -1,0 +1,28 @@
+{
+  "id": "routing-pacing-to-edit",
+  "suite": "diagnostic",
+  "capability": "routing",
+  "summary": "Individually strong shots with weak sequence rhythm. The cut owns the defect; no shot is regenerated.",
+  "skills": [
+    "video-evaluate",
+    "video-production"
+  ],
+  "commands": [
+    "video-evaluate/diagnose",
+    "video-production/refine",
+    "video-production/assemble-edit"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "A three-shot sequence has been assembled from approved, selected takes. Every shot passes motion QC and matches its reference frame. Viewed as a sequence, the middle shot is held two seconds too long and the reveal in shot three lands after the music cue. Diagnose: owning artifact, one corrective action, correction scope, and the command refine must route to. State what must not be regenerated.",
+  "expectedRouting": {
+    "owningArtifact": "edit_timeline",
+    "correctiveAction": "revise-edit",
+    "maxScope": "the edit timeline only"
+  }
+}

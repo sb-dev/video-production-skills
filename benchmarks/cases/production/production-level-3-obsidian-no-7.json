@@ -1,0 +1,39 @@
+{
+  "id": "production-level-3-obsidian-no-7",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "Obsidian No. 7: product commercial with delivery variants. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-3-obsidian-no-7",
+  "promptSource": {
+    "path": "examples/level-3-obsidian-no-7/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "environment-continuity",
+    "spatial-continuity",
+    "editing-pacing",
+    "shot-selection",
+    "specificity-intentionality",
+    "visual-direction-adherence",
+    "product-fidelity",
+    "physical-interaction",
+    "audio-video-integration",
+    "graphics-typography",
+    "delivery-fit"
+  ]
+}

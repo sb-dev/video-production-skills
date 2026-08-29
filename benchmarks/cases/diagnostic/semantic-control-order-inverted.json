@@ -1,0 +1,48 @@
+{
+  "id": "semantic-control-order-inverted",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "an abstract scene with the axis order reversed against a reference",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "continuity",
+  "tier": "semantic",
+  "images": [
+    {
+      "fixture": "scene-clean.png",
+      "role": "approved reference"
+    },
+    {
+      "fixture": "scene-order-inverted.png",
+      "role": "frame under review"
+    }
+  ],
+  "context": "The first image is the approved scene. The second is a new frame that must match its landmark layout.",
+  "criterion": "spatial-continuity",
+  "keywords": [
+    "order",
+    "swapped",
+    "reversed",
+    "left",
+    "right",
+    "position",
+    "moved",
+    "opposite"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "shot_plan",
+  "correctiveAction": "revise-shot-plan"
+}

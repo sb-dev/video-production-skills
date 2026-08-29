@@ -1,0 +1,68 @@
+{
+  "schema": "vps-benchmark-manifest/1",
+  "_comment": "Coverage authority for the benchmark. Cases are discovered from cases/<suite>/<id>.json; this file names the suites, the rubrics, where the diagnostic suite's recorded evidence lives, and the coverage rules the validator enforces. Counts are derived, never written here.",
+  "suites": {
+    "diagnostic": {
+      "description": "Minimal seeded failures and clean controls. Measures whether evaluation detects a defect, cites evidence, routes to the owning artifact, bounds the correction, preserves approved work, and stays in scope.",
+      "measures": ["detection", "evidence", "routing", "scope", "preservation", "boundary", "precision"]
+    },
+    "production": {
+      "description": "The progressive production examples the repository advertises. The prompt source is the example README; changing the advertised prompt changes the case fingerprint.",
+      "measures": ["video-quality"]
+    },
+    "packs": {
+      "description": "One case per extension-pack showcase under extension-packs/<slug>/README.md. Zero cases while that surface does not exist; the validator fails the moment a showcase appears without a case.",
+      "measures": ["pack-adherence"]
+    },
+    "pack-authoring": {
+      "description": "video-extension-pack-creator behaviour: necessity first, then contract completeness, operational specificity, packaging, showcase, evals, and catalogue integration.",
+      "measures": ["pack-authoring"]
+    }
+  },
+  "rubrics": {
+    "diagnostic": "rubrics/diagnostic.json",
+    "video-quality": "rubrics/video-quality.json",
+    "pack-adherence": "rubrics/pack-adherence.json",
+    "pack-authoring": "rubrics/pack-authoring.json"
+  },
+  "diagnostic": {
+    "_comment": "Order of closedCriteria is load-bearing: the closed-prompt digest that keys every recorded transcript is computed over this list. Moved verbatim from tests/fixtures/defects/taxonomy.json.",
+    "closedCriteria": [
+      "spatial-continuity",
+      "subject-posed-for-action",
+      "character-reference-fidelity",
+      "text-legibility",
+      "annotations-outside-frame"
+    ],
+    "transcripts": "tests/fixtures/defects/transcripts",
+    "baseline": "tests/fixtures/defects/baseline.json",
+    "exampleRoot": "examples/level-2-missed-connection",
+    "visionModel": "google/gemini-3-pro"
+  },
+  "coverage": {
+    "examples": {
+      "root": "examples",
+      "promptHeading": "Prompt",
+      "exclude": [
+        {
+          "path": "examples/three-shot-character-sequence",
+          "reason": "The docs/03 §18 initial example. It has no advertised ## Prompt; it is proved by evals/end-to-end/core-proof.json, and inventing a prompt for it would duplicate nothing the repository advertises."
+        }
+      ]
+    },
+    "showcases": {
+      "root": "extension-packs",
+      "promptHeading": "Prompt",
+      "caseIdPrefix": "packs-"
+    },
+    "commands": {
+      "normalClasses": ["normal", "draft", "refinement", "final"],
+      "boundaryClasses": ["failure-boundary"],
+      "exempt": {}
+    }
+  },
+  "tiers": {
+    "core": ["diagnostic", "production"],
+    "catalogue": ["packs", "pack-authoring"]
+  }
+}

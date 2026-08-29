@@ -38,6 +38,11 @@ All notable changes to this project will be documented here.
 - `tests/fixtures/defects/taxonomy.json` and a committed baseline, covering continuity, generation, technical and creative defect classes with clean controls.
 - Synthetic scene fixtures acting as controls for the grader itself.
 - `docs/04-testing-and-benchmark-spec.md` specifying the testing layers and serving as the runbook for running them.
+- `benchmarks/` as a first-class surface: `manifest.json` as the coverage authority, anchored rubrics (`diagnostic`, `video-quality`, `pack-adherence`, `pack-authoring`), and cases across four suites — the migrated diagnostic cases plus routing, scope and orchestration definitions, one production case per advertised example, and pack-authoring scenarios.
+- `tools/validate-benchmark.ts` and `tools/benchmark/`: manifest validation, example and showcase coverage gates, command normal/boundary conformance, deterministic case fingerprints; wired into `npm run validate`.
+- `run-benchmark.ts --list`, `--suite`, `--case`, `--prepare <id>` and `--score <result.json>`: host-agent cases are prepared and scored offline, report `NOT RUN` until measured, and refuse `STALE` results.
+- `npm run benchmark:list`, `npm run validate:benchmark`, and scorer fixtures under `benchmarks/fixtures/`.
+- Eval cases so every command has normal-side and boundary coverage, with two new deterministic checks (`continuity:passes-clean-scene`, `qc:accepts-valid-media`).
 - `make-storyboard.ts` composing storyboard panels into a numbered, keylined board sheet, with defaults that produce the expected form and `--print-command` for hosts without ImageMagick.
 - Committed semantic transcripts under `tests/fixtures/defects/transcripts/`, with `--rescore` scoring them offline and `--print-prompts` showing exactly what the reviewer was asked. Re-scoring after a scorer change costs nothing, and a transcript recorded against a changed prompt, model or image set is refused rather than scored.
 - `--repeat N` sampling each semantic case several times: verdicts are the majority across repeats, the observed rate is recorded beside them, and a case that passes some repeats and fails others is reported `FLAKY` instead of failing the run as a regression.
@@ -50,6 +55,8 @@ All notable changes to this project will be documented here.
 
 ### Changed
 
+- The defect benchmark's cases moved losslessly from `tests/fixtures/defects/taxonomy.json` to `benchmarks/cases/diagnostic/<id>.json`; transcripts and the historical baseline stay where they were and every recorded transcript still scores. `run-benchmark.ts --taxonomy` became `--manifest`.
+- `docs/04` rewritten to v2 around the `benchmarks/` surface, keeping the 2026-08-24 measured results verbatim as historical evidence; `docs/03` v7 and `docs/06` v3.2 record the benchmark contract.
 - `render-timeline.ts` warns when a source aspect differs from the render aspect instead of letterboxing silently.
 - Reference-frame guidance: a reference frame is a photograph of a moment, not a blocking diagram; subjects that must move are posed mid-motion; the environment is its own artifact.
 - Storyboard guidance: boards inherit approved references, annotations stay outside the frame, and board approval is not motion validation.

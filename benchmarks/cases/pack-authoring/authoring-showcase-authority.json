@@ -1,0 +1,29 @@
+{
+  "id": "authoring-showcase-authority",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Showcase authority: canonical README under extension-packs/<pack>/ with an exact fenced ## Prompt, expected traits and evaluation focus, and no fabricated results.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/create-showcase"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Create the showcase README for a newly defined pixilation music-video pack that has never been produced.",
+  "requiredDimensions": [
+    "showcase-quality",
+    "generation-prompt-quality",
+    "benchmark-integration"
+  ],
+  "hardGates": [
+    "necessity",
+    "no-fabricated-evidence"
+  ]
+}

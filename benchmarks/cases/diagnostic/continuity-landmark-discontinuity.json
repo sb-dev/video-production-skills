@@ -1,0 +1,27 @@
+{
+  "id": "continuity-landmark-discontinuity",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a landmark vanishes between two shots that both contain it",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "continuity",
+  "tier": "deterministic",
+  "checker": "continuity",
+  "scene": "vanishing-landmark",
+  "expect": {
+    "rule": "landmark-discontinuity"
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

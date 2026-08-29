@@ -1,0 +1,40 @@
+{
+  "id": "routing-storyboard-wardrobe",
+  "suite": "diagnostic",
+  "capability": "routing",
+  "summary": "A storyboard panel contradicting the approved character sheets. The board is the owning artifact; the sheets stay untouched.",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/diagnose",
+    "video-evaluate/check-fidelity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "The first two images are the approved character sheets. The third is a storyboard panel that must depict those same two characters in that same wardrobe. Diagnose the defect: owning artifact, one corrective action, correction scope, evidence. State explicitly which approved artifacts must not change.",
+  "expectedRouting": {
+    "owningArtifact": "storyboard",
+    "correctiveAction": "revise-storyboard",
+    "maxScope": "the storyboard panel"
+  },
+  "evidence": [
+    {
+      "example": "production/03-characters/selected/CHAR-M-elias.jpg",
+      "role": "approved character sheet, man"
+    },
+    {
+      "example": "production/03-characters/selected/CHAR-F-nora.jpg",
+      "role": "approved character sheet, woman"
+    },
+    {
+      "example": "production/04-storyboard/frames/sb-01.jpg",
+      "role": "storyboard panel under review"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "continuity-pillar-real",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "the shipped defect: a pillar in one approved frame and not the other, and a board mounted in one and free-hanging in the other",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "continuity",
+  "tier": "semantic",
+  "images": [
+    {
+      "example": "production/06-reference-frames/selected/SH01-establish-v2.jpg",
+      "role": "approved reference frame, shot 1"
+    },
+    {
+      "example": "production/06-reference-frames/selected/SH02-crossing.jpg",
+      "role": "approved reference frame, shot 2"
+    }
+  ],
+  "context": "Two approved reference frames for consecutive shots in one railway station concourse. They must agree about the architecture.",
+  "criterion": "spatial-continuity",
+  "keywords": [
+    "pillar",
+    "column",
+    "board",
+    "differ",
+    "inconsistent",
+    "contradict",
+    "not present",
+    "missing",
+    "attached",
+    "mounted"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

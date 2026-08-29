@@ -1,0 +1,29 @@
+{
+  "id": "authoring-adapt-existing-pack",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Adapt an existing pack: audience and duration change, production identity preserved; only affected constraints, showcase and evals update.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/derive-production-profile",
+    "video-extension-pack-creator/create-skill-package"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Adapt the claymation-family-adventure pack for an adult audience and a 3-minute duration. List every file and field that changes and every one that is preserved.",
+  "requiredDimensions": [
+    "contract-completeness",
+    "self-contained-packaging"
+  ],
+  "hardGates": [
+    "necessity",
+    "project-boundary"
+  ]
+}

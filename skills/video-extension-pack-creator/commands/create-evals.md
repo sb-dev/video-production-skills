@@ -43,4 +43,4 @@ Behaviour that cannot be expressed as a case because the profile is unobservable
 
 ## Evaluation hooks
 Include clean/boundary controls where false positives are meaningful.
-Case: `evals-cover-pack-behaviour`.
+Cases: `evals-cover-pack-behaviour`, `evals-not-weakened-to-pass`.

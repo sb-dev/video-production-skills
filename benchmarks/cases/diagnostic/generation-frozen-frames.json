@@ -1,0 +1,27 @@
+{
+  "id": "generation-frozen-frames",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a run of duplicated frames where the subject stops",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-motion"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "generation",
+  "tier": "deterministic",
+  "checker": "motion",
+  "fixture": "frozen.mp4",
+  "expect": {
+    "frozen": true
+  },
+  "owningArtifact": "video_shot",
+  "correctiveAction": "retry-execution"
+}

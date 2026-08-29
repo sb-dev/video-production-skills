@@ -1,0 +1,45 @@
+{
+  "id": "creative-subject-static",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a subject posed standing still in a frame whose shot requires her to walk",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-fidelity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "creative",
+  "tier": "semantic",
+  "images": [
+    {
+      "example": "production/06-reference-frames/selected/SH02-crossing.jpg"
+    }
+  ],
+  "context": "A reference frame for a shot in which BOTH the man in the rust jacket and the woman in the teal coat must be walking, in opposite directions. The frame becomes the first frame of the generated shot.",
+  "criterion": "subject-posed-for-action",
+  "keywords": [
+    "standing",
+    "still",
+    "static",
+    "stationary",
+    "not walking",
+    "not moving",
+    "feet",
+    "planted",
+    "mid-stride",
+    "stride"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

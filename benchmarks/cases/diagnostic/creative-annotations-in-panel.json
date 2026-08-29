@@ -1,0 +1,43 @@
+{
+  "id": "creative-annotations-in-panel",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "direction arrows and sight-lines drawn inside a storyboard panel, obscuring the composition it exists to test",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-fidelity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "creative",
+  "tier": "semantic",
+  "images": [
+    {
+      "example": "production/04-storyboard/frames/sb-02.jpg"
+    }
+  ],
+  "context": "A storyboard panel. Annotations belong beside a panel, never inside it, because they obscure the composition the panel exists to test.",
+  "criterion": "annotations-outside-frame",
+  "keywords": [
+    "arrow",
+    "annotation",
+    "dashed",
+    "line",
+    "diagram",
+    "overlay",
+    "marking",
+    "drawn on"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "storyboard",
+  "correctiveAction": "revise-storyboard"
+}

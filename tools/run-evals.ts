@@ -203,6 +203,37 @@ const CHECKS: Readonly<Record<string, () => CheckResult>> = {
         : false;
     return { ok: found, detail: found ? 'attachment contradiction flagged' : 'contradiction missed' };
   },
+  'continuity:passes-clean-scene': () => {
+    const directory = mkdtempSync(join(tmpdir(), 'vps-evals-continuity-'));
+    const path = join(directory, 'scene.json');
+    writeFileSync(
+      path,
+      JSON.stringify({
+        sceneId: 'eval-scene',
+        cameraSide: 'south',
+        axis: { name: 'west-east', order: ['kiosk', 'board', 'column'] },
+        landmarks: [{ id: 'kiosk' }, { id: 'board' }, { id: 'column' }],
+        shots: {
+          SH01: { present: ['kiosk', 'board'], screenOrder: ['kiosk', 'board'] },
+          SH02: { present: ['board', 'column'], screenOrder: ['board', 'column'] },
+        },
+      }),
+    );
+
+    const result = runScript(CONTINUITY, [path, '--json']);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const findings = isRecord(parsed) && Array.isArray(parsed.findings) ? parsed.findings.length : -1;
+    return {
+      ok: findings === 0 && result.status === 0,
+      detail: findings === 0 ? 'clean scene produced no findings' : `${String(findings)} false positive(s)`,
+    };
+  },
+  'qc:accepts-valid-media': () => {
+    const result = runScript('skills/video-evaluate/scripts/inspect-video.ts', [join(fixtures(), 'clean.mp4')]);
+    const parsed: unknown = JSON.parse(result.stdout);
+    const readable = isRecord(parsed) ? parsed.readable : false;
+    return { ok: readable === true, detail: `readable=${String(readable)}` };
+  },
   'storyboard:composes-numbered-board': () => {
     const directory = mkdtempSync(join(tmpdir(), 'vps-evals-storyboard-'));
     const panels = ['a', 'b', 'c', 'd'].map((name) => {

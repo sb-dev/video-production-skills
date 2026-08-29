@@ -1,0 +1,26 @@
+{
+  "id": "authoring-adapt-with-project-instruction",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Existing-pack adaptation control. One project-specific difference (aspect ratio) must become a project instruction, not a near-duplicate pack.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/define-pack"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Create an extension pack identical to found-footage-horror but delivered in 9:16 for a vertical platform. Decide: reuse, adapt, or create. State where the 9:16 requirement should live.",
+  "requiredDimensions": [
+    "catalogue-integration"
+  ],
+  "hardGates": [
+    "necessity"
+  ]
+}

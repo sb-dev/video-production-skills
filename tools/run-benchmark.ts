@@ -31,25 +31,26 @@
  *   case that flips is FLAKY, not a regression.
  */
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
-import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
+import {
+  SUITES, baselineStates, closedPrompt, coverageReport, fingerprintCase, imagesKey, isLegacyDiagnostic,
+  isRecord, loadBaseline, loadCatalogue, openPrompt, parseJsonOrNull, resolvePrompt, resultsBaselinePath, sha, sha256,
+} from './benchmark/manifest.ts';
+import type { BenchmarkCase, Catalogue, Suite } from './benchmark/manifest.ts';
+import { formatScoreReport, majority, observedRates, parseRecordedResult, scoreResult } from './benchmark/score.ts';
+import type { Binding, ScoreReport } from './benchmark/score.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const DEFAULT_TAXONOMY = join(ROOT, 'tests/fixtures/defects/taxonomy.json');
-const DEFAULT_BASELINE = join(ROOT, 'tests/fixtures/defects/baseline.json');
-const DEFAULT_TRANSCRIPTS = join(ROOT, 'tests/fixtures/defects/transcripts');
-const EXAMPLE_ROOT = join(ROOT, 'examples/level-2-missed-connection');
 
 const EXIT_USAGE = 2;
 const EXIT_FAILED = 1;
 /** The provider failed after retries — not a usage error, not a benchmark verdict. */
 const EXIT_PROVIDER = 3;
 
-const VISION_MODEL = 'google/gemini-3-pro';
 const MAX_IMAGE_WIDTH = 1024;
 
 /** A ceiling on accidental spend: every repeat is two more paid calls per case. */
@@ -79,14 +80,13 @@ interface CaseResult {
 
 function usage(): void {
   console.log(
-    'Usage: run-benchmark.ts [--json] [--only <class>] [--repeat <n>] [--rescore] [--refresh]\n' +
-      '                       [--update-baseline] [--print-prompts] [--taxonomy <file>]\n' +
-      '                       [--baseline <file>] [--transcripts <dir>]',
+    'Usage: run-benchmark.ts [--json] [--manifest <file>] [--suite <suite>] [--case <id>] [--only <class>]\n' +
+      '                       [--repeat <n>] [--rescore] [--refresh] [--update-baseline] [--print-prompts]\n' +
+      '                       [--baseline <file>] [--transcripts <dir>]\n' +
+      '       run-benchmark.ts --list [--json] [--manifest <file>] [--suite <suite>]\n' +
+      '       run-benchmark.ts --prepare <id> [--manifest <file>]\n' +
+      '       run-benchmark.ts --score <result.json> [--score <result.json> ...] [--json] [--update-baseline]',
   );
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function runScript(relativePath: string, args: readonly string[]): { status: number | null; stdout: string; stderr: string } {
@@ -97,27 +97,23 @@ function runScript(relativePath: string, args: readonly string[]): { status: num
   return { status: result.status, stdout: result.stdout ?? '', stderr: result.stderr ?? '' };
 }
 
-function parseJsonOrNull(text: string): unknown {
-  try {
-    return JSON.parse(text) as unknown;
-  } catch {
-    return null;
-  }
-}
-
 function temp(prefix: string): string {
   return mkdtempSync(join(tmpdir(), `vps-bench-${prefix}-`));
 }
 
-function sha(text: string): string {
-  return createHash('sha256').update(text).digest('hex').slice(0, 16);
-}
-
 let fixtureCache: string | null = null;
 
+/**
+ * Fixtures are synthesised into a directory keyed on a hash of the generator,
+ * the same cache the stage tests use. The generator skips files that exist, so
+ * one benchmark run after another does not pay to re-encode the same clips.
+ */
 function fixtures(): string {
   if (fixtureCache !== null) return fixtureCache;
-  const directory = temp('fixtures');
+  const generator = resolve(ROOT, 'tests/fixtures/make-fixtures.ts');
+  const key = sha256(readFileSync(generator)).slice(0, 12);
+  const directory = join(tmpdir(), `video-production-skills-fixtures-${key}`);
+  mkdirSync(directory, { recursive: true });
   const result = runScript('tests/fixtures/make-fixtures.ts', [directory]);
   if (result.status !== 0) throw new Error(`fixture generation failed: ${result.stderr.trim()}`);
   fixtureCache = directory;
@@ -289,55 +285,6 @@ function scoreDeterministic(entry: Record<string, unknown>): { pass: boolean; de
   throw new Error(`unknown checker: ${checker}`);
 }
 
-// -------------------------------------------------------------- prompts
-
-function imageSpecs(entry: Record<string, unknown>): readonly Record<string, unknown>[] {
-  return Array.isArray(entry.images) ? entry.images.filter(isRecord) : [];
-}
-
-function roleList(entry: Record<string, unknown>): readonly string[] {
-  return imageSpecs(entry).map((spec) => (typeof spec.role === 'string' ? spec.role : 'artifact under review'));
-}
-
-/**
- * A stable description of which images a case sends, used to notice that a case
- * was repointed at different artifacts. Deliberately a descriptor and not a
- * content hash: it must be recomputable with no filesystem or ffmpeg access, so
- * `--rescore` stays offline. Content drift in the underlying files is not
- * detectable this way and is recorded as a limitation in docs/04.
- */
-function imagesKey(entry: Record<string, unknown>): string {
-  return imageSpecs(entry)
-    .map((spec) => {
-      const source = typeof spec.fixture === 'string' ? `fixture:${spec.fixture}` : `example:${String(spec.example)}`;
-      return `${source}@${typeof spec.role === 'string' ? spec.role : 'artifact under review'}`;
-    })
-    .join('|');
-}
-
-function describeImages(roles: readonly string[]): string {
-  if (roles.length <= 1) return '';
-  return `The images are, in order: ${roles.map((role, index) => `(${String(index + 1)}) ${role}`).join('; ')}.\n\n`;
-}
-
-function openPrompt(entry: Record<string, unknown>): string {
-  const context = typeof entry.context === 'string' ? `${entry.context}\n\n` : '';
-  return (
-    `${context}${describeImages(roleList(entry))}Describe any problems with this artifact. ` +
-    'If it is fine, say so plainly. Be specific and concrete.'
-  );
-}
-
-function closedPrompt(entry: Record<string, unknown>, criteria: readonly string[]): string {
-  const context = typeof entry.context === 'string' ? `${entry.context}\n\n` : '';
-  return (
-    `${context}${describeImages(roleList(entry))}Assess this artifact against each criterion below. ` +
-    'Reply with JSON only, an object mapping each criterion name to one of "PASS", "FAIL" or "NA", ' +
-    'like {"criterion-name": "PASS"}. Use FAIL only when the criterion is genuinely violated.\n\n' +
-    criteria.map((criterion) => `- ${criterion}`).join('\n')
-  );
-}
-
 // ------------------------------------------------------------ semantic
 
 function downscale(source: string): string {
@@ -360,13 +307,13 @@ interface ResolvedImages {
   readonly missing: string | null;
 }
 
-function resolveImages(entry: Record<string, unknown>): ResolvedImages {
+function resolveImages(entry: BenchmarkCase, exampleRoot: string): ResolvedImages {
   const uris: string[] = [];
 
-  for (const spec of imageSpecs(entry)) {
+  for (const spec of entry.images ?? []) {
     let source: string;
-    if (typeof spec.fixture === 'string') source = join(fixtures(), spec.fixture);
-    else if (typeof spec.example === 'string') source = join(EXAMPLE_ROOT, spec.example);
+    if (spec.fixture !== undefined) source = join(fixtures(), spec.fixture);
+    else if (spec.example !== undefined) source = resolve(ROOT, exampleRoot, spec.example);
     else continue;
 
     if (!existsSync(source)) return { uris: [], missing: source };
@@ -424,13 +371,13 @@ async function providerFetch(url: string, init: RequestInit, what: string): Prom
   }
 }
 
-async function askVision(prompt: string, images: readonly string[]): Promise<string> {
+async function askVision(model: string, prompt: string, images: readonly string[]): Promise<string> {
   const token = process.env.REPLICATE_API_TOKEN;
   if (token === undefined || token === '') throw new Error('REPLICATE_API_TOKEN is not set');
   const authorization = { Authorization: `Bearer ${token}` };
 
   const response = await providerFetch(
-    `https://api.replicate.com/v1/models/${VISION_MODEL}/predictions`,
+    `https://api.replicate.com/v1/models/${model}/predictions`,
     {
       method: 'POST',
       headers: { ...authorization, 'Content-Type': 'application/json', Prefer: 'wait' },
@@ -607,15 +554,6 @@ function scoreClosedAnswer(
 
 // ----------------------------------------------------------- aggregation
 
-/**
- * Ties fail. With an even repeat count a case that passes half the time has not
- * demonstrated the ability, and the conservative reading is the honest one.
- */
-function majority(values: readonly boolean[]): boolean | undefined {
-  if (values.length === 0) return undefined;
-  return values.filter(Boolean).length * 2 > values.length;
-}
-
 function aggregate(
   id: string,
   className: string,
@@ -630,14 +568,7 @@ function aggregate(
     closed: samples.map((sample) => sample.closed.strict),
   };
 
-  const rates: Record<string, string> = {};
-  let unstable = false;
-  for (const [axis, values] of Object.entries(axes)) {
-    if (values.length === 0) continue;
-    const passed = values.filter(Boolean).length;
-    rates[axis] = `${String(passed)}/${String(values.length)}`;
-    if (passed !== 0 && passed !== values.length) unstable = true;
-  }
+  const { rates, unstable } = observedRates(axes);
 
   const first = samples[0];
   const detail = first === undefined ? '' : `open: ${first.open.detail} | closed: ${first.closed.detail}`;
@@ -669,10 +600,10 @@ function mark(label: string, value: boolean | undefined, observed: string | unde
   return `${label} ${value ? 'ok' : 'MISS'}${suffix}`;
 }
 
-function printReport(results: readonly CaseResult[], semanticRan: boolean, source: string): void {
+function printReport(results: readonly CaseResult[], semanticRan: boolean, source: string, hostCases: number): void {
   for (const result of results) {
     if (result.skipped !== undefined) {
-      console.log(`SKIP ${result.id} — ${result.skipped}`);
+      console.log(`${result.tier === 'host' ? 'NOT RUN' : 'SKIP'} ${result.id} — ${result.skipped}`);
       continue;
     }
     const marks = [
@@ -688,6 +619,7 @@ function printReport(results: readonly CaseResult[], semanticRan: boolean, sourc
 
   console.log('');
   console.log(`deterministic  ${tally(results, 'deterministic')}`);
+  if (hostCases > 0) console.log(`host-agent     ${String(hostCases)} case(s) NOT RUN — see --list; prepare with --prepare, score with --score`);
 
   if (!semanticRan) {
     console.log('semantic       NOT RUN — set RUN_SEMANTIC_BENCHMARK=1 and REPLICATE_API_TOKEN, or use --rescore');
@@ -706,22 +638,10 @@ function printReport(results: readonly CaseResult[], semanticRan: boolean, sourc
 
 // ------------------------------------------------------------ baseline
 
-/**
- * Entries are kept whole, not reduced to their booleans: an offline or --only
- * run that rewrites the baseline must not strip the recorded observed rates
- * from cases it did not score — they are the only record of the sample counts.
- */
-function loadBaseline(path: string): Record<string, Record<string, unknown>> {
-  if (!existsSync(path)) return {};
-  const parsed = parseJsonOrNull(readFileSync(path, 'utf8'));
-  if (!isRecord(parsed) || !isRecord(parsed.cases)) return {};
-  const cases: Record<string, Record<string, unknown>> = {};
-  for (const [id, value] of Object.entries(parsed.cases)) {
-    if (!isRecord(value)) continue;
-    cases[id] = { ...value };
-  }
-  return cases;
-}
+// Baseline entries are kept whole, not reduced to their booleans: an offline or
+// --only run that rewrites the baseline must not strip the recorded observed
+// rates from cases it did not score — they are the only record of the sample
+// counts. `loadBaseline` in the manifest module honours that.
 
 /**
  * A case that used to pass and now fails every repeat is a regression. One that
@@ -753,6 +673,8 @@ function compare(
 // ------------------------------------------------------------------ run
 
 interface Options {
+  readonly model: string;
+  readonly exampleRoot: string;
   readonly repeat: number;
   /** Whether --repeat was given, as opposed to defaulted. */
   readonly repeatExplicit: boolean;
@@ -768,15 +690,16 @@ type SemanticOutcome =
   | { readonly kind: 'scored'; readonly result: CaseResult };
 
 async function runSemanticCase(
-  entry: Record<string, unknown>,
+  entry: BenchmarkCase,
   id: string,
   className: string,
   options: Options,
 ): Promise<SemanticOutcome> {
+  const raw = entry.raw as Record<string, unknown>;
   const expected = {
-    model: VISION_MODEL,
-    imagesKey: imagesKey(entry),
-    prompts: { open: sha(openPrompt(entry)), closed: sha(closedPrompt(entry, options.criteria)) },
+    model: options.model,
+    imagesKey: imagesKey(raw),
+    prompts: { open: sha(openPrompt(raw)), closed: sha(closedPrompt(raw, options.criteria)) },
   };
 
   const existing = options.refresh ? null : readTranscript(options.transcripts, id);
@@ -813,13 +736,13 @@ async function runSemanticCase(
         return { kind: 'skip', reason: `no recorded transcript for repeat ${String(index)} — run the collection first` };
       }
       if (images === null) {
-        images = resolveImages(entry);
+        images = resolveImages(entry, options.exampleRoot);
         if (images.missing !== null) return { kind: 'skip', reason: `fixture absent: ${images.missing}` };
       }
       recorded = {
         index,
-        open: await askVision(openPrompt(entry), images.uris),
-        closed: await askVision(closedPrompt(entry, options.criteria), images.uris),
+        open: await askVision(options.model, openPrompt(raw), images.uris),
+        closed: await askVision(options.model, closedPrompt(raw, options.criteria), images.uris),
       };
       kept.push(recorded);
       flush();
@@ -828,8 +751,8 @@ async function runSemanticCase(
     }
 
     samples.push({
-      open: scoreOpenAnswer(entry, recorded.open),
-      closed: scoreClosedAnswer(entry, recorded.closed, options.criteria),
+      open: scoreOpenAnswer(raw, recorded.open),
+      closed: scoreClosedAnswer(raw, recorded.closed, options.criteria),
     });
   }
 
@@ -841,12 +764,11 @@ async function runSemanticCase(
   };
 }
 
-function countPlannedCalls(cases: readonly unknown[], options: Options, only: string | undefined): number {
+function countPlannedCalls(cases: readonly BenchmarkCase[], options: Options): number {
   let calls = 0;
   for (const value of cases) {
-    if (!isRecord(value) || String(value.tier) !== 'semantic') continue;
-    if (only !== undefined && String(value.class) !== only) continue;
-    const existing = options.refresh ? null : readTranscript(options.transcripts, String(value.id));
+    if (value.tier !== 'semantic') continue;
+    const existing = options.refresh ? null : readTranscript(options.transcripts, value.id);
     for (let index = 0; index < options.repeat; index += 1) {
       if (existing?.repeats.some((repeat) => repeat.index === index) !== true) calls += 2;
     }
@@ -854,20 +776,218 @@ function countPlannedCalls(cases: readonly unknown[], options: Options, only: st
   return calls;
 }
 
+// ---------------------------------------------------------------- catalogue
+
+function loadOrUsage(manifestPath: string | undefined): Catalogue | null {
+  try {
+    return loadCatalogue(ROOT, manifestPath === undefined ? undefined : resolve(manifestPath));
+  } catch (error: unknown) {
+    console.error(error instanceof Error ? error.message : String(error));
+    return null;
+  }
+}
+
+function isSuite(value: string): value is Suite {
+  return (SUITES as readonly string[]).includes(value);
+}
+
+function hostSkipReason(entry: BenchmarkCase): string {
+  const cost = entry.execution.paid ? 'paid' : 'free';
+  return `NOT RUN — host-agent ${entry.execution.kind} case (${cost}); prepare with --prepare ${entry.id}, score with --score <result.json>`;
+}
+
+// --------------------------------------------------------------------- list
+
+function listCatalogue(catalogue: Catalogue, cases: readonly BenchmarkCase[], json: boolean): number {
+  const states = baselineStates(catalogue);
+  const rows = cases.map((entry) => ({
+    suite: entry.suite,
+    id: entry.id,
+    execution: `${entry.execution.kind}/${entry.execution.collector}`,
+    cost: entry.execution.paid ? 'paid' : 'free',
+    baseline: states.get(entry.id) ?? 'UNMEASURED',
+    fingerprint: fingerprintCase(catalogue, entry).short,
+    skills: entry.skills,
+    commands: entry.commands ?? [],
+    capability: entry.capability,
+  }));
+  const report = coverageReport(catalogue);
+
+  if (json) {
+    console.log(JSON.stringify({ cases: rows, coverage: report }, null, 2));
+    return 0;
+  }
+
+  for (const row of rows) {
+    console.log(
+      `${row.suite.padEnd(15)} ${row.id.padEnd(48)} ${row.execution.padEnd(19)} ${row.cost.padEnd(5)} ` +
+      `${row.baseline.padEnd(11)} fp=${row.fingerprint}  ${row.skills.join(',')}  ${row.commands.length === 0 ? '-' : row.commands.join(',')}`,
+    );
+  }
+  console.log('');
+  console.log(`suites: ${SUITES.map((suite) => `${suite} ${String(report.suites[suite])}`).join(', ')}`);
+  console.log(`examples with prompt: ${String(report.examples.covered.length)}/${String(report.examples.withPrompt.length)} covered`);
+  console.log(
+    report.showcases.present
+      ? `showcases: ${String(report.showcases.covered.length)}/${String(report.showcases.showcases.length)} covered`
+      : `showcases: ${catalogue.manifest.coverage.showcases.root}/ absent → 0/0`,
+  );
+  const measured = rows.filter((row) => row.baseline === 'MEASURED').length;
+  console.log(`baselines: ${String(measured)} MEASURED, ${String(rows.length - measured)} UNMEASURED`);
+  console.log(`runner-collected semantic: ${String(report.runnerSemantic.total)} (transcripts ${String(report.runnerSemantic.withTranscript)})`);
+  return 0;
+}
+
+// ------------------------------------------------------------------ prepare
+
+/**
+ * Everything a host agent needs to execute one case, and the fingerprint its
+ * result must carry to be comparable. No network, no provider.
+ */
+function prepareCase(catalogue: Catalogue, entry: BenchmarkCase): number {
+  const rubric = catalogue.rubrics.get(entry.rubric);
+  if (rubric === undefined) {
+    console.error(`${entry.id}: unknown rubric ${entry.rubric}`);
+    return EXIT_USAGE;
+  }
+  const fingerprint = fingerprintCase(catalogue, entry);
+  const hardGates = entry.hardGates ?? rubric.hardGates;
+  const template: Record<string, unknown> = { index: 0 };
+  if (rubric.kind === 'axes') {
+    template.axes = Object.fromEntries(rubric.dimensions.map((item) => [item.id, null]));
+    if (entry.expectedRouting !== undefined) template.routing = { owningArtifact: null, correctiveAction: null };
+  } else {
+    template.gates = Object.fromEntries(hardGates.map((gate) => [gate, null]));
+    template.dimensions = Object.fromEntries((entry.requiredDimensions ?? []).map((dimension) => [dimension, null]));
+  }
+  console.log(JSON.stringify({
+    case: entry.raw,
+    prompt: resolvePrompt(catalogue, entry),
+    rubric: rubric.raw,
+    hardGates,
+    fingerprint: fingerprint.value,
+    contracts: fingerprint.contracts,
+    execution: entry.execution,
+    resultTemplate: {
+      schema: 'vps-benchmark-result/1',
+      caseId: entry.id,
+      fingerprint: fingerprint.value,
+      execution: { repositoryRevision: null, hostAgent: null, provider: null, model: null, reviewer: null, budget: null },
+      repeats: [template],
+    },
+  }, null, 2));
+  return 0;
+}
+
+// -------------------------------------------------------------------- score
+
+interface ScoredFile {
+  readonly file: string;
+  readonly report: ScoreReport;
+  readonly fingerprint: string;
+}
+
+function scoreFile(catalogue: Catalogue, file: string): ScoredFile {
+  const parsed = parseJsonOrNull(readFileSync(file, 'utf8'));
+  const result = parseRecordedResult(parsed);
+  const entry = catalogue.cases.find((candidate) => candidate.id === result.caseId);
+  if (entry === undefined) throw new Error(`${file}: no benchmark case "${result.caseId}"`);
+  const rubric = catalogue.rubrics.get(entry.rubric);
+  if (rubric === undefined) throw new Error(`${file}: case ${entry.id} names unknown rubric ${entry.rubric}`);
+  const fingerprint = fingerprintCase(catalogue, entry).value;
+  const binding: Binding = result.fingerprint === undefined ? 'UNBOUND' : result.fingerprint === fingerprint ? 'BOUND' : 'STALE';
+  return { file, report: scoreResult(rubric, entry, result, binding), fingerprint };
+}
+
+/**
+ * Scores recorded structured results offline. A STALE result answered a
+ * different question and is refused; an UNBOUND one is scored but can never
+ * enter a baseline, because nothing ties it to the case as it stands.
+ */
+function scoreResults(catalogue: Catalogue, files: readonly string[], json: boolean, updateBaseline: boolean): number {
+  const scored: ScoredFile[] = [];
+  for (const file of files) {
+    try {
+      scored.push(scoreFile(catalogue, file));
+    } catch (error: unknown) {
+      console.error(`${file}: ${error instanceof Error ? error.message : String(error)}`);
+      return EXIT_USAGE;
+    }
+  }
+
+  const baselinePath = resultsBaselinePath(catalogue);
+  const baseline = loadBaseline(baselinePath);
+  const regressed: string[] = [];
+  const flaky: string[] = [];
+  for (const { report } of scored) {
+    const previous = baseline[report.caseId];
+    if (previous?.ready !== true || report.majorityReady) continue;
+    const observed = report.rates.ready ?? '0/0';
+    (observed.startsWith('0/') ? regressed : flaky).push(report.caseId);
+  }
+  const stale = scored.filter((item) => item.report.binding === 'STALE');
+
+  if (json) {
+    console.log(JSON.stringify({
+      results: scored.map((item) => ({ file: relative(ROOT, item.file), ...item.report })),
+      regressions: regressed,
+      flaky,
+      stale: stale.map((item) => item.report.caseId),
+    }, null, 2));
+  } else {
+    for (const item of scored) {
+      console.log(formatScoreReport(item.report));
+      console.log('');
+    }
+    for (const item of stale) console.log(`STALE RESULT: ${item.report.caseId} — recorded under a different fingerprint; re-run the case against the current definition`);
+    if (flaky.length > 0) console.log(`FLAKY: ${flaky.join(', ')} — passed some repeats, not treated as a regression`);
+    if (regressed.length > 0) console.log(`REGRESSION: ${regressed.join(', ')}`);
+  }
+
+  if (updateBaseline) {
+    const unbound = scored.filter((item) => item.report.binding !== 'BOUND');
+    const thin = scored.filter((item) => item.report.repeats.length < 3);
+    if (unbound.length > 0 || thin.length > 0) {
+      console.error('refusing to update the results baseline:');
+      for (const item of unbound) console.error(`  ${item.report.caseId}: result is ${item.report.binding}, not BOUND`);
+      for (const item of thin) console.error(`  ${item.report.caseId}: ${String(item.report.repeats.length)} repeat(s); a baseline needs at least three`);
+      return EXIT_FAILED;
+    }
+    const cases: Record<string, Record<string, unknown>> = { ...baseline };
+    for (const item of scored) {
+      cases[item.report.caseId] = { ready: item.report.majorityReady, rates: item.report.rates, fingerprint: item.fingerprint };
+    }
+    mkdirSync(dirname(baselinePath), { recursive: true });
+    writeFileSync(baselinePath, `${JSON.stringify({ cases }, null, 2)}\n`);
+    console.log(`results baseline written: ${relative(ROOT, baselinePath)}`);
+    return 0;
+  }
+
+  if (stale.length > 0 || regressed.length > 0) return EXIT_FAILED;
+  return scored.every((item) => item.report.majorityReady) ? 0 : EXIT_FAILED;
+}
+
+// ---------------------------------------------------------------------- main
+
 async function main(): Promise<number> {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
     options: {
       json: { type: 'boolean' },
+      manifest: { type: 'string' },
+      suite: { type: 'string' },
+      case: { type: 'string' },
       only: { type: 'string' },
       repeat: { type: 'string' },
       rescore: { type: 'boolean' },
       refresh: { type: 'boolean' },
       'update-baseline': { type: 'boolean' },
       'print-prompts': { type: 'boolean' },
-      taxonomy: { type: 'string' },
       baseline: { type: 'string' },
       transcripts: { type: 'string' },
+      list: { type: 'boolean' },
+      prepare: { type: 'string' },
+      score: { type: 'string', multiple: true },
       help: { type: 'boolean', short: 'h' },
     },
     strict: true,
@@ -882,49 +1002,84 @@ async function main(): Promise<number> {
     return EXIT_USAGE;
   }
 
-  const repeat = values.repeat === undefined ? 1 : Number(values.repeat);
-  if (!Number.isInteger(repeat) || repeat < 1 || repeat > MAX_REPEAT) {
-    console.error(`--repeat must be an integer between 1 and ${String(MAX_REPEAT)}`);
+  const catalogue = loadOrUsage(values.manifest);
+  if (catalogue === null) return EXIT_USAGE;
+
+  // A selection that matches nothing is a typo, not a green run — the worst
+  // possible answer to a misspelled question.
+  if (values.suite !== undefined && !isSuite(values.suite)) {
+    console.error(`--suite ${values.suite} is not a suite (known: ${SUITES.join(', ')})`);
     return EXIT_USAGE;
   }
-
-  const taxonomyPath = values.taxonomy ?? DEFAULT_TAXONOMY;
-  const baselinePath = values.baseline ?? DEFAULT_BASELINE;
-
-  const taxonomy = parseJsonOrNull(readFileSync(taxonomyPath, 'utf8'));
-  if (!isRecord(taxonomy) || !Array.isArray(taxonomy.cases)) throw new Error('taxonomy.cases must be an array');
-
-  // A typo'd class would match nothing, and a run over nothing exits green —
-  // the worst possible answer to a misspelled question.
+  if (values.case !== undefined && !catalogue.cases.some((entry) => entry.id === values.case)) {
+    console.error(`--case ${values.case} matches no benchmark case; run --list`);
+    return EXIT_USAGE;
+  }
   if (values.only !== undefined) {
-    const classes = new Set(taxonomy.cases.filter(isRecord).map((entry) => String(entry.class)));
+    const classes = new Set(catalogue.cases.map((entry) => entry.class).filter((value): value is string => value !== undefined));
     if (!classes.has(values.only)) {
       console.error(`--only ${values.only} matches no case class (known: ${[...classes].sort().join(', ')})`);
       return EXIT_USAGE;
     }
   }
 
+  const selected = catalogue.cases.filter(
+    (entry) =>
+      (values.suite === undefined || entry.suite === values.suite) &&
+      (values.case === undefined || entry.id === values.case) &&
+      (values.only === undefined || entry.class === values.only),
+  );
+
+  if (values.list === true) return listCatalogue(catalogue, selected, values.json === true);
+
+  if (values.prepare !== undefined) {
+    const entry = catalogue.cases.find((candidate) => candidate.id === values.prepare);
+    if (entry === undefined) {
+      console.error(`--prepare ${values.prepare} matches no benchmark case; run --list`);
+      return EXIT_USAGE;
+    }
+    return prepareCase(catalogue, entry);
+  }
+
+  if (values.score !== undefined && values.score.length > 0) {
+    return scoreResults(catalogue, values.score.map((file) => resolve(file)), values.json === true, values['update-baseline'] === true);
+  }
+
+  const repeat = values.repeat === undefined ? 1 : Number(values.repeat);
+  if (!Number.isInteger(repeat) || repeat < 1 || repeat > MAX_REPEAT) {
+    console.error(`--repeat must be an integer between 1 and ${String(MAX_REPEAT)}`);
+    return EXIT_USAGE;
+  }
+
+  const { diagnostic } = catalogue.manifest;
+  const baselinePath = values.baseline === undefined ? resolve(ROOT, diagnostic.baseline) : resolve(values.baseline);
   const options: Options = {
+    model: diagnostic.visionModel,
+    exampleRoot: diagnostic.exampleRoot,
     repeat,
     repeatExplicit: values.repeat !== undefined,
     rescore: values.rescore === true,
     refresh: values.refresh === true,
-    transcripts: values.transcripts ?? DEFAULT_TRANSCRIPTS,
-    criteria: Array.isArray(taxonomy.criteria) ? taxonomy.criteria.map(String) : [],
+    transcripts: values.transcripts === undefined ? resolve(ROOT, diagnostic.transcripts) : resolve(values.transcripts),
+    criteria: diagnostic.closedCriteria,
   };
+
+  const legacy = selected.filter(isLegacyDiagnostic);
+  const host = selected.filter((entry) => !isLegacyDiagnostic(entry));
 
   // Exactly what the reviewer is asked, and the digests its transcripts are
   // keyed on. Auditing a score means reading the question as well as the answer.
   if (values['print-prompts'] === true) {
-    const cases = taxonomy.cases.filter(isRecord).filter((entry) => String(entry.tier) === 'semantic');
+    const cases = legacy.filter((entry) => entry.tier === 'semantic');
     console.log(JSON.stringify({
-      model: VISION_MODEL,
+      model: options.model,
       cases: cases.map((entry) => {
-        const open = openPrompt(entry);
-        const closed = closedPrompt(entry, options.criteria);
+        const raw = entry.raw as Record<string, unknown>;
+        const open = openPrompt(raw);
+        const closed = closedPrompt(raw, options.criteria);
         return {
-          id: String(entry.id),
-          imagesKey: imagesKey(entry),
+          id: entry.id,
+          imagesKey: imagesKey(raw),
           prompts: { open: { sha: sha(open), text: open }, closed: { sha: sha(closed), text: closed } },
         };
       }),
@@ -937,7 +1092,7 @@ async function main(): Promise<number> {
   const semanticRan = options.rescore || (semanticRequested && hasToken);
 
   if (semanticRan && !options.rescore) {
-    const planned = countPlannedCalls(taxonomy.cases, options, values.only);
+    const planned = countPlannedCalls(legacy, options);
     console.error(`collecting ${String(planned)} paid calls (${String(repeat)} repeat(s) × 2 passes per uncached case)`);
   }
 
@@ -948,15 +1103,13 @@ async function main(): Promise<number> {
   // "still green" off a benchmark that no longer measured anything.
   const evidential: string[] = [];
 
-  for (const value of taxonomy.cases) {
-    if (!isRecord(value)) continue;
-    const id = String(value.id);
-    const className = String(value.class);
-    const tier = String(value.tier);
-    if (values.only !== undefined && className !== values.only) continue;
+  for (const entry of legacy) {
+    const id = entry.id;
+    const className = entry.class ?? '';
+    const tier = entry.tier ?? 'deterministic';
 
     if (tier === 'deterministic') {
-      const scored = scoreDeterministic(value);
+      const scored = scoreDeterministic(entry.raw as Record<string, unknown>);
       results.push({ id, class: className, tier, deterministic: scored.pass, detail: scored.detail });
       continue;
     }
@@ -969,7 +1122,7 @@ async function main(): Promise<number> {
       continue;
     }
 
-    const outcome = await runSemanticCase(value, id, className, options);
+    const outcome = await runSemanticCase(entry, id, className, options);
     if (outcome.kind === 'stale') {
       stale.push(`${id}: ${outcome.reason}`);
       results.push({ id, class: className, tier, detail: '', skipped: `stale transcript — ${outcome.reason}` });
@@ -983,6 +1136,12 @@ async function main(): Promise<number> {
     results.push(outcome.result);
   }
 
+  // Host-agent cases are never executed here. They are listed so a run over
+  // the catalogue says NOT RUN for every case it did not measure.
+  for (const entry of host) {
+    results.push({ id: entry.id, class: entry.capability, tier: 'host', detail: '', skipped: hostSkipReason(entry) });
+  }
+
   const baseline = loadBaseline(baselinePath);
   const { regressed, flaky } = compare(results, baseline);
   const source = options.rescore ? 'recorded transcripts' : 'live model';
@@ -990,7 +1149,7 @@ async function main(): Promise<number> {
   if (values.json) {
     console.log(JSON.stringify({ results, semanticRan, regressions: regressed, flaky, stale, evidentialSkips: evidential }, null, 2));
   }
-  else printReport(results, semanticRan, source);
+  else printReport(results, semanticRan, source, host.length);
 
   if (values['update-baseline'] === true) {
     if (stale.length > 0) {

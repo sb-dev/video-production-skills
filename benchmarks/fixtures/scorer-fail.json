@@ -1,0 +1,14 @@
+{
+  "schema": "vps-benchmark-result/1",
+  "caseId": "production-level-1-mechanical-watch-hero",
+  "_comment": "A recorded result that must score NOT READY: repeat 0 fails a hard gate, repeat 1 scores a required dimension below 2, repeat 2 leaves a required dimension unscored. No fingerprint on purpose; see scorer-pass.json.",
+  "execution": { "hostAgent": "scorer fixture", "reviewer": "scorer fixture" },
+  "repeats": [
+    { "index": 0, "gates": { "approved-decision-preservation": true, "required-fidelity": true, "continuity": "na", "delivery-correctness": "na" },
+      "dimensions": { "instruction-adherence": 3, "composition-staging": 3, "motion-quality": 3, "camera-behaviour": 3, "technical-integrity": 0, "product-fidelity": 3, "specificity-intentionality": 3, "production-discipline": 2 } },
+    { "index": 1, "gates": { "approved-decision-preservation": true, "required-fidelity": true, "continuity": "na", "delivery-correctness": "na" },
+      "dimensions": { "instruction-adherence": 2, "composition-staging": 2, "motion-quality": 1, "camera-behaviour": 2, "technical-integrity": 2, "product-fidelity": 2, "specificity-intentionality": 2, "production-discipline": 2 } },
+    { "index": 2, "gates": { "approved-decision-preservation": true, "required-fidelity": true, "continuity": "na", "delivery-correctness": "na" },
+      "dimensions": { "instruction-adherence": 2, "composition-staging": 2, "motion-quality": 2, "camera-behaviour": 2, "technical-integrity": 2, "specificity-intentionality": 2, "production-discipline": 2 } }
+  ]
+}

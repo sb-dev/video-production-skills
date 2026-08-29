@@ -1,0 +1,28 @@
+{
+  "id": "authoring-intentional-trait-distinction",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Intentional-trait distinction for a claymation pack: preserve stepped motion and tactile variation; reject accidental interpolation and material or proportion drift.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/define-evaluation-profile"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Define the evaluation profile for a claymation pack. State, as paired rules, which traits video-evaluate must preserve or not penalise, and which real defects it must still reject.",
+  "requiredDimensions": [
+    "operational-specificity",
+    "eval-coverage"
+  ],
+  "hardGates": [
+    "necessity",
+    "project-boundary"
+  ]
+}
