@@ -1,0 +1,27 @@
+{
+  "id": "continuity-control-clean-scene",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a consistent scene must produce no findings",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "continuity",
+  "tier": "deterministic",
+  "checker": "continuity",
+  "scene": "clean",
+  "expect": {
+    "clean": true
+  },
+  "owningArtifact": "scene_manifest",
+  "correctiveAction": "accept"
+}

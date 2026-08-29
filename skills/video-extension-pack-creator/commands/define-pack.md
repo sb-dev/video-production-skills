@@ -40,5 +40,5 @@ A defect in downstream operational behaviour routes here only when the pack iden
 itself is incoherent or unjustified; otherwise it belongs to `derive-production-profile`.
 
 ## Evaluation hooks
-Test reuse and adapt decisions separately; the create decision is required coverage, not yet written.
-Cases: `define-pack-reuse-existing`, `define-pack-project-override`.
+Test reuse, adapt and create decisions separately.
+Cases: `define-pack-reuse-existing`, `define-pack-project-override`, `define-pack-create-justified`.

@@ -1,0 +1,27 @@
+{
+  "id": "continuity-undeclared-landmark",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a landmark present in a shot and in no scene declaration",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "continuity",
+  "tier": "deterministic",
+  "checker": "continuity",
+  "scene": "extra-landmark",
+  "expect": {
+    "rule": "unknown-landmark"
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

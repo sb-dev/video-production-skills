@@ -52,4 +52,4 @@ Only unobservable or missing operational guidance is owned here.
 
 ## Evaluation hooks
 A style-only request must become observable production guidance.
-Cases: `derive-profile-style-only`, `derive-profile-complete-brief`, `derive-profile-adapt-existing`.
+Cases: `derive-profile-style-only`, `derive-profile-complete-brief`, `derive-profile-adapt-existing`, `derive-profile-labels-not-operational`.

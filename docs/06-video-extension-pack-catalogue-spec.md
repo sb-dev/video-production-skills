@@ -115,7 +115,9 @@ video-production-skills/
 │   └── ...
 │
 └── benchmarks/
-    └── ...
+    ├── manifest.json
+    ├── rubrics/pack-adherence.json
+    └── cases/packs/<pack>.json
 ```
 
 Surface responsibilities:
@@ -151,6 +153,8 @@ status
 ```
 
 Use optional fields where appropriate. Do not add marketplace ranking, pricing, download counts, ratings, or speculative provider metadata.
+
+`benchmarkCase` must equal the id of a case under `benchmarks/cases/packs/` — `packs-<slug>` — whose `promptSource` is the showcase README. `tools/validate-benchmark.ts` fails when a showcase README carries a `## Prompt` and no such case exists, when a case names a pack with no showcase, or when `benchmarkCase` disagrees with the case id.
 
 The canonical showcase and exact generation prompt live at:
 
@@ -1224,4 +1228,4 @@ These cover substantially different production grammars before the full catalogu
 ---
 
 **Video Production Extension Pack Catalogue Specification**  
-**Version 3.1 — 27 August 2026**
+**Version 3.2 — 29 August 2026**

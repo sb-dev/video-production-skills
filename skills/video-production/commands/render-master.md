@@ -52,4 +52,4 @@ Produce the master only from an approved/locked edit and approved finishing inpu
 - Defect visible in a source take → `select-shot`, or `generate-shot` when no usable candidate exists.
 
 ## Evaluation hooks
-Cases carrying `"command": "render-master"` in `evals/evals.json`: one final case, `final-locked-edit`, rendering from a locked edit with lineage retained. Required coverage, not yet written: a boundary case refusing to master from an unapproved edit. `tools/validate-production.ts` backs the approval and reconciliation assertions deterministically, through its `approval-without-approver` and `plan-delivery-mismatch` rules.
+Cases carrying `"command": "render-master"` in `evals/evals.json`: one final case, `final-locked-edit`, rendering from a locked edit with lineage retained. `boundary-master-from-unlocked-edit` refuses to master from an unlocked, unapproved edit. `tools/validate-production.ts` backs the approval and reconciliation assertions deterministically, through its `approval-without-approver` and `plan-delivery-mismatch` rules.

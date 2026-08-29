@@ -17,19 +17,81 @@ The governing principle:
 > **No defect class should require a full production run to discover.**
 
 This document complements `docs/03` §13 *Eval Requirements* and §26 *Technical Acceptance
-Criteria*; it does not restate them.
+Criteria*; it does not restate them. `benchmarks/README.md` is the short contributor runbook;
+this document is the contract behind it.
 
 ---
 
-## 2. Benchmark scope and capability coverage
+---
 
-The benchmark covers three product surfaces: the core Video Production Skills, the extension packs
-that specialise them, and `video-extension-pack-creator`, which authors those packs.
+## 2. Quality model
 
-The core surface is covered by the layers in §3, the runbook in §4, and the measured results in §7.
-The two surfaces below are introduced by this specification. Neither has been measured.
+Quality is reported as six surfaces. A strong score on one never hides a regression on another,
+and no surface is summed into a single number.
 
-### 2.1 Extension packs
+| Surface | Question | Where it is measured |
+|---|---|---|
+| Command correctness | Does one command honour its contract? | `skills/*/evals/evals.json` via `run-evals.ts`; command-scoped benchmark cases |
+| Skill orchestration | Does a skill choose and sequence commands correctly, skip what is approved, and stop? | `diagnostic` cases with capability `orchestration` |
+| Production correctness | Are approved decisions preserved, continuity kept, delivery constraints met? | deterministic checkers; hard gates of `video-quality` |
+| Video quality | Is the result strong as a film — composition, motion, edit, audio, style? | `production` cases, anchored 0–3 dimensions |
+| Extension-pack fidelity | Does the pack materially change production without excusing defects? | `packs` cases, `pack-adherence` rubric |
+| Pack-authoring quality | Does the creator make necessary, operational, self-contained packs? | `pack-authoring` cases, `necessity` hard gate |
+
+The benchmark keeps two failure kinds apart:
+
+```text
+production-contract failure
+→ approved work lost · wrong artifact revised · continuity broken · pack ignored · delivery constraint violated
+→ a hard gate; the repeat is not production-ready
+
+creative-quality failure
+→ technically valid output whose composition, motion, edit, audio or style is weak
+→ a scored dimension below 2
+```
+
+And four failure locations:
+
+```text
+wrong command selected                    → skill-orchestration failure
+right command, contract violated          → command failure
+correct commands, wrong sequence/handoff  → orchestration/workflow failure
+correct workflow, weak final video        → end-product quality failure
+```
+
+---
+
+## 3. Benchmark suites
+
+`benchmarks/manifest.json` names four suites. Case counts are derived by `npm run benchmark:list`
+and are not written in this document.
+
+| Suite | Content | Execution |
+|---|---|---|
+| `diagnostic` | seeded defects and clean controls: the migrated defect benchmark, plus routing, scope-preservation and orchestration definitions | deterministic (runner), semantic (runner-collected vision transcripts), semantic (host agent) |
+| `production` | one case per example README with a `## Prompt`; the prompt source is the README | generation, host agent, paid |
+| `packs` | one case per `extension-packs/<slug>/README.md` showcase; zero today, gate armed | generation, host agent, paid |
+| `pack-authoring` | `video-extension-pack-creator` scenarios from §13 | semantic, host agent |
+
+### 3.1 Diagnostic
+
+Retained defect classes: motion seam, frozen range, unreadable media, aspect mismatch,
+self-approval, plan/delivery mismatch, undeclared landmark, attachment contradiction, screen-order
+contradiction, landmark discontinuity, axis violation, static subject, storyboard contradicting its
+references, pseudo-text, annotations in panel — each with the smallest fixture that exposes it and a
+clean control where practical. The new definition-only cases hold the answers the old benchmark
+never scored: the owning artifact, the corrective action, the correction scope, and which commands
+an orchestration must skip.
+
+### 3.2 Production
+
+> **The benchmark measures the productions the repository actually advertises.**
+
+Each case's `promptSource` is `examples/<name>/README.md` under `## Prompt`. The prompt is never
+copied into the case; changing the README changes the fingerprint. An example without a prompt is
+excluded in the manifest with a reason.
+
+### 3.3 Packs
 
 Extension-pack quality is not measured by whether a result merely resembles the pack label.
 Representative packs must prove:
@@ -63,7 +125,8 @@ premium-product-launch
 The full catalogue may be swept on release candidates or scheduled runs. A change to one pack does
 not require paying to regenerate every other pack unless shared behaviour changed.
 
-### 2.2 `video-extension-pack-creator`
+
+### 3.4 Pack authoring
 
 The creator benchmark must prove that the skill can:
 
@@ -99,10 +162,11 @@ showcase that demonstrates its declared production language.
 The `extension-packs/` surface these cases name is specified in `docs/05` §4 and does not exist in
 this repository yet.
 
-### 2.3 Defect taxonomy
+
+### 3.5 Defect taxonomy
 
 Benchmark cases use explicit defect classes so regressions remain diagnosable. The four-way split
-in §5 step 1 — technical, creative, continuity, generation/model — remains the classification a
+in §21 step 1 — technical, creative, continuity, generation/model — remains the classification a
 finding is reported under; these classes name the specific defect within it.
 
 ```text
@@ -195,81 +259,15 @@ Pack creation
 ```
 
 Every seeded defect must have a clean control where practical. The classes above beyond those
-already present in `tests/fixtures/defects/taxonomy.json` are the vocabulary for cases yet to be
+already present under `benchmarks/cases/diagnostic/` are the vocabulary for cases yet to be
 written, not a claim that fixtures exist for them.
+
 
 ---
 
-## 3. Testing layers
+## 4. Command conformance
 
-| Layer | Question it answers | Provider | Command |
-|---|---|---|---|
-| typecheck / validate | Is the repository well formed? | no | `npm run typecheck`, `npm run validate` |
-| unit | Do scripts reject bad input before doing work? | no | `npm run test:unit` |
-| command | Does one named skill behaviour satisfy its contract in isolation? | no (structural), opt-in (behavioural) | `npm run test:commands` |
-| stage | Does each workflow stage behave correctly in isolation? | no | `npm run test:stages` |
-| evals | Do the skills' declared behaviours actually hold? | no (structural), opt-in (behavioural) | `npm run test:evals` |
-| benchmark — deterministic | Are declared defects detected, and clean artifacts left alone? | no | `npm run test:benchmark` |
-| benchmark — semantic, scoring | Does the scorer read the recorded answers correctly? | no | `node tools/run-benchmark.ts --rescore` |
-| benchmark — semantic, collection | Does judgement catch defects only visible in the image? | opt-in | `RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3` |
-| benchmark — extension packs | Do representative packs change the quality target correctly without hiding defects? | structural + opt-in / paid | *(not yet implemented)* |
-
-The repository implements every layer in that table except the last. The extension-pack and
-pack-creator runners are **implementation requirements introduced by this specification**. Do not
-report their commands or coverage as available until the corresponding runner and fixtures exist.
-
-### 3.1 What each layer cannot do
-
-Stating the limits matters more than stating the coverage, because every shipped defect passed
-a layer that was never able to see it.
-
-- **typecheck / validate** say nothing about behaviour. A script can be perfectly typed and wrong.
-- **unit** tests here assert argument rejection. They do not exercise a single frame of media.
-- **command** tests prove one declared behaviour against controlled inputs and its preserve set.
-  They do not prove that an entire production can orchestrate several commands coherently.
-- **stage** tests exercise real behaviour on synthetic fixtures. They cannot judge whether a
-  photograph matches its brief.
-- **evals** are prose unless a case names an executable `check`. Coverage is reported so an
-  unfalsifiable suite cannot look green.
-- **benchmark, deterministic** checks *declarations*. It catches a landmark nobody declared; it
-  cannot see a landmark that is in the picture but absent from the declaration.
-- **benchmark, semantic** is the only layer that judges an image against its declaration, and
-  the only layer that costs money — but only when *collecting* answers. Scoring them is free and
-  offline, and runs in `npm test`. What it cannot do is tell you the reviewer is reliable: it is
-  not deterministic even at `temperature: 0`, which is why a verdict is a majority of repeats
-  and never a single sample.
-- **transcripts** prove what was asked and answered. They cannot prove the *images* have not
-  changed underneath them: staleness is keyed on the model, the prompt text and which artifacts
-  a case points at, none of which notice a regenerated file at the same path.
-
-### 3.2 Standing rules
-
-1. **A stage that cannot run skips loudly.** Never silently. A missing dependency that produces
-   a green run is how ad-hoc tooling gets substituted unnoticed — which is precisely how the
-   sparse frame sampling that hid the seams came about.
-2. **Coverage is reported, not implied.** `run-evals.ts` prints executable-versus-total.
-3. **Every defect that reaches a deliverable becomes a fixture.** The shipped failures are now
-   regression tests: seams (`tests/stages/motion-artifacts.test.ts`), the pillar and the board
-   (`tests/stages/continuity.test.ts`), self-approval (`tests/stages/production-lint.test.ts`),
-   silent letterboxing (`tests/stages/timeline.test.ts`).
-4. **Fixtures are synthesised, not committed.** `tests/fixtures/make-fixtures.ts` builds media
-   with ffmpeg `lavfi` at run time. The fixture directory is keyed on a hash of the generator,
-   so editing a fixture definition invalidates the cache rather than silently serving a stale clip.
-5. **Answers are kept; evidence is never paid for twice.** Every semantic response is written to
-   `tests/fixtures/defects/transcripts/` and committed. Changing the scorer is re-scored for
-   nothing, which is what makes it possible to fix a scorer *after* publishing a baseline
-   without the fix being suspected of chasing the numbers.
-6. **A transcript recorded against a different question is refused, not scored.** Editing a
-   case's context, criteria or images invalidates its transcripts; the run says `STALE
-   TRANSCRIPT` and exits non-zero rather than scoring stale evidence, and it will not write a
-   baseline from it.
-7. **One sample is not a measurement.** Verdicts are the majority across repeats, the observed
-   rate travels with them, and a case that passes some repeats and fails others is reported
-   `FLAKY` rather than failing the run as a regression.
-8. **Pack-aware cases require paired controls.** At least one case must prove an intentional trait
-   is accepted and another must prove a real defect is not excused by the same style.
-
-### 3.3 Command-level testing
+Command decomposition is the primary component-test boundary.
 
 Command decomposition is the primary component-test boundary.
 
@@ -373,6 +371,10 @@ create-catalogue-entry
 → must refuse registration before validation and verify catalogue/benchmark cross-references
 ```
 
+Every command also needs at least one normal-side eval case (`normal`, `draft`, `refinement`,
+`final`) and one `failure-boundary` case; `tools/validate-benchmark.ts` reports the counts per
+skill and command and fails on a gap unless the manifest records an exemption with a reason.
+
 Command coverage is reported separately from skill coverage. A green end-to-end case does not
 backfill missing command coverage. Every command is reported by name as `PASS`, `FAIL`, `MANUAL`
 (it has cases, none of them executable) or `UNCOVERED` (no case targets it at all). None of the four
@@ -389,11 +391,122 @@ node tools/run-evals.ts --skill video-evaluate --command diagnose
 
 The runner is test infrastructure. It must not become a production command runtime.
 
+
 ---
 
-## 4. Runbook
+## 5. Testing layers
 
-### 4.1 Prerequisites
+| Layer | Question it answers | Provider | Command |
+|---|---|---|---|
+| typecheck / validate | Is the repository well formed? | no | `npm run typecheck`, `npm run validate` |
+| unit | Do scripts reject bad input before doing work? | no | `npm run test:unit` |
+| command | Does one named skill behaviour satisfy its contract in isolation? | no (structural), opt-in (behavioural) | `npm run test:commands` |
+| stage | Does each workflow stage behave correctly in isolation? | no | `npm run test:stages` |
+| evals | Do the skills' declared behaviours actually hold? | no (structural), opt-in (behavioural) | `npm run test:evals` |
+| benchmark — deterministic | Are declared defects detected, and clean artifacts left alone? | no | `npm run test:benchmark` |
+| benchmark — semantic, scoring | Does the scorer read the recorded answers correctly? | no | `node tools/run-benchmark.ts --rescore` |
+| benchmark — semantic, collection | Does judgement catch defects only visible in the image? | opt-in | `RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3` |
+| benchmark — catalogue | Which capabilities are claimed, which cases prove them, and what is measured? | no | `npm run validate`, `npm run benchmark:list` |
+| benchmark — host-agent scoring | Does a recorded production, routing, pack or authoring result meet its rubric? | no (scoring); opt-in / paid (collection) | `node tools/run-benchmark.ts --prepare <id>`, `--score <result.json>` |
+
+The repository implements every layer in that table except the last. The extension-pack and
+pack-creator runners are **implementation requirements introduced by this specification**. Do not
+report their commands or coverage as available until the corresponding runner and fixtures exist.
+
+The repository implements every layer in that table.
+
+### 5.1 What each layer cannot do
+
+Stating the limits matters more than stating the coverage, because every shipped defect passed
+a layer that was never able to see it.
+
+- **typecheck / validate** say nothing about behaviour. A script can be perfectly typed and wrong.
+- **unit** tests here assert argument rejection. They do not exercise a single frame of media.
+- **command** tests prove one declared behaviour against controlled inputs and its preserve set.
+  They do not prove that an entire production can orchestrate several commands coherently.
+- **stage** tests exercise real behaviour on synthetic fixtures. They cannot judge whether a
+  photograph matches its brief.
+- **evals** are prose unless a case names an executable `check`. Coverage is reported so an
+  unfalsifiable suite cannot look green.
+- **benchmark, deterministic** checks *declarations*. It catches a landmark nobody declared; it
+  cannot see a landmark that is in the picture but absent from the declaration.
+- **benchmark, semantic** is the only layer that judges an image against its declaration, and
+  the only layer that costs money — but only when *collecting* answers. Scoring them is free and
+  offline, and runs in `npm test`. What it cannot do is tell you the reviewer is reliable: it is
+  not deterministic even at `temperature: 0`, which is why a verdict is a majority of repeats
+  and never a single sample.
+- **benchmark, host-agent scoring** reads what a host agent or reviewer recorded. It cannot
+  see the video; it trusts the recorded axes and scores, which is why a result carries its
+  execution identity and why three repeats are the floor for a baseline.
+- **transcripts** prove what was asked and answered. They cannot prove the *images* have not
+  changed underneath them: staleness is keyed on the model, the prompt text and which artifacts
+  a case points at, none of which notice a regenerated file at the same path.
+
+---
+
+## 6. Standing rules
+
+1. **A stage that cannot run skips loudly.** Never silently. A missing dependency that produces
+   a green run is how ad-hoc tooling gets substituted unnoticed — which is precisely how the
+   sparse frame sampling that hid the seams came about.
+2. **Coverage is reported, not implied.** `run-evals.ts` prints executable-versus-total.
+3. **Every defect that reaches a deliverable becomes a fixture.** The shipped failures are now
+   regression tests: seams (`tests/stages/motion-artifacts.test.ts`), the pillar and the board
+   (`tests/stages/continuity.test.ts`), self-approval (`tests/stages/production-lint.test.ts`),
+   silent letterboxing (`tests/stages/timeline.test.ts`).
+4. **Fixtures are synthesised, not committed.** `tests/fixtures/make-fixtures.ts` builds media
+   with ffmpeg `lavfi` at run time. The fixture directory is keyed on a hash of the generator,
+   so editing a fixture definition invalidates the cache rather than silently serving a stale clip.
+5. **Answers are kept; evidence is never paid for twice.** Every semantic response is written to
+   `tests/fixtures/defects/transcripts/` and committed. Changing the scorer is re-scored for
+   nothing, which is what makes it possible to fix a scorer *after* publishing a baseline
+   without the fix being suspected of chasing the numbers.
+6. **A transcript recorded against a different question is refused, not scored.** Editing a
+   case's context, criteria or images invalidates its transcripts; the run says `STALE
+   TRANSCRIPT` and exits non-zero rather than scoring stale evidence, and it will not write a
+   baseline from it.
+7. **One sample is not a measurement.** Verdicts are the majority across repeats, the observed
+   rate travels with them, and a case that passes some repeats and fails others is reported
+   `FLAKY` rather than failing the run as a regression.
+8. **Pack-aware cases require paired controls.** At least one case must prove an intentional trait
+   is accepted and another must prove a real defect is not excused by the same style.
+9. **A result recorded under a different fingerprint is `STALE`.** `--score` refuses it. Editing a
+   case, its prompt source, its rubric or a bound command contract re-fingerprints it on purpose.
+10. **Coverage is a gate, not a report.** An advertised example or showcase without a case, and a
+    command without normal-side and boundary eval cases, fail `npm run validate`.
+11. **No score is invented for a surface nobody measured.** A case is `MEASURED` only when its id
+    appears in a baseline file written from real evidence; everything else is `UNMEASURED`.
+
+---
+
+## 7. Repository layout
+
+```text
+benchmarks/
+→ benchmark cases, rubrics, capability coverage, fingerprints, benchmark documentation
+
+tests/fixtures/
+→ synthetic and raw test evidence; low-level deterministic fixtures; recorded transcripts and the
+  historical baseline under tests/fixtures/defects/
+
+tests/stages/
+→ deterministic production-stage tests
+
+skills/*/evals/
+→ command and skill behavioural evals
+
+tools/
+→ benchmark and eval execution; tools/benchmark/ is the library the runner and validator share
+```
+
+`benchmarks/results/` does not exist until a `BOUND` result with three or more repeats is written
+by `--score --update-baseline`. Nothing scaffolds it earlier.
+
+---
+
+## 8. Runbook
+
+### 8.1 Prerequisites
 
 - **Node.js 24.12+** — the repository targets native TypeScript execution. On an older runtime,
   prefix commands with `NODE_OPTIONS='--experimental-strip-types --disable-warning=ExperimentalWarning'`.
@@ -421,7 +534,7 @@ Do not substitute ad-hoc tooling for an unusable script without recording it.
 
 A missing dependency is not a reason to improvise a replacement. Record it.
 
-### 4.2 Run everything
+### 8.2 Run everything
 
 ```bash
 npm test
@@ -430,7 +543,7 @@ npm test
 Runs typecheck → validate → unit → commands → stages → evals → benchmark → smoke. Exit 0 is the
 only pass. The semantic tier is never part of `npm test` and never gates CI.
 
-### 4.3 Run one layer or one stage
+### 8.3 Run one layer or one stage
 
 ```bash
 npm run test:commands
@@ -445,7 +558,7 @@ node --test tests/stages/motion-artifacts.test.ts
 Stage files map one-to-one onto workflow stages: `preflight`, `media-qc`, `motion-artifacts`,
 `sampling`, `timeline`, `contact-sheet`, `storyboard`, `continuity`, `production-lint`, `benchmark`.
 
-### 4.4 Check a real artifact
+### 8.4 Check a real artifact
 
 **Temporal integrity and usable range.** Exit `0` clean, `1` artifacts, `2` usage error.
 
@@ -490,10 +603,10 @@ node skills/video-evaluate/scripts/sample-frames.ts <shot.mp4> <dir> --every 4
 `--count N` spreads a handful of frames across the clip. That answers staging questions and
 nothing else; it is not a motion check.
 
-### 4.5 The defect benchmark
+### 8.5 The defect benchmark
 
-Cases live in `tests/fixtures/defects/taxonomy.json`, each declaring its class, tier, fixture
-and the diagnosis it must produce. Clean controls carry equal weight: a benchmark without
+Cases live under `benchmarks/cases/diagnostic/`, one file per case, each declaring its class,
+tier, fixture and the diagnosis it must produce. Clean controls carry equal weight: a benchmark without
 negative cases measures eagerness, not discrimination.
 
 ```bash
@@ -541,8 +654,8 @@ node tools/run-benchmark.ts --rescore          # scores every recorded repeat
 node tools/run-benchmark.ts --print-prompts    # exactly what the reviewer was asked
 ```
 
-Editing a case's `context`, the `criteria` list, or which images it points at changes the
-question, so its recorded answers no longer bear on it. The run says so and exits non-zero:
+Editing a case's `context`, the manifest's `closedCriteria` list, or which images it points at
+changes the question, so its recorded answers no longer bear on it. The run says so and exits non-zero:
 
 ```
 STALE TRANSCRIPT: creative-pseudo-text: the open prompt changed
@@ -574,11 +687,26 @@ fail: a case that passes half the time has not demonstrated the ability.
 - a case that still passes **some** repeats is `FLAKY` and does not. The tier is not
   deterministic even at `temperature: 0`, and a gate that fires on sampling noise stops being read.
 
-### 4.6 Triage
+### 8.6 The benchmark catalogue
+
+```bash
+npm run benchmark:list                                  # every case: suite, execution, cost, baseline state, fingerprint
+node tools/run-benchmark.ts --list --suite production   # one suite
+node tools/validate-benchmark.ts                        # coverage by suite, example, showcase and command
+node tools/run-benchmark.ts --prepare <id>              # prompt + rubric + fingerprint + result template for a host agent
+node tools/run-benchmark.ts --score <result.json>       # offline verdict; READY / NOT READY per repeat, STALE refused
+node tools/run-benchmark.ts --score <a> --score <b> --update-baseline   # BOUND results, three or more repeats only
+```
+
+The runner never executes a host-agent case. In `npm test` every such case is `NOT RUN`.
+
+### 8.7 Triage
 
 | Symptom | Owning layer | Likely cause | Action |
 |---|---|---|---|
 | `validate` fails on JSON | repository | stray or malformed file in the tree | fix or remove the file |
+| `validate` fails on benchmark coverage | benchmark | an example or showcase gained a prompt with no case, a case names a missing skill/command/rubric, or a command lacks a normal-side or boundary eval | add the case or eval; `node tools/validate-benchmark.ts` names each gap |
+| `STALE RESULT` from `--score` | benchmark | the case, prompt, rubric or a bound contract changed since the result was recorded | re-run the case with `--prepare`; never edit the result |
 | `validate` fails on a command contract | repository | a command file is missing a required heading, or an eval names a command that does not exist | fix the contract or the eval |
 | a stage test fails only on your machine | environment | missing dependency | run `preflight.ts` |
 | a stage test skips | environment | optional dependency absent | install it, or accept the stated gap |
@@ -598,46 +726,126 @@ how a reference-frame failure gets misdiagnosed as a prompt failure and retried 
 
 ---
 
-## 5. Adding coverage
+## 9. Case contract
 
-When a defect reaches a deliverable, it becomes a fixture. The sequence:
+Every case is one file, `benchmarks/cases/<suite>/<id>.json`, whose name equals its `id`.
 
-1. **Name the class.** Every finding is technical, creative, continuity or generation/model.
-2. **Add a fixture.** Synthesise it in `tests/fixtures/make-fixtures.ts` where the defect can be
-   expressed in synthetic media; otherwise point at a real artifact read-only and skip loudly if
-   it is absent.
-3. **Add a stage test** in `tests/stages/` asserting both directions — the defect is caught, and
-   a clean fixture is not flagged. A detector with no negative case is a detector that fires on
-   everything.
-4. **Add or update the owning command contract** when the defect exposes missing or incorrect
-   command behaviour. Route it to the smallest command that owns it, not to the whole skill.
-5. **Add a command-targeted eval case** in the relevant `skills/*/evals/evals.json`, with
-   `command`, `expect` and `forbid`.
-6. **Wire an executable `check`** into `CHECKS` in `tools/run-evals.ts` so the case is
-   falsifiable. A case with no check is reported as manual and lowers coverage — which is the
-   honest outcome, not a failure.
-7. **Re-run `npm test`.**
+```text
+id                     unique across suites
+suite                  the directory it lives in
+capability             what the case proves: detection, routing, scope-preservation, orchestration,
+                       video-quality, pack-adherence, pack-authoring
+summary                one sentence
+skills                 skills exercised; must exist
+commands               <skill>/<command>; every one must have a contract file
+rubric                 a rubric id from the manifest
+execution              { kind: deterministic | semantic | generation,
+                         collector: runner | host, paid, provider?, bindContracts? }
+prompt | promptSource  exactly one, except legacy diagnostic cases, which build their prompts from
+                       context and images; promptSource is { path, heading } and resolves to the
+                       first fenced block under that heading
+requiredDimensions     rubric dimensions that must score ≥ 2 (anchored rubrics)
+hardGates              overrides the rubric's default hard gates when a case needs fewer
+expectedRouting        { owningArtifact, correctiveAction, maxScope? } — scored mechanically
+evidence               optional images a host agent is shown, in the diagnostic image shape
+example | pack         the example directory or pack slug the coverage gate matches on
+```
 
-A semantic benchmark case needs one extra step: collect its answers once
-(`RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3`) and commit the transcript
-alongside the case. Until it has one, the case reports as skipped rather than passing.
+Legacy diagnostic fields — `class`, `tier`, `checker`, `scene`, `fixture`, `production`, `images`,
+`context`, `criterion`, `keywords`, `expect`, `owningArtifact`, `correctiveAction` — are carried
+verbatim from the original taxonomy so their transcripts stay valid.
 
-Changing an existing case is the same work in reverse: the edit invalidates its transcripts, the
-run refuses to score them, and the case must be re-collected before it counts again. That
-friction is deliberate. Rewording a case until the reviewer passes it is the failure mode this
-whole layer exists to prevent, and it should cost something.
-
-This gives `CONTRIBUTING.md`'s question *"How is the change evaluated?"* a concrete answer.
+`execution.collector: runner` is reserved for those legacy cases. Everything else is collected by a
+host agent through `--prepare` and scored through `--score`; the runner never spends on it.
 
 ---
 
-## 6. Extension-pack and pack-creator benchmark cases
+## 10. Diagnostic scoring
 
-> **NOT RUN.** Every case in this section is specified, not implemented. No fixture, transcript or
-> baseline exists for any of them. They are the required shape of pack and creator coverage, and
-> must not be reported as passing, failing, or scored until a runner and fixtures exist.
+`rubrics/diagnostic.json` scores each repeat on seven axes:
 
-### 6.1 Pack-awareness cases
+| Axis | Question |
+|---|---|
+| detection | Did the system identify the seeded problem, or correctly leave a clean control alone? |
+| evidence | Did it cite supplied artifact or media evidence — frame or time range, reference mismatch, timeline source, manifest contradiction, brief constraint, pack rule, technical measurement? |
+| routing | Did it identify the highest useful owning artifact, stage or command? |
+| scope | Did it choose the smallest sufficient correction? |
+| preservation | Did approved or locked work survive? |
+| boundary | Did it stay inside Video Production Skills responsibilities? |
+| precision | Did it avoid unsupported additional findings? |
+
+A strict pass requires every applicable hard axis — all but precision — to pass. Precision is
+reported beside the verdict and never decides it: a second finding that may also be genuine does
+not invalidate a correct diagnosis. When a case declares `expectedRouting`, the result must record
+the route chosen; the `routing` axis is computed by exact match on owning artifact and corrective
+action, and an absent route fails it. When the case also declares `maxScope`, the result must record
+`routing.scope`; the `scope` axis is computed by comparing it with `maxScope` (case and whitespace
+ignored), and an absent or wider scope fails it. The reviewer's own `routing` and `scope` booleans
+never override these checks. A correct diagnosis with the wrong corrective target is not a strict
+pass.
+
+Routing examples the cases hold:
+
+```text
+wrong camera move caused by the shot plan        → shot_plan / revise-shot-plan
+bad composition already in an approved reference → reference_frame / revise-reference
+good shots, weak rhythm                          → edit_timeline / revise-edit
+wrong crop                                       → delivery_variant / refine-current via create-delivery
+```
+
+The historical vision transcripts (§23.1) were scored on `open`, `closedDetection`,
+`closedPrecision` and `closed`. Those map to detection and precision only; they are not evidence
+about routing, scope, preservation, evidence or boundary, which stay `UNMEASURED` until a host
+agent result is recorded.
+
+---
+
+## 11. Video-quality scoring
+
+`rubrics/video-quality.json` uses an anchored four-point scale:
+
+```text
+0 = fails or contradicts the requirement
+1 = material weakness; not production-ready
+2 = acceptable production quality
+3 = strong, deliberate execution
+```
+
+Nineteen dimensions are available — instruction adherence, visual-direction adherence, composition
+and staging, character fidelity, product fidelity, environment continuity, motion quality, camera
+behaviour, physical interaction, spatial continuity, editing and pacing, shot selection, audio/video
+integration, voice continuity, graphics and typography, technical integrity, delivery fit,
+production discipline, specificity and intentionality. A case names only the ones its prompt calls
+for.
+
+Hard gates: instruction adherence, approved-decision preservation, required character or product
+fidelity, continuity, technical integrity, delivery correctness, production discipline. A gate that
+is also a scored dimension is judged by its score (< 2 fails).
+
+A repeat is **production-ready** when no applicable hard gate fails and every required dimension
+scores 2 or higher. Dimensions are reported separately and never summed. A visually attractive video
+that breaks an approved product design or contains invalid media is not production-ready.
+
+---
+
+## 12. Extension-pack scoring
+
+`rubrics/pack-adherence.json` scores format, genre, style through operational behaviour —
+materials, motion cadence, camera, lighting, editing, graphics, sound — intentional-imperfection
+tolerance, audience, voice casting, pack consistency and pack-aware evaluation. Its hard gates are
+user-instruction precedence, approved-artifact precedence, project boundary, and
+real-defect-not-excused. A pack is never judged by whether output "looks like" its label.
+
+The catalogue coverage gate: a showcase README with a `## Prompt` under `extension-packs/` requires
+`cases/packs/packs-<slug>.json`, and `extension-packs/manifest.json` must name it in
+`benchmarkCase`. Stale cases for removed packs, and entries without a case, fail validation.
+
+> **UNMEASURED.** The pack-authoring scenarios below are defined as cases under
+> `benchmarks/cases/pack-authoring/` and prepared with `--prepare`; no result has been recorded
+> for any of them. The pack-awareness cases become `packs` cases the moment a showcase exists under
+> `extension-packs/`; until then the gate reports `0/0`. Nothing here is a score.
+
+### 12.1 Pack-awareness cases
 
 #### Intentional stop-motion control
 
@@ -710,7 +918,17 @@ route to audio / voice selection
 preserve unaffected picture
 ```
 
-### 6.2 `video-extension-pack-creator` cases
+---
+
+## 13. Pack-authoring scoring
+
+`rubrics/pack-authoring.json` scores contract completeness, operational specificity, self-contained
+packaging, showcase quality, generation-prompt quality, eval coverage, catalogue integration and
+benchmark integration. Its hard gates are **necessity**, voice safety, provider boundary, project
+boundary, and no fabricated evidence. Necessity decides between reuse, project instruction, and
+create; a structurally valid pack that an existing pack plus an instruction would have covered fails.
+
+### 13.1 `video-extension-pack-creator` cases
 
 Creator cases identify the command under test so failures localise to authoring behaviour rather
 than the whole skill.
@@ -897,7 +1115,7 @@ no central ontology
 no provider-specific fork without demonstrated requirement
 ```
 
-### 6.3 Catalogue quality sweep
+### 13.2 Catalogue quality sweep
 
 Every catalogue pack must have structural and behavioural coverage.
 
@@ -916,11 +1134,84 @@ no forbidden creator-name-only definition
 ```
 
 Provider-backed generation for all catalogue packs is not required on every commit. A release
-candidate should exercise at least the representative six-pack suite from §2.1. The remaining
+candidate should exercise at least the representative six-pack suite from §3.3. The remaining
 packs rotate through scheduled or catalogue-specific runs so every pack eventually accumulates
 real output evidence.
 
-### 6.4 Release quality gate
+---
+
+## 14. Semantic judging protocol
+
+Semantic review is evidence, not an oracle.
+
+- Generation and review are separate invocations or separate models; a generator's self-assessment
+  is never the only quality evidence.
+- The runner-collected diagnostic tier asks open first, then closed, and scores the two separately
+  (§8.5). Ask open-ended first; use the checklist to organise what was found, not to find it.
+- A host-agent result carries its execution identity — repository revision, host agent, provider,
+  model, settings, pack revision, input and output hashes, budget, reviewer — so a verdict can be
+  audited and repeated.
+- Blinded pairwise A/B comparison (same case, same fingerprint, both orders, both outputs kept) is
+  supplementary and never overrides a hard gate. It is not implemented; nothing yet exists to compare.
+
+---
+
+## 15. Fingerprints and staleness
+
+A case fingerprint is the sha256 of the canonical case definition, the resolved prompt text, the
+rubric, and — when `execution.bindContracts` is true — each named command contract. `--list` prints
+it; `--prepare` embeds it; a result must carry it to be `BOUND`.
+
+```text
+result fingerprint == case fingerprint   BOUND    scored, comparable, may enter a baseline
+result carries no fingerprint            UNBOUND  scored, flagged, never comparable
+result fingerprint != case fingerprint   STALE    refused, exit 1
+```
+
+Transcript staleness for the runner-collected vision cases is a separate, older key — model, image
+descriptor, open and closed prompt digests — deliberately unchanged so historical transcripts still
+score. Both mechanisms follow the same rule: evidence recorded against a different question is
+refused, not reused.
+
+---
+
+## 16. Evidence retention
+
+Every runner-collected answer is committed under `tests/fixtures/defects/transcripts/`. Host-agent
+results are files a contributor keeps and scores; a baseline entry records the verdict, the observed
+rates and the fingerprint, never the media. The scorer fixtures under `benchmarks/fixtures/` are not
+evidence and carry no fingerprint so a rubric edit cannot break `npm test`.
+
+---
+
+## 17. Re-scoring
+
+Changing the scorer costs nothing to re-measure: `--rescore` for transcripts, `--score` for recorded
+results. Neither touches a provider. See §8.5.
+
+---
+
+## 18. Baselines, regressions and flakes
+
+Verdicts are majorities across repeats; ties fail. `REGRESSION` is a case that passed the baseline
+and now fails every repeat; `FLAKY` passed some; `NEW FAILURE` never had a baseline; `NOT RUN` was
+not executed; `STALE` was recorded against a different question. A baseline is written only by an
+explicit `--update-baseline`, never by a passing run, and the results baseline only from `BOUND`
+results with at least three repeats. New surfaces stay `UNMEASURED` until then. See §8.5.
+
+---
+
+## 19. Release tiers
+
+```text
+core       diagnostic + production + command/skill conformance touched by the change
+catalogue  every packs case + pack-authoring
+```
+
+Definition coverage is complete on every commit; paid execution is not. A targeted pack case may run
+during development; a release claiming catalogue support runs the complete pack suite.
+
+### 19.1 Release quality gate
 
 A release candidate is acceptable when:
 
@@ -951,9 +1242,88 @@ capability and defect class.
 
 ---
 
-## 7. Measured results and known blind spots
+## 20. CI
 
-The two capability surfaces §2 introduces have no measurement at all:
+Normal CI runs only free, deterministic work plus re-scoring of already recorded evidence:
+
+```text
+typecheck · repository validation · unit tests · command coverage validation · stage tests
+structural skill evals · benchmark-definition validation · deterministic benchmark
+transcript and result staleness · skill install smoke · example/showcase coverage validation
+```
+
+CI fails when a deterministic check fails, the manifest is invalid, a command lacks required
+coverage, a prompt source cannot be resolved, a showcase has no case, a case references a removed
+example or pack, or required recorded evidence is stale. It never fails because an optional paid
+benchmark was not requested; those cases report `NOT RUN`.
+
+---
+
+## 21. Adding coverage
+
+When a defect reaches a deliverable, it becomes a fixture. The sequence:
+
+1. **Name the class.** Every finding is technical, creative, continuity or generation/model.
+2. **Add a fixture.** Synthesise it in `tests/fixtures/make-fixtures.ts` where the defect can be
+   expressed in synthetic media; otherwise point at a real artifact read-only and skip loudly if
+   it is absent.
+3. **Add a stage test** in `tests/stages/` asserting both directions — the defect is caught, and
+   a clean fixture is not flagged. A detector with no negative case is a detector that fires on
+   everything.
+4. **Add or update the owning command contract** when the defect exposes missing or incorrect
+   command behaviour. Route it to the smallest command that owns it, not to the whole skill.
+5. **Add a benchmark case** under `benchmarks/cases/<suite>/<id>.json` naming its skills,
+   commands, rubric, execution and — for a diagnostic case — its `expectedRouting`. A production
+   example needs no hand-written prompt: point `promptSource` at its README.
+6. **Add a command-targeted eval case** in the relevant `skills/*/evals/evals.json`, with
+   `command`, `expect` and `forbid`.
+7. **Wire an executable `check`** into `CHECKS` in `tools/run-evals.ts` so the case is
+   falsifiable. A case with no check is reported as manual and lowers coverage — which is the
+   honest outcome, not a failure.
+8. **Re-run `npm test`.** `npm run validate` fails until the case and the eval both exist.
+
+A semantic benchmark case needs one extra step: collect its answers once
+(`RUN_SEMANTIC_BENCHMARK=1 node tools/run-benchmark.ts --repeat 3`) and commit the transcript
+alongside the case. Until it has one, the case reports as skipped rather than passing.
+
+Changing an existing case is the same work in reverse: the edit invalidates its transcripts, the
+run refuses to score them, and the case must be re-collected before it counts again. That
+friction is deliberate. Rewording a case until the reviewer passes it is the failure mode this
+whole layer exists to prevent, and it should cost something.
+
+This gives `CONTRIBUTING.md`'s question *"How is the change evaluated?"* a concrete answer.
+
+
+---
+
+## 22. Known blind spots
+
+Recorded rather than hidden; no infrastructure is added to make them disappear on paper.
+
+- Semantic reviewer subjectivity and reviewer or model drift; the tier is not deterministic even at
+  `temperature: 0`, which is why verdicts are majorities.
+- Visual-style judgement variance across reviewers and across packs.
+- Motion judged from sampled evidence: stills cannot show a temporal seam.
+- Audio quality judgement is limited to sync, balance and intelligibility.
+- Precision penalises additional findings that may be true (§23.1).
+- Provider and model generation drift makes results comparable only within one fingerprint and one
+  recorded execution identity.
+- Catalogue-scale discrimination between similar packs is untested.
+- Cross-model comparability, long-video scaling, and host-agent variance are unmeasured.
+- Full catalogue generation is expensive; definition coverage does not imply execution coverage.
+- Transcript image identity is a path descriptor, not a content hash (§5.1).
+
+---
+
+## 23. Measured results
+
+### 23.1 Historical measured evidence (2026-08-24)
+
+> Kept verbatim from v1 of this document. Section references inside it were updated; nothing else
+> was. These numbers measure unprompted recall, checklist detection and checklist precision on the
+> runner-collected diagnostic cases and nothing else.
+
+The two capability surfaces §3.3–3.4 introduce have no measurement at all:
 
 ```text
 extension-pack generation baseline: UNMEASURED
@@ -1004,7 +1374,8 @@ Recall measures whether the reviewer **notices**. It says nothing about whether 
 the right owning artifact — and that is the answer that decides whether you regenerate one
 reference frame or fifteen shots.
 
-Nothing here measures that. Every case in `tests/fixtures/defects/taxonomy.json` carries
+Nothing here measures that. Every diagnostic case (then in `tests/fixtures/defects/taxonomy.json`, now under
+`benchmarks/cases/diagnostic/`) carries
 `owningArtifact` and `correctiveAction` alongside `criterion`:
 
 ```json
@@ -1019,7 +1390,7 @@ was written into the fixtures and then ignored by the scorer.
 That gap matters because routing, not detection, is what this benchmark was built in response
 to. On the production it draws its real artifacts from, the reversed screen direction on SH01
 **was** noticed. It was diagnosed as a prompt failure and the shot was re-run fifteen times; the
-cause was upstream, in an approved reference frame. §4.6 already warns about it —
+cause was upstream, in an approved reference frame. §8.7 already warns about it —
 *"Taking them out of order is how a reference-frame failure gets misdiagnosed as a prompt
 failure and retried fifteen times"* — and no layer tests whether that warning is heeded.
 
@@ -1127,9 +1498,34 @@ It is not bundled here. Changing the scorer and the prompt in the same run would
 attribute the movement to either. It is the next change, measured on its own, and the committed
 transcripts make the before-and-after comparison free.
 
+
+### 23.2 Current deterministic coverage
+
+The deterministic tier scores every fixture-backed diagnostic case through its owning checker on
+every `npm test`; `node tools/run-benchmark.ts` prints the tally. The validator proves definition
+coverage: every advertised example has a production case, the showcase gate is armed at zero, and
+every command has normal-side and boundary eval cases or a recorded exemption. Run
+`node tools/validate-benchmark.ts` for the current table.
+
+### 23.3 Benchmark coverage definitions
+
+Cases exist, with prompts, rubrics, hard gates and fingerprints, for: routing, scope preservation and
+orchestration (diagnostic, host-collected); every advertised production example; and the
+pack-authoring scenarios of §13. `npm run benchmark:list` derives the counts.
+
+### 23.4 Unmeasured semantic capabilities
+
+```text
+routing · correction scope · preservation · evidence · boundary
+command correctness (semantic) · skill orchestration
+production video quality · extension-pack fidelity · pack-authoring quality
+```
+
+All `UNMEASURED`. No score is inferred for them from the historical detection results above.
+
 ---
 
-## 8. Prior art
+## 24. Prior art
 
 The evaluation vocabulary here draws on existing work, recorded so the borrowing is visible:
 
@@ -1144,9 +1540,10 @@ The evaluation vocabulary here draws on existing work, recorded so the borrowing
 self-contained, and `sample-frames.ts` already covers extraction. It is recorded in
 `docs/research-logs/2026-08-20-extraction-candidates.md` as a candidate substrate.
 
+
 ---
 
-## 9. Related documents
+## 25. Related documents
 
 - `docs/03` §13 *Eval Requirements*, §26 *Technical Acceptance Criteria* — packaging contracts.
 - `docs/02` §30 *Failure Taxonomy* — the production-side failure classification this triage mirrors.
@@ -1154,3 +1551,10 @@ self-contained, and `sample-frames.ts` already covers extraction. It is recorded
 - `docs/05-video-customisation-packs-spec.md` — extension-pack contract and pack-aware evaluation.
 - `docs/06-video-extension-pack-catalogue-spec.md` — catalogue, showcase examples, and representative pack set.
 - `skills/video-extension-pack-creator/SKILL.md` — extension-pack authoring behaviour.
+
+- `benchmarks/README.md` — the contributor runbook for the benchmark surface.
+
+---
+
+**Video Production Skills — Testing and Benchmark Specification v2 — 29 August 2026**
+*(v1, 2026-08-24, predates the `benchmarks/` surface and is preserved in git history.)*

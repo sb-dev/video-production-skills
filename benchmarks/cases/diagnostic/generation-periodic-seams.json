@@ -1,0 +1,27 @@
+{
+  "id": "generation-periodic-seams",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a clip assembled from fixed-length chunks, seaming at a regular interval",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-motion"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "generation",
+  "tier": "deterministic",
+  "checker": "motion",
+  "fixture": "seams.mp4",
+  "expect": {
+    "periodic": true
+  },
+  "owningArtifact": "video_shot",
+  "correctiveAction": "retry-execution"
+}

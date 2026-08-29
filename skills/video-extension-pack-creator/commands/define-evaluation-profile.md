@@ -40,4 +40,4 @@ tolerate/reject boundary routes to `define-pack`. Mis-set tolerance is owned her
 
 ## Evaluation hooks
 Use paired intentional-trait and real-defect controls.
-Case: `evaluation-intentional-vs-defect`.
+Cases: `evaluation-intentional-vs-defect`, `evaluation-does-not-excuse-continuity`.

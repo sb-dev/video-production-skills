@@ -1,0 +1,30 @@
+{
+  "id": "authoring-validation-before-catalogue",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Validation before catalogue: a pack with a showcase but no eval or benchmark coverage fails validate-pack and is not registered.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/validate-pack",
+    "video-extension-pack-creator/create-catalogue-entry"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "A pack package is supplied with SKILL.md, a showcase README and a fenced prompt, but its evals/evals.json is empty and no benchmark case exists. Run the acceptance gate and decide whether to register it.",
+  "requiredDimensions": [
+    "eval-coverage",
+    "benchmark-integration",
+    "catalogue-integration"
+  ],
+  "hardGates": [
+    "necessity",
+    "no-fabricated-evidence"
+  ]
+}

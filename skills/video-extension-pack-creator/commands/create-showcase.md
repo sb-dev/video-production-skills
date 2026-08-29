@@ -47,4 +47,4 @@ Expected traits that the profile does not actually produce route to
 
 ## Evaluation hooks
 Benchmark should resolve this exact prompt as its source.
-Case: `showcase-exact-prompt`.
+Cases: `showcase-exact-prompt`, `showcase-no-fabricated-results`.

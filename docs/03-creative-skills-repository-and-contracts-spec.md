@@ -57,13 +57,29 @@ video-production-skills/
 │           └── evals.json
 │
 ├── examples/
-│   └── three-shot-character-sequence/
+│   ├── three-shot-character-sequence/
+│   └── level-<n>-<name>/          progressive examples, each advertising its prompt under ## Prompt
 │
 ├── evals/
 │   └── end-to-end/
 │
+├── benchmarks/                    first-class quality-assurance surface
+│   ├── README.md
+│   ├── manifest.json              coverage authority
+│   ├── rubrics/
+│   ├── cases/
+│   │   ├── diagnostic/
+│   │   ├── production/
+│   │   ├── packs/                 created with the first extension-pack showcase
+│   │   └── pack-authoring/
+│   └── fixtures/
+│
 ├── tests/
+│   ├── stages/
+│   └── fixtures/
+│       └── defects/               transcripts and the historical baseline
 ├── tools/
+│   └── benchmark/                 shared library behind the runner and the validator
 │
 └── .github/
     ├── ISSUE_TEMPLATE/
@@ -1110,6 +1126,26 @@ video-production/refine
 video-evaluate/diagnose
 ```
 
+Every command needs at least one normal-side case (`normal`, `draft`, `refinement` or `final`) and one `failure-boundary` case. `tools/validate-benchmark.ts` reports the count per skill and command and fails on a gap; a command whose boundary behaviour is genuinely meaningless is exempted in `benchmarks/manifest.json` with a recorded reason, never silently.
+
+### 13.2 Skill evals are not benchmark cases
+
+Three surfaces answer three different questions and must not be merged:
+
+```text
+skills/*/evals/evals.json
+→ does one command or skill honour its contract? Run by tools/run-evals.ts.
+
+tests/
+→ does the tooling behave? Deterministic, synthetic fixtures, run by node --test.
+
+benchmarks/
+→ which capabilities are claimed, which cases prove them, and what has been measured?
+  Defined by benchmarks/manifest.json, run and scored by tools/run-benchmark.ts.
+```
+
+Benchmark definitions are not results. A case exists so coverage is visible; its baseline stays `UNMEASURED` until evidence is recorded, and a passing eval never backfills a benchmark measurement. `docs/04` owns the benchmark contract.
+
 ---
 
 ## 14. `video-production` Evals
@@ -1579,6 +1615,10 @@ local copied install of video-production for Codex
 local copied install of video-evaluate for Codex
 installed references/scripts presence
 broken file/reference checks
+benchmark manifest validation (unique ids, rubrics, skills, commands, prompt sources)
+example and extension-pack showcase benchmark coverage
+command normal/boundary eval coverage
+semantic transcript staleness
 ```
 
 Installation smoke tests must run in clean temporary consumer projects and use `--copy --yes`.
@@ -1730,8 +1770,12 @@ The repository contract is correct when:
 29. every initial command has a complete lightweight contract, and its eval coverage is reported per command — a command with no targeted case reports `UNCOVERED` rather than passing by implication;
 30. `SKILL.md` remains the user-facing orchestration surface and commands do not become separately installable skills;
 31. no command runtime, workflow engine, or proprietary skill-to-command API is introduced;
-32. benchmark reporting can attribute failures to commands rather than only to whole skills.
+32. benchmark reporting can attribute failures to commands rather than only to whole skills;
+33. `benchmarks/manifest.json` is the benchmark coverage authority and validates in CI through `tools/validate-benchmark.ts`;
+34. every example README that advertises a `## Prompt` has a production benchmark case whose fingerprint binds that exact prompt;
+35. every extension-pack showcase has a `packs` benchmark case, and the gate is executable even while zero showcases exist;
+36. every command has a normal-side and a boundary eval case, or a recorded exemption.
 
 ---
 
-**Video Production Skills — Creative Skills Repository and Contracts Specification v6**
+**Video Production Skills — Creative Skills Repository and Contracts Specification v7**

@@ -166,6 +166,77 @@
         "choose an out-point without reporting the usable range"
       ],
       "check": "motion:reports-usable-range"
+    },
+    {
+      "id": "boundary-evaluate-does-not-revise",
+      "class": "failure-boundary",
+      "command": "evaluate",
+      "given": "an artifact with a clear defect and an obvious fix",
+      "expect": [
+        "report the finding with evidence",
+        "route to diagnose"
+      ],
+      "forbid": [
+        "rewrite or regenerate the artifact",
+        "collapse findings into one score"
+      ]
+    },
+    {
+      "id": "normal-ambiguous-camera-routes-to-plan",
+      "class": "normal",
+      "command": "diagnose",
+      "given": "a visually strong shot whose camera move contradicts an ambiguous shot plan",
+      "expect": [
+        "owning artifact shot_plan",
+        "corrective action revise-shot-plan",
+        "correction scope the affected shot only"
+      ],
+      "forbid": [
+        "route to repeated regeneration",
+        "emit more than one corrective action"
+      ]
+    },
+    {
+      "id": "normal-clean-scene-no-findings",
+      "class": "normal",
+      "command": "check-continuity",
+      "given": "a consistent scene manifest",
+      "expect": [
+        "report no findings",
+        "exit 0"
+      ],
+      "forbid": [
+        "invent a continuity finding"
+      ],
+      "check": "continuity:passes-clean-scene"
+    },
+    {
+      "id": "boundary-drift-names-its-reference",
+      "class": "failure-boundary",
+      "command": "check-fidelity",
+      "given": "a shot whose character wardrobe differs from the approved character sheet",
+      "expect": [
+        "report the drift",
+        "name the approved reference it drifted from"
+      ],
+      "forbid": [
+        "treat prompt compliance as fidelity",
+        "amend the reference so the shot matches"
+      ]
+    },
+    {
+      "id": "normal-valid-master-passes",
+      "class": "normal",
+      "command": "qc",
+      "given": "a valid master that meets its declared requirements",
+      "expect": [
+        "pass on deterministic evidence",
+        "no creative commentary"
+      ],
+      "forbid": [
+        "make creative, editorial or fidelity judgements"
+      ],
+      "check": "qc:accepts-valid-media"
     }
   ]
 }

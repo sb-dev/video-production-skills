@@ -1,0 +1,45 @@
+{
+  "id": "pack-adherence",
+  "kind": "anchored",
+  "scale": {
+    "min": 0,
+    "max": 3,
+    "anchors": {
+      "0": "fails or contradicts the requirement",
+      "1": "material weakness; not production-ready",
+      "2": "acceptable production quality",
+      "3": "strong, deliberate execution"
+    }
+  },
+  "_comment": "Style is judged through operational production behaviour, never by asking whether the output 'looks like' the pack label. The pack changes the target, not the requirement for quality.",
+  "dimensions": [
+    { "id": "format", "question": "Does the production honour the pack's format — duration, aspect, structure?" },
+    { "id": "genre", "question": "Does it read as the pack's genre?" },
+    { "id": "style-materials", "question": "Do materials and rendering language match the pack — surfaces, line, texture?" },
+    { "id": "style-motion-cadence", "question": "Does motion cadence match the pack — stepped, limited, fluid, handheld?" },
+    { "id": "style-camera", "question": "Does camera behaviour match the pack's device language?" },
+    { "id": "style-lighting", "question": "Does lighting match the pack?" },
+    { "id": "style-editing", "question": "Does editing match the pack's rhythm and grammar?" },
+    { "id": "style-graphics", "question": "Where graphics are intrinsic, do they follow the pack?" },
+    { "id": "style-sound", "question": "Does sound treatment match the pack?" },
+    { "id": "intentional-imperfection-tolerance", "question": "Are the pack's intentional imperfections present and accepted, not smoothed away?" },
+    { "id": "audience", "question": "Is the result appropriate for the pack's declared audience?" },
+    { "id": "voice-casting", "question": "Where voices are declared, are roles cast and kept consistent?" },
+    { "id": "pack-consistency", "question": "Are pack traits preserved across every shot, not only the first?" },
+    { "id": "pack-aware-evaluation", "question": "Does evaluation accept intentional traits and still reject genuine defects?" }
+  ],
+  "gates": [
+    { "id": "user-instruction-precedence", "question": "Does an explicit user instruction override the pack default without being reported as a violation?" },
+    { "id": "approved-artifact-precedence", "question": "Are approved upstream artifacts left intact by the pack?" },
+    { "id": "delivery-behaviour", "question": "Does delivery follow the pack's declared behaviour?" },
+    { "id": "project-boundary", "question": "Does the pack stay out of commands and projects it was not requested for?" },
+    { "id": "real-defect-not-excused", "question": "Is a real defect — broken action, continuity failure, accidental interpolation — rejected rather than excused as style?" }
+  ],
+  "hardGates": [
+    "user-instruction-precedence",
+    "approved-artifact-precedence",
+    "project-boundary",
+    "real-defect-not-excused"
+  ],
+  "readiness": "A repeat passes when no applicable hard gate fails and every required scored dimension is 2 or higher. Pack-aware cases are paired: one proves an intentional trait is accepted, another proves a real defect is not excused by the same style."
+}

@@ -1,0 +1,27 @@
+{
+  "id": "technical-plan-delivery-mismatch",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a master that no longer matches the timeline that claims to describe it",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/qc"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "technical",
+  "tier": "deterministic",
+  "checker": "production",
+  "production": "plan-drift",
+  "expect": {
+    "rule": "plan-delivery-mismatch"
+  },
+  "owningArtifact": "edit_timeline",
+  "correctiveAction": "revise-edit"
+}

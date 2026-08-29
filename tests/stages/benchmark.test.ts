@@ -7,7 +7,7 @@
  * and never reports a semantic score it did not actually obtain.
  */
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -17,6 +17,7 @@ const SCRIPT = 'tools/run-benchmark.ts';
 
 interface CaseRow {
   readonly id: string;
+  readonly tier?: string;
   readonly deterministic?: boolean;
   readonly open?: boolean;
   readonly closedDetection?: boolean;
@@ -27,8 +28,7 @@ interface CaseRow {
   readonly skipped?: string;
 }
 
-function results(args: readonly string[] = []): readonly CaseRow[] {
-  const result = runScript(SCRIPT, ['--json', ...args]);
+function rowsOf(result: { readonly stdout: string; readonly stderr: string }): readonly CaseRow[] {
   const parsed = parseJson(result.stdout);
   assert.ok(isRecord(parsed), result.stderr);
   const rows = parsed.results;
@@ -36,38 +36,87 @@ function results(args: readonly string[] = []): readonly CaseRow[] {
   return rows.filter(isRecord) as unknown as readonly CaseRow[];
 }
 
+function results(args: readonly string[] = []): readonly CaseRow[] {
+  return rowsOf(runScript(SCRIPT, ['--json', ...args]));
+}
+
+/**
+ * A full deterministic run scores every fixture through its owning checker,
+ * which is the expensive part of this file. The run is pure — nothing here
+ * writes to the repository — so one run serves every test that reads it.
+ */
+let fullRunCache: { readonly plain: ReturnType<typeof runScript>; readonly rows: readonly CaseRow[] } | null = null;
+
+function fullRun(): { readonly plain: ReturnType<typeof runScript>; readonly rows: readonly CaseRow[] } {
+  if (fullRunCache === null) {
+    fullRunCache = { plain: runScript(SCRIPT, []), rows: rowsOf(runScript(SCRIPT, ['--json'])) };
+  }
+  return fullRunCache;
+}
+
 function workspace(): string {
   return mkdtempSync(join(tmpdir(), 'vps-benchmark-'));
 }
 
-/** A taxonomy whose single case cannot pass: the clean scene has no findings. */
-function impossibleTaxonomy(directory: string): string {
-  const path = join(directory, 'taxonomy.json');
+const REAL_MANIFEST = join(ROOT, 'benchmarks/manifest.json');
+
+/**
+ * A throwaway benchmark surface: a manifest, the real diagnostic rubric, and
+ * the given legacy diagnostic cases. Transcripts and baseline live beside it
+ * so nothing a test writes can touch the committed evidence.
+ */
+function writeManifest(directory: string, criteria: readonly string[], cases: readonly Record<string, unknown>[]): string {
+  const manifest = join(directory, 'manifest.json');
+  const real = parseJson(readFileSync(REAL_MANIFEST, 'utf8'));
+  assert.ok(isRecord(real));
+  mkdirSync(join(directory, 'cases', 'diagnostic'), { recursive: true });
   writeFileSync(
-    path,
+    manifest,
     JSON.stringify({
-      criteria: [],
-      cases: [
-        {
-          id: 'deliberately-unsatisfiable',
-          class: 'continuity',
-          tier: 'deterministic',
-          summary: 'expects a rule the clean scene will never produce',
-          checker: 'continuity',
-          scene: 'clean',
-          expect: { rule: 'rule-that-does-not-exist' },
-        },
-      ],
+      ...real,
+      rubrics: { diagnostic: join(ROOT, 'benchmarks/rubrics/diagnostic.json') },
+      diagnostic: {
+        closedCriteria: criteria,
+        transcripts: join(directory, 'transcripts'),
+        baseline: join(directory, 'baseline.json'),
+        exampleRoot: 'examples/level-2-missed-connection',
+        visionModel: 'google/gemini-3-pro',
+      },
     }),
   );
-  return path;
+  for (const entry of cases) {
+    const legacy = {
+      suite: 'diagnostic', capability: 'detection', skills: ['video-evaluate'], rubric: 'diagnostic',
+      execution: entry.tier === 'deterministic'
+        ? { kind: 'deterministic', collector: 'runner', paid: false }
+        : { kind: 'semantic', collector: 'runner', paid: true, provider: 'replicate' },
+      ...entry,
+    };
+    writeFileSync(join(directory, 'cases', 'diagnostic', `${String(entry.id)}.json`), JSON.stringify(legacy));
+  }
+  return manifest;
+}
+
+/** A manifest whose single case cannot pass: the clean scene has no findings. */
+function impossibleManifest(directory: string): string {
+  return writeManifest(directory, [], [
+    {
+      id: 'deliberately-unsatisfiable',
+      class: 'continuity',
+      tier: 'deterministic',
+      summary: 'expects a rule the clean scene will never produce',
+      checker: 'continuity',
+      scene: 'clean',
+      expect: { rule: 'rule-that-does-not-exist' },
+    },
+  ]);
 }
 
 test('every seeded defect is detected and the suite passes', () => {
-  const outcome = runScript(SCRIPT, []);
+  const outcome = fullRun().plain;
   assert.equal(outcome.status, 0, outcome.stdout + outcome.stderr);
 
-  const deterministic = results().filter((row) => row.deterministic !== undefined);
+  const deterministic = fullRun().rows.filter((row) => row.deterministic !== undefined);
   assert.ok(deterministic.length >= 10, 'the benchmark should carry a meaningful number of cases');
   assert.deepEqual(
     deterministic.filter((row) => row.deterministic === false).map((row) => row.id),
@@ -77,7 +126,7 @@ test('every seeded defect is detected and the suite passes', () => {
 });
 
 test('clean controls are not flagged', () => {
-  const controls = results().filter((row) => row.id.includes('control'));
+  const controls = fullRun().rows.filter((row) => row.id.includes('control'));
   assert.ok(controls.length > 0, 'the benchmark must carry clean controls');
 
   for (const control of controls) {
@@ -88,7 +137,7 @@ test('clean controls are not flagged', () => {
 
 test('a case that cannot pass fails the run', () => {
   const directory = workspace();
-  const outcome = runScript(SCRIPT, ['--taxonomy', impossibleTaxonomy(directory), '--baseline', join(directory, 'none.json')]);
+  const outcome = runScript(SCRIPT, ['--manifest', impossibleManifest(directory)]);
   assert.equal(outcome.status, 1, 'an undetected defect must fail the benchmark');
   assert.match(outcome.stdout, /MISS/);
 });
@@ -98,7 +147,7 @@ test('a case that used to pass and now fails is reported as a regression', () =>
   const baseline = join(directory, 'baseline.json');
   writeFileSync(baseline, JSON.stringify({ cases: { 'deliberately-unsatisfiable': { deterministic: true } } }));
 
-  const outcome = runScript(SCRIPT, ['--taxonomy', impossibleTaxonomy(directory), '--baseline', baseline]);
+  const outcome = runScript(SCRIPT, ['--manifest', impossibleManifest(directory), '--baseline', baseline]);
   assert.equal(outcome.status, 1);
   assert.match(outcome.stdout, /REGRESSION: deliberately-unsatisfiable\.deterministic/);
 });
@@ -123,10 +172,10 @@ test('the baseline is only written when asked for', () => {
  * the standing rule that a stage which cannot run skips loudly.
  */
 test('the semantic tier reports not run rather than passing quietly', () => {
-  const outcome = runScript(SCRIPT, []);
+  const outcome = fullRun().plain;
   assert.match(outcome.stdout, /semantic\s+NOT RUN/);
 
-  const semantic = results().filter((row) => row.skipped !== undefined);
+  const semantic = fullRun().rows.filter((row) => row.skipped !== undefined);
   assert.ok(semantic.length > 0, 'semantic cases must be reported as skipped, not omitted');
   for (const row of semantic) {
     assert.equal(row.deterministic, undefined, 'a skipped case must not carry a score');
@@ -134,28 +183,46 @@ test('the semantic tier reports not run rather than passing quietly', () => {
 });
 
 /**
- * The taxonomy points five semantic cases at real artifacts from the failed
- * run. The transcript key is a path descriptor, not a content hash, so deleting
- * the images leaves --rescore green while making re-collection impossible —
- * exactly how the seven stills once vanished without anything noticing.
+ * Cases a host agent collects are never executed by the runner. They must
+ * still appear in the run, as NOT RUN, so the catalogue never reads as green
+ * for a case nobody measured.
  */
-test('every taxonomy-referenced example image exists on disk', () => {
-  const taxonomy = parseJson(readFileSync(join(ROOT, 'tests/fixtures/defects/taxonomy.json'), 'utf8'));
-  assert.ok(isRecord(taxonomy) && Array.isArray(taxonomy.cases));
+test('host-agent cases are reported NOT RUN, never scored', () => {
+  const outcome = fullRun().plain;
+  assert.match(outcome.stdout, /host-agent\s+\d+ case\(s\) NOT RUN/);
+  const host = fullRun().rows.filter((row) => row.tier === 'host');
+  assert.ok(host.length > 0, 'host cases must be listed');
+  for (const row of host) {
+    assert.match(String(row.skipped), /NOT RUN/);
+    assert.equal(row.deterministic, undefined);
+    assert.equal(row.closed, undefined);
+  }
+});
 
+/**
+ * The diagnostic suite points five semantic cases at real artifacts from the
+ * failed run. The transcript key is a path descriptor, not a content hash, so
+ * deleting the images leaves --rescore green while making re-collection
+ * impossible — exactly how the seven stills once vanished without anything
+ * noticing.
+ */
+test('every case-referenced example image exists on disk', () => {
+  const directory = join(ROOT, 'benchmarks/cases/diagnostic');
   const referenced: string[] = [];
-  for (const entry of taxonomy.cases.filter(isRecord)) {
+  for (const file of readdirSync(directory)) {
+    const entry = parseJson(readFileSync(join(directory, file), 'utf8'));
+    if (!isRecord(entry)) continue;
     const images = Array.isArray(entry.images) ? entry.images : [];
     for (const spec of images.filter(isRecord)) {
       if (typeof spec.example === 'string') referenced.push(spec.example);
     }
   }
-  assert.ok(referenced.length > 0, 'the taxonomy is expected to score against real artifacts');
+  assert.ok(referenced.length > 0, 'the diagnostic suite is expected to score against real artifacts');
 
   const missing = referenced.filter(
     (path) => !existsSync(join(ROOT, 'examples/level-2-missed-connection', path)),
   );
-  assert.deepEqual(missing, [], 'benchmark evidence must not be deleted out from under the taxonomy');
+  assert.deepEqual(missing, [], 'benchmark evidence must not be deleted out from under the cases');
 });
 
 /**
@@ -171,9 +238,9 @@ test('the semantic opt-in does not leak from the ambient environment', () => {
   process.env.RUN_SEMANTIC_BENCHMARK = '1';
   process.env.REPLICATE_API_TOKEN = 'deliberately-unused';
   try {
-    const outcome = runScript(SCRIPT, []);
+    const outcome = runScript(SCRIPT, ['--only', 'continuity']);
     assert.match(outcome.stdout, /semantic\s+NOT RUN/, 'ambient credentials must not start a collection');
-    const skipped = results().filter((row) => row.skipped !== undefined);
+    const skipped = results(['--only', 'continuity']).filter((row) => row.skipped !== undefined && row.tier === 'semantic');
     assert.ok(skipped.length > 0);
     for (const row of skipped) {
       assert.match(String(row.skipped), /semantic tier not requested/);
@@ -197,6 +264,134 @@ test('a class filter that matches nothing is an error, not a green run', () => {
   assert.equal(outcome.status, 2, 'a run over zero cases must not exit clean');
   assert.match(outcome.stderr, /matches no case class/);
   assert.match(outcome.stderr, /generation/, 'the error should list the known classes');
+});
+
+test('a case or suite filter that matches nothing is an error', () => {
+  assert.equal(runScript(SCRIPT, ['--case', 'no-such-case']).status, 2);
+  assert.equal(runScript(SCRIPT, ['--suite', 'no-such-suite']).status, 2);
+  const one = results(['--case', 'generation-periodic-seams']);
+  assert.deepEqual(one.map((row) => row.id), ['generation-periodic-seams']);
+});
+
+// ---------------------------------------------------------------- catalogue
+
+test('--list names every case once with its fingerprint and baseline state', () => {
+  const outcome = runScript(SCRIPT, ['--list', '--json']);
+  assert.equal(outcome.status, 0, outcome.stderr);
+  const parsed = parseJson(outcome.stdout);
+  assert.ok(isRecord(parsed) && Array.isArray(parsed.cases));
+  const rows = parsed.cases.filter(isRecord);
+  const ids = rows.map((row) => String(row.id));
+  assert.equal(new Set(ids).size, ids.length, 'every case is listed exactly once');
+  assert.ok(ids.includes('generation-periodic-seams'));
+  assert.ok(ids.some((id) => id.startsWith('production-')), 'production cases are catalogued');
+  for (const row of rows) {
+    assert.match(String(row.fingerprint), /^[0-9a-f]{16}$/);
+    assert.ok(row.baseline === 'MEASURED' || row.baseline === 'UNMEASURED');
+  }
+  const measured = rows.filter((row) => row.baseline === 'MEASURED').map((row) => String(row.id));
+  assert.ok(measured.includes('continuity-pillar-real'), 'historical evidence counts as measured');
+  assert.ok(!measured.some((id) => id.startsWith('production-')), 'no baseline is fabricated for unmeasured surfaces');
+});
+
+test('--list is deterministic across invocations', () => {
+  const first = runScript(SCRIPT, ['--list', '--json']).stdout;
+  const second = runScript(SCRIPT, ['--list', '--json']).stdout;
+  assert.equal(first, second, 'fingerprints must not depend on run-time state');
+});
+
+test('--prepare emits the exact prompt, the rubric and the fingerprint', () => {
+  const outcome = runScript(SCRIPT, ['--prepare', 'routing-pacing-to-edit']);
+  assert.equal(outcome.status, 0, outcome.stderr);
+  const bundle = parseJson(outcome.stdout);
+  assert.ok(isRecord(bundle) && isRecord(bundle.rubric) && isRecord(bundle.resultTemplate));
+  assert.equal(bundle.rubric.id, 'diagnostic');
+  assert.match(String(bundle.fingerprint), /^[0-9a-f]{64}$/);
+  assert.match(String(bundle.prompt), /Diagnose/);
+  assert.ok(isRecord(bundle.contracts) && Object.keys(bundle.contracts).length > 0, 'a contract-bound case lists its contract digests');
+  assert.equal(runScript(SCRIPT, ['--prepare', 'no-such-case']).status, 2);
+});
+
+// ------------------------------------------------------------------ --score
+//
+// A host agent records what it observed as a structured result; scoring it is
+// offline and free. The committed fixtures prove the scorer reads readiness
+// the way docs/04 defines it.
+
+function scoreFixture(name: string): { status: number | null; stdout: string } {
+  const outcome = runScript(SCRIPT, ['--score', join(ROOT, 'benchmarks/fixtures', name)]);
+  return { status: outcome.status, stdout: outcome.stdout };
+}
+
+test('the passing scorer fixture is READY on every repeat', () => {
+  const outcome = scoreFixture('scorer-pass.json');
+  assert.equal(outcome.status, 0, outcome.stdout);
+  assert.match(outcome.stdout, /UNBOUND/, 'a fixture without a fingerprint is scored but flagged');
+  assert.match(outcome.stdout, /majority READY \(3\/3\)/);
+});
+
+test('the failing scorer fixture names each reason and exits non-zero', () => {
+  const outcome = scoreFixture('scorer-fail.json');
+  assert.equal(outcome.status, 1);
+  assert.match(outcome.stdout, /gate technical-integrity failed/);
+  assert.match(outcome.stdout, /motion-quality=1 < 2/);
+  assert.match(outcome.stdout, /dimension product-fidelity unscored/);
+  assert.match(outcome.stdout, /majority NOT READY \(0\/3\)/);
+  assert.doesNotMatch(outcome.stdout, /FLAKY/, 'a uniform failure is not flaky');
+});
+
+test('a result recorded under a different fingerprint is STALE and refused', () => {
+  const directory = workspace();
+  const fixture = parseJson(readFileSync(join(ROOT, 'benchmarks/fixtures/scorer-pass.json'), 'utf8'));
+  assert.ok(isRecord(fixture));
+  const path = join(directory, 'stale.json');
+  writeFileSync(path, JSON.stringify({ ...fixture, fingerprint: 'deadbeef' }));
+  const outcome = runScript(SCRIPT, ['--score', path]);
+  assert.equal(outcome.status, 1);
+  assert.match(outcome.stdout, /STALE RESULT/);
+});
+
+test('a diagnostic result with the wrong corrective target is not a strict pass', () => {
+  const directory = workspace();
+  const axes = { detection: true, evidence: true, scope: true, preservation: true, boundary: true, precision: false };
+  const path = join(directory, 'routing.json');
+  writeFileSync(
+    path,
+    JSON.stringify({
+      schema: 'vps-benchmark-result/1',
+      caseId: 'routing-pacing-to-edit',
+      repeats: [{ index: 0, axes, routing: { owningArtifact: 'video_shot', correctiveAction: 'retry-execution' } }],
+    }),
+  );
+  const outcome = runScript(SCRIPT, ['--score', path, '--json']);
+  assert.equal(outcome.status, 1);
+  const parsed = parseJson(outcome.stdout);
+  assert.ok(isRecord(parsed) && Array.isArray(parsed.results));
+  const report = parsed.results[0];
+  assert.ok(isRecord(report) && Array.isArray(report.repeats));
+  const repeat = report.repeats[0];
+  assert.ok(isRecord(repeat));
+  assert.equal(repeat.ready, false);
+  assert.match(String(JSON.stringify(repeat.reasons)), /routing expected edit_timeline\/revise-edit/);
+  assert.match(String(JSON.stringify(repeat.reasons)), /scope not recorded/);
+  assert.equal(repeat.precision, false, 'precision is reported beside the verdict');
+
+  writeFileSync(
+    path,
+    JSON.stringify({
+      schema: 'vps-benchmark-result/1',
+      caseId: 'routing-pacing-to-edit',
+      repeats: [{ index: 0, axes, routing: { owningArtifact: 'edit_timeline', correctiveAction: 'revise-edit', scope: 'the edit timeline only' } }],
+    }),
+  );
+  assert.equal(runScript(SCRIPT, ['--score', path]).status, 0, 'the right route with imprecision is still a strict pass');
+});
+
+test('a malformed result file is a usage error', () => {
+  const directory = workspace();
+  const path = join(directory, 'bad.json');
+  writeFileSync(path, JSON.stringify({ schema: 'nope' }));
+  assert.equal(runScript(SCRIPT, ['--score', path]).status, 2);
 });
 
 // ------------------------------------------------------------- semantic
@@ -238,23 +433,22 @@ interface PromptMeta {
 }
 
 interface Bench {
-  readonly taxonomy: string;
+  readonly manifest: string;
   readonly transcripts: string;
   readonly baseline: string;
   readonly meta: ReadonlyMap<string, PromptMeta>;
 }
 
-function bench(cases: readonly unknown[]): Bench {
+function bench(cases: readonly Record<string, unknown>[]): Bench {
   const directory = workspace();
-  const taxonomy = join(directory, 'taxonomy.json');
+  const manifest = writeManifest(directory, CRITERIA, cases);
   const transcripts = join(directory, 'transcripts');
-  writeFileSync(taxonomy, JSON.stringify({ criteria: CRITERIA, cases }));
   mkdirSync(transcripts, { recursive: true });
 
   // The digests a transcript is keyed on come from the runner itself rather than
   // being reimplemented here; a test that recomputed them would agree with a
   // broken implementation.
-  const printed = runScript(SCRIPT, ['--taxonomy', taxonomy, '--print-prompts']);
+  const printed = runScript(SCRIPT, ['--manifest', manifest, '--print-prompts']);
   assert.equal(printed.status, 0, printed.stderr);
   const parsed = parseJson(printed.stdout);
   assert.ok(isRecord(parsed) && Array.isArray(parsed.cases));
@@ -270,7 +464,7 @@ function bench(cases: readonly unknown[]): Bench {
     });
   }
 
-  return { taxonomy, transcripts, baseline: join(directory, 'baseline.json'), meta };
+  return { manifest, transcripts, baseline: join(directory, 'baseline.json'), meta };
 }
 
 function record(
@@ -295,7 +489,7 @@ function record(
 function rescore(target: Bench, args: readonly string[] = []): { rows: readonly CaseRow[]; status: number | null; stdout: string } {
   const outcome = runScript(SCRIPT, [
     '--rescore', '--json',
-    '--taxonomy', target.taxonomy,
+    '--manifest', target.manifest,
     '--transcripts', target.transcripts,
     '--baseline', target.baseline,
     ...args,
@@ -452,7 +646,7 @@ test('a transcript recorded against a different prompt is refused, not scored', 
   );
 
   const outcome = runScript(SCRIPT, [
-    '--rescore', '--taxonomy', target.taxonomy, '--transcripts', target.transcripts, '--baseline', target.baseline,
+    '--rescore', '--manifest', target.manifest, '--transcripts', target.transcripts, '--baseline', target.baseline,
   ]);
   assert.equal(outcome.status, 1, 'a stale transcript must fail the run');
   assert.match(outcome.stdout, /STALE TRANSCRIPT: bench-defect: the open prompt changed/);
@@ -469,7 +663,7 @@ test('a stale transcript blocks a baseline update', () => {
 
   const outcome = runScript(SCRIPT, [
     '--rescore', '--update-baseline',
-    '--taxonomy', target.taxonomy, '--transcripts', target.transcripts, '--baseline', target.baseline,
+    '--manifest', target.manifest, '--transcripts', target.transcripts, '--baseline', target.baseline,
   ]);
   assert.equal(outcome.status, 1);
   assert.match(outcome.stderr, /refusing to update the baseline while transcripts are stale/);
@@ -490,7 +684,7 @@ test('missing evidence blocks a baseline update', () => {
   const target = bench([DEFECT_CASE]);
   const outcome = runScript(SCRIPT, [
     '--rescore', '--update-baseline',
-    '--taxonomy', target.taxonomy, '--transcripts', target.transcripts, '--baseline', target.baseline,
+    '--manifest', target.manifest, '--transcripts', target.transcripts, '--baseline', target.baseline,
   ]);
   assert.equal(outcome.status, 1);
   assert.match(outcome.stderr, /refusing to update the baseline while cases skip without evidence/);

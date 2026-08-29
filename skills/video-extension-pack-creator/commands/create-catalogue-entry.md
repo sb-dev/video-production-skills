@@ -35,4 +35,4 @@ cross-reference correctness are owned here.
 
 ## Evaluation hooks
 Validate manifest → skill → showcase → benchmark cross-references.
-Case: `catalogue-requires-validation`.
+Cases: `catalogue-requires-validation`, `catalogue-refuses-orphan-entry`.

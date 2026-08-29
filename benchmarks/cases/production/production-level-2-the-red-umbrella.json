@@ -1,0 +1,35 @@
+{
+  "id": "production-level-2-the-red-umbrella",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "The Red Umbrella: multi-shot character sequence. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-2-the-red-umbrella",
+  "promptSource": {
+    "path": "examples/level-2-the-red-umbrella/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "environment-continuity",
+    "spatial-continuity",
+    "editing-pacing",
+    "shot-selection",
+    "specificity-intentionality",
+    "character-fidelity",
+    "visual-direction-adherence"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "authoring-complete-brief",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Complete brief: format, genre, style, audience, traits and evaluation requirements supplied. Hard constraints must be separated from defaults; no provider architecture invented.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/derive-production-profile"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Derive the production profile for a pack with this brief — format: 60–90 s short; genre: gothic fantasy; style: puppet stop-motion with visible armature seams accepted; audience: adult; must: practical-light look, stepped 12 fps motion cadence, no dialogue; defaults: 16:9, muted palette; evaluation: accept stepped motion, reject interpolation smoothing, reject material drift.",
+  "requiredDimensions": [
+    "contract-completeness",
+    "operational-specificity",
+    "self-contained-packaging"
+  ],
+  "hardGates": [
+    "necessity",
+    "provider-boundary",
+    "project-boundary"
+  ]
+}

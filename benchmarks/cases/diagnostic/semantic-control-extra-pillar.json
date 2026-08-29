@@ -1,0 +1,45 @@
+{
+  "id": "semantic-control-extra-pillar",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "an abstract scene carrying one landmark the declaration does not contain",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "continuity",
+  "tier": "semantic",
+  "images": [
+    {
+      "fixture": "scene-extra-pillar.png"
+    }
+  ],
+  "context": "A schematic reference frame. The scene declares exactly three landmarks: an orange kiosk, a dark suspended board, and one grey column.",
+  "criterion": "spatial-continuity",
+  "keywords": [
+    "extra",
+    "additional",
+    "second",
+    "fourth",
+    "undeclared",
+    "not declared",
+    "pillar",
+    "column",
+    "grey block",
+    "gray block"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

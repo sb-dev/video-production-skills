@@ -1,0 +1,54 @@
+{
+  "id": "creative-storyboard-contradicts-references",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a storyboard panel showing different characters and wardrobe than the approved character sheets",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-fidelity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "creative",
+  "tier": "semantic",
+  "images": [
+    {
+      "example": "production/03-characters/selected/CHAR-M-elias.jpg",
+      "role": "approved character sheet, man"
+    },
+    {
+      "example": "production/03-characters/selected/CHAR-F-nora.jpg",
+      "role": "approved character sheet, woman"
+    },
+    {
+      "example": "production/04-storyboard/frames/sb-01.jpg",
+      "role": "storyboard panel under review"
+    }
+  ],
+  "context": "The first two images are the approved character sheets. The third is a storyboard panel that must depict those same two characters in that same wardrobe.",
+  "criterion": "character-reference-fidelity",
+  "keywords": [
+    "hat",
+    "different",
+    "wardrobe",
+    "contradict",
+    "does not match",
+    "doesn't match",
+    "suit",
+    "period",
+    "clothing",
+    "not the same"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "storyboard",
+  "correctiveAction": "revise-storyboard"
+}

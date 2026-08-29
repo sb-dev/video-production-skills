@@ -387,6 +387,111 @@
         "re-render or re-approve the master",
         "reopen the edit or the selected takes"
       ]
+    },
+    {
+      "id": "boundary-direction-already-settled",
+      "class": "failure-boundary",
+      "command": "define-direction",
+      "given": "a brief that already specifies palette, lens, lighting and register",
+      "expect": [
+        "produce no direction alternatives",
+        "record the settled direction as a cheap artifact",
+        "route straight to create-reference"
+      ],
+      "forbid": [
+        "generate direction alternatives",
+        "invent a prop, character or setting the brief did not state"
+      ]
+    },
+    {
+      "id": "boundary-written-board-authoritative",
+      "class": "failure-boundary",
+      "command": "create-storyboard",
+      "given": "a storyboard whose markdown is declared authoritative and governs the sequence decision",
+      "expect": [
+        "keep the written board as the decision record",
+        "spend nothing rendering panels"
+      ],
+      "forbid": [
+        "render board images",
+        "draw annotations inside a panel"
+      ]
+    },
+    {
+      "id": "normal-unambiguous-plan-routes-to-generate-shot",
+      "class": "normal",
+      "command": "plan-shots",
+      "given": "an unambiguous shot plan with machine-checkable framing, camera move and duration, and a generated shot whose camera disagrees with it",
+      "expect": [
+        "leave the plan unchanged",
+        "route the defect to generate-shot as an execution failure",
+        "correction scope the affected shot only"
+      ],
+      "forbid": [
+        "edit the plan to match the output",
+        "renumber shot IDs"
+      ]
+    },
+    {
+      "id": "boundary-animatic-frame-not-a-reference",
+      "class": "failure-boundary",
+      "command": "create-animatic",
+      "given": "an animatic frame an agent proposes to promote as the shot reference frame",
+      "expect": [
+        "refuse the promotion",
+        "route reference creation to create-reference",
+        "keep timing decisions unapproved until a human approves"
+      ],
+      "forbid": [
+        "treat an animatic frame as a reference_frame",
+        "generate final motion to populate the animatic"
+      ]
+    },
+    {
+      "id": "boundary-rejected-candidate-in-edit",
+      "class": "failure-boundary",
+      "command": "assemble-edit",
+      "given": "a timeline that references a candidate select-shot rejected",
+      "expect": [
+        "refuse the source",
+        "use only selected candidates",
+        "report the attempted substitution"
+      ],
+      "forbid": [
+        "include a rejected candidate",
+        "lock the timeline on the agent's own authority"
+      ]
+    },
+    {
+      "id": "boundary-master-from-unlocked-edit",
+      "class": "failure-boundary",
+      "command": "render-master",
+      "given": "a request to render a master from an edit that is selected but not locked, with no approver recorded",
+      "expect": [
+        "refuse to render",
+        "name the missing approval",
+        "route back to assemble-edit"
+      ],
+      "forbid": [
+        "render from an unlocked edit",
+        "relabel a review render as the master"
+      ]
+    },
+    {
+      "id": "boundary-refine-does-not-restart-from-brief",
+      "class": "failure-boundary",
+      "command": "refine",
+      "given": "a single defective shot with an approved reference frame and shot plan upstream, and a request to fix it",
+      "expect": [
+        "revise only the affected shot",
+        "drive the revision from the most specific approved artifact",
+        "preserve the approved reference, plan and unaffected shots"
+      ],
+      "forbid": [
+        "restart from the brief",
+        "regenerate the whole sequence",
+        "retry against unchanged inputs"
+      ]
     }
   ]
 }

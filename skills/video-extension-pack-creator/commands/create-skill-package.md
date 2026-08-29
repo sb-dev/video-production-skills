@@ -39,4 +39,4 @@ tolerate/reject rule routes to `define-evaluation-profile`; a voice reference de
 
 ## Evaluation hooks
 Selective installation must retain all referenced runtime resources.
-Case: `package-self-contained`.
+Cases: `package-self-contained`, `package-no-provider-duplication`.

@@ -1,0 +1,51 @@
+{
+  "id": "video-quality",
+  "kind": "anchored",
+  "scale": {
+    "min": 0,
+    "max": 3,
+    "anchors": {
+      "0": "fails or contradicts the requirement",
+      "1": "material weakness; not production-ready",
+      "2": "acceptable production quality",
+      "3": "strong, deliberate execution"
+    }
+  },
+  "dimensions": [
+    { "id": "instruction-adherence", "question": "Does the delivered video do what the prompt asked, at the stated duration, format and tone?" },
+    { "id": "visual-direction-adherence", "question": "Does every shot honour the approved visual direction — palette, register, lighting language?" },
+    { "id": "composition-staging", "question": "Are subjects placed and framed with intent, with readable depth and blocking?" },
+    { "id": "character-fidelity", "question": "Do characters match their approved sheets across every shot?" },
+    { "id": "product-fidelity", "question": "Does the product match its approved geometry, materials and markings?" },
+    { "id": "environment-continuity", "question": "Is the environment the same place from shot to shot?" },
+    { "id": "motion-quality", "question": "Is motion plausible — no sliding, morphing, seams or frozen ranges?" },
+    { "id": "camera-behaviour", "question": "Does the camera do what the shot plan specified, and nothing else?" },
+    { "id": "physical-interaction", "question": "Do subjects contact, hold and move objects believably?" },
+    { "id": "spatial-continuity", "question": "Do landmarks, screen direction and the axis agree across shots?" },
+    { "id": "editing-pacing", "question": "Does the cut carry the intended rhythm, with each shot at a length it earns?" },
+    { "id": "shot-selection", "question": "Was the strongest take chosen, on motion evidence rather than a still?" },
+    { "id": "audio-video-integration", "question": "Are sound, music and picture in sync and balanced so required information is heard?" },
+    { "id": "voice-continuity", "question": "Where a voice is present, is it the same voice with the same performance profile throughout?" },
+    { "id": "graphics-typography", "question": "Where text or graphics are present, are they legible, correctly spelled and inside safe areas?" },
+    { "id": "technical-integrity", "question": "Does the master decode, at the declared resolution, frame rate and duration, with audio where required?" },
+    { "id": "delivery-fit", "question": "Do delivery variants keep the critical subject in frame and text readable?" },
+    { "id": "production-discipline", "question": "Was work approved by a human, were plans reconciled, and were retries bounded?" },
+    { "id": "specificity-intentionality", "question": "Does the result read as a deliberate film rather than a generic rendering of the prompt?" }
+  ],
+  "gates": [
+    { "id": "approved-decision-preservation", "question": "Does the delivered video honour every approved creative decision without silent revision?" },
+    { "id": "required-fidelity", "question": "Where a character or product is required to match a reference, does it?" },
+    { "id": "continuity", "question": "Is there no broken spatial, environment or wardrobe continuity between shots?" },
+    { "id": "delivery-correctness", "question": "Does each delivery variant meet its declared target?" }
+  ],
+  "hardGates": [
+    "instruction-adherence",
+    "approved-decision-preservation",
+    "required-fidelity",
+    "continuity",
+    "technical-integrity",
+    "delivery-correctness",
+    "production-discipline"
+  ],
+  "readiness": "A repeat is production-ready when no applicable hard gate fails and every required scored dimension is 2 or higher. Dimensions are reported separately and never summed. A visually attractive video that breaks an approved product design or contains invalid media is not production-ready."
+}

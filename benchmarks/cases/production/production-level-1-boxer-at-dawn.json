@@ -1,0 +1,31 @@
+{
+  "id": "production-level-1-boxer-at-dawn",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "Boxer at Dawn: single-shot action. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-1-boxer-at-dawn",
+  "promptSource": {
+    "path": "examples/level-1-boxer-at-dawn/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "character-fidelity",
+    "physical-interaction",
+    "specificity-intentionality"
+  ]
+}

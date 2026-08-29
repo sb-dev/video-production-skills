@@ -1,0 +1,27 @@
+{
+  "id": "authoring-voice-free-profile",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Voice-free pack: a production with no spoken audio gets no voice profile.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/define-voice-profile"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Define the voice profile for a kinetic-typography launch pack whose productions carry music and sound design but no spoken audio.",
+  "requiredDimensions": [
+    "contract-completeness"
+  ],
+  "hardGates": [
+    "necessity",
+    "voice-safety"
+  ]
+}

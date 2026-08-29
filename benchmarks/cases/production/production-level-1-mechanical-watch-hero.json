@@ -1,0 +1,30 @@
+{
+  "id": "production-level-1-mechanical-watch-hero",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "Mechanical Watch Hero: single-shot product. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-1-mechanical-watch-hero",
+  "promptSource": {
+    "path": "examples/level-1-mechanical-watch-hero/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "product-fidelity",
+    "specificity-intentionality"
+  ]
+}

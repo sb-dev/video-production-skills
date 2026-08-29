@@ -1,0 +1,32 @@
+{
+  "id": "semantic-control-clean-scene",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "an abstract clean scene; the grader must not invent a defect",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-fidelity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "continuity",
+  "tier": "semantic",
+  "images": [
+    {
+      "fixture": "scene-clean.png"
+    }
+  ],
+  "context": "A schematic reference frame. Landmarks left to right: an orange kiosk, a dark suspended board, a grey column.",
+  "expect": {
+    "clean": true
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "accept"
+}

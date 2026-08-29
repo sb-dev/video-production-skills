@@ -1,0 +1,26 @@
+{
+  "id": "authoring-reuse-existing-pack",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Existing-pack reuse control. The request is already covered by a catalogue pack; the right answer is reuse, not a duplicate.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/define-pack"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Create an extension pack for a stop-motion claymation family adventure short. The catalogue already contains claymation-family-adventure. Decide: reuse, adapt, or create. Justify the decision against the catalogue.",
+  "requiredDimensions": [
+    "catalogue-integration"
+  ],
+  "hardGates": [
+    "necessity"
+  ]
+}

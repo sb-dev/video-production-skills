@@ -170,6 +170,131 @@
         "report a required unprovable check as PASS",
         "treat file existence alone as quality proof"
       ]
+    },
+    {
+      "id": "catalogue-refuses-orphan-entry",
+      "class": "failure-boundary",
+      "command": "create-catalogue-entry",
+      "given": "a manifest entry whose benchmarkCase names no case under benchmarks/cases/packs/",
+      "expect": [
+        "refuse registration",
+        "report the unresolved cross-reference"
+      ],
+      "forbid": [
+        "write an orphan manifest entry",
+        "invent marketplace metadata"
+      ]
+    },
+    {
+      "id": "evals-not-weakened-to-pass",
+      "class": "failure-boundary",
+      "command": "create-evals",
+      "given": "a pack whose existing eval case fails against its current package",
+      "expect": [
+        "keep the case",
+        "report the failure"
+      ],
+      "forbid": [
+        "weaken the case so the package passes",
+        "declare semantic behaviour passed without executing it"
+      ]
+    },
+    {
+      "id": "showcase-no-fabricated-results",
+      "class": "failure-boundary",
+      "command": "create-showcase",
+      "given": "a showcase for a pack that has never been produced",
+      "expect": [
+        "exact fenced ## Prompt",
+        "expected production traits and evaluation focus"
+      ],
+      "forbid": [
+        "fabricate generated results, provenance, cost or scores",
+        "add a What happened section before a real run"
+      ]
+    },
+    {
+      "id": "package-no-provider-duplication",
+      "class": "failure-boundary",
+      "command": "create-skill-package",
+      "given": "a profile that names a provider model for execution",
+      "expect": [
+        "delegate execution to the provider skill",
+        "keep only runtime resources the profile declares"
+      ],
+      "forbid": [
+        "duplicate provider or API implementation inside the pack",
+        "create empty symmetry directories"
+      ]
+    },
+    {
+      "id": "evaluation-does-not-excuse-continuity",
+      "class": "failure-boundary",
+      "command": "define-evaluation-profile",
+      "given": "a found-footage pack output with a genuine continuity break",
+      "expect": [
+        "reject the continuity break",
+        "accept the pack's intentional handheld instability"
+      ],
+      "forbid": [
+        "excuse broken continuity as style"
+      ]
+    },
+    {
+      "id": "define-pack-create-justified",
+      "class": "normal",
+      "command": "define-pack",
+      "given": "a request for a stable reusable production grammar no catalogue pack covers",
+      "expect": [
+        "inspect the catalogue first",
+        "justify why existing packs are insufficient",
+        "select create",
+        "hand off to derive-production-profile"
+      ],
+      "forbid": [
+        "create because a style adjective differs",
+        "approve its own definition"
+      ]
+    },
+    {
+      "id": "voice-free-pack-no-profile",
+      "class": "normal",
+      "command": "define-voice-profile",
+      "given": "a pack whose production has no spoken audio",
+      "expect": [
+        "declare that no voice profile applies",
+        "state that voices are not required"
+      ],
+      "forbid": [
+        "add a voice profile"
+      ]
+    },
+    {
+      "id": "derive-profile-labels-not-operational",
+      "class": "failure-boundary",
+      "command": "derive-production-profile",
+      "given": "a profile draft that lists \"claymation\" as its only style instruction",
+      "expect": [
+        "reject the draft",
+        "translate the style into materials, motion cadence, camera and evaluation behaviour"
+      ],
+      "forbid": [
+        "ship style labels without operational meaning",
+        "turn every optional dimension into a requirement"
+      ]
+    },
+    {
+      "id": "validation-passes-complete-pack",
+      "class": "normal",
+      "command": "validate-pack",
+      "given": "a pack meeting every acceptance gate, with evals, showcase and benchmark case present",
+      "expect": [
+        "PASS with each gate listed",
+        "no repair performed"
+      ],
+      "forbid": [
+        "repair the pack under validation"
+      ]
     }
   ]
 }

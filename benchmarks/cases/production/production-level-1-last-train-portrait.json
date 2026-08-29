@@ -1,0 +1,30 @@
+{
+  "id": "production-level-1-last-train-portrait",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "Last Train Portrait: single-shot character. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-1-last-train-portrait",
+  "promptSource": {
+    "path": "examples/level-1-last-train-portrait/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "character-fidelity",
+    "specificity-intentionality"
+  ]
+}

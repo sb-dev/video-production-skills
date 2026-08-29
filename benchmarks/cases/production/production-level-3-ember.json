@@ -1,0 +1,39 @@
+{
+  "id": "production-level-3-ember",
+  "suite": "production",
+  "capability": "video-quality",
+  "summary": "Ember: product commercial with delivery variants. Measured against the exact prompt advertised in the example README.",
+  "skills": [
+    "video-production",
+    "video-evaluate"
+  ],
+  "rubric": "video-quality",
+  "execution": {
+    "kind": "generation",
+    "collector": "host",
+    "paid": true
+  },
+  "example": "level-3-ember",
+  "promptSource": {
+    "path": "examples/level-3-ember/README.md",
+    "heading": "Prompt"
+  },
+  "requiredDimensions": [
+    "instruction-adherence",
+    "composition-staging",
+    "motion-quality",
+    "camera-behaviour",
+    "technical-integrity",
+    "environment-continuity",
+    "spatial-continuity",
+    "editing-pacing",
+    "shot-selection",
+    "specificity-intentionality",
+    "visual-direction-adherence",
+    "product-fidelity",
+    "physical-interaction",
+    "audio-video-integration",
+    "graphics-typography",
+    "delivery-fit"
+  ]
+}

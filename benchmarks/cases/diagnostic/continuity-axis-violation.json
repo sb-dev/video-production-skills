@@ -1,0 +1,27 @@
+{
+  "id": "continuity-axis-violation",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "the camera crosses the axis without declaring it",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "continuity",
+  "tier": "deterministic",
+  "checker": "continuity",
+  "scene": "undeclared-crossing",
+  "expect": {
+    "rule": "axis-violation"
+  },
+  "owningArtifact": "shot_plan",
+  "correctiveAction": "revise-shot-plan"
+}

@@ -1,0 +1,45 @@
+{
+  "id": "creative-pseudo-text",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "garbled machine-generated lettering on signage, and a clock face that does not read",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-fidelity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "runner",
+    "paid": true,
+    "provider": "replicate"
+  },
+  "class": "creative",
+  "tier": "semantic",
+  "images": [
+    {
+      "example": "production/06-reference-frames/selected/SH01-wide.jpg"
+    }
+  ],
+  "context": "A reference frame for a photorealistic documentary-register shot. Text in frame has exactly two acceptable states: readable and plausible, spelled correctly and consistent across frames; or genuinely defocused, abstract, or out of frame, with no glyph shapes resolving at all. Garbled pseudo-lettering that reads as text but does not resolve into words is neither, and is a defect. This scene's visual direction chose the defocused state.",
+  "criterion": "text-legibility",
+  "keywords": [
+    "text",
+    "illegible",
+    "garbled",
+    "gibberish",
+    "unreadable",
+    "nonsense",
+    "sign",
+    "lettering",
+    "clock",
+    "letters"
+  ],
+  "expect": {
+    "detects": true
+  },
+  "owningArtifact": "reference_frame",
+  "correctiveAction": "revise-reference"
+}

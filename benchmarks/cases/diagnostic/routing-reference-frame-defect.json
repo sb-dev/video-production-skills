@@ -1,0 +1,36 @@
+{
+  "id": "routing-reference-frame-defect",
+  "suite": "diagnostic",
+  "capability": "routing",
+  "summary": "The shipped pillar defect, put to diagnose: two approved reference frames disagree about the architecture. The owning artifact is the reference frame, never the prompt.",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/diagnose",
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Two approved reference frames for consecutive shots in one railway station concourse are supplied. Two approved reference frames for consecutive shots in one railway station concourse. They must agree about the architecture. Evaluate them, then diagnose: name the owning artifact, one corrective action from accept | refine-current | retry-execution | revise-reference | revise-shot-plan | revise-storyboard | revise-edit | change-capability | reject, and the correction scope. Cite the evidence you used.",
+  "expectedRouting": {
+    "owningArtifact": "reference_frame",
+    "correctiveAction": "revise-reference",
+    "maxScope": "the affected reference frame"
+  },
+  "evidence": [
+    {
+      "example": "production/06-reference-frames/selected/SH01-establish-v2.jpg",
+      "role": "approved reference frame, shot 1"
+    },
+    {
+      "example": "production/06-reference-frames/selected/SH02-crossing.jpg",
+      "role": "approved reference frame, shot 2"
+    }
+  ]
+}

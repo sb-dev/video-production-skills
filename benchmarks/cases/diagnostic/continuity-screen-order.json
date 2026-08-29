@@ -1,0 +1,27 @@
+{
+  "id": "continuity-screen-order",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "landmark order across frame contradicts the scene axis",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "continuity",
+  "tier": "deterministic",
+  "checker": "continuity",
+  "scene": "order-inverted",
+  "expect": {
+    "rule": "screen-order-contradiction"
+  },
+  "owningArtifact": "shot_plan",
+  "correctiveAction": "revise-shot-plan"
+}

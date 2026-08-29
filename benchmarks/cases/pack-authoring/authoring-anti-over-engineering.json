@@ -1,0 +1,30 @@
+{
+  "id": "authoring-anti-over-engineering",
+  "suite": "pack-authoring",
+  "capability": "pack-authoring",
+  "summary": "Anti-over-engineering control: one coherent pack, no inheritance framework, composition engine, central ontology or provider fork.",
+  "skills": [
+    "video-extension-pack-creator"
+  ],
+  "commands": [
+    "video-extension-pack-creator/create-skill-package",
+    "video-extension-pack-creator/create-evals"
+  ],
+  "rubric": "pack-authoring",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "Package one coherent new pack for a vector science explainer, with behavioural evals. Keep the package minimal and self-contained.",
+  "requiredDimensions": [
+    "self-contained-packaging",
+    "eval-coverage"
+  ],
+  "hardGates": [
+    "necessity",
+    "provider-boundary",
+    "project-boundary"
+  ]
+}

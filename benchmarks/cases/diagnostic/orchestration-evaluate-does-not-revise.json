@@ -1,0 +1,26 @@
+{
+  "id": "orchestration-evaluate-does-not-revise",
+  "suite": "diagnostic",
+  "capability": "orchestration",
+  "summary": "An evaluation request must end in a report and a diagnosis, not a revision. Choosing refine here is a skill-orchestration failure, distinct from a command failure.",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/evaluate",
+    "video-evaluate/diagnose"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "The user asks: \"Evaluate the master for Missed Connection and tell me what is wrong with it.\" The master and its lineage are supplied. Describe which commands you run, in order, and what you hand back. Do not perform any correction.",
+  "expectedRouting": {
+    "owningArtifact": "evaluation_report",
+    "correctiveAction": "accept",
+    "maxScope": "report only; nothing revised"
+  }
+}

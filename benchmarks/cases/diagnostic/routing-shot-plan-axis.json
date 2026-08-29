@@ -1,0 +1,36 @@
+{
+  "id": "routing-shot-plan-axis",
+  "suite": "diagnostic",
+  "capability": "routing",
+  "summary": "A frame whose landmark order is reversed against the approved scene. The defect is the camera side, owned by the shot plan.",
+  "skills": [
+    "video-evaluate"
+  ],
+  "commands": [
+    "video-evaluate/diagnose",
+    "video-evaluate/check-continuity"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "semantic",
+    "collector": "host",
+    "paid": false,
+    "bindContracts": true
+  },
+  "prompt": "The first image is the approved scene. The second is a new frame that must match its landmark layout. Diagnose the defect: owning artifact, one corrective action, correction scope, evidence.",
+  "expectedRouting": {
+    "owningArtifact": "shot_plan",
+    "correctiveAction": "revise-shot-plan",
+    "maxScope": "the affected shot"
+  },
+  "evidence": [
+    {
+      "fixture": "scene-clean.png",
+      "role": "approved reference"
+    },
+    {
+      "fixture": "scene-order-inverted.png",
+      "role": "frame under review"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "technical-aspect-mismatch",
+  "suite": "diagnostic",
+  "capability": "detection",
+  "summary": "a source whose aspect differs from the render aspect, silently letterboxed",
+  "skills": [
+    "video-evaluate",
+    "video-production"
+  ],
+  "commands": [
+    "video-production/assemble-edit"
+  ],
+  "rubric": "diagnostic",
+  "execution": {
+    "kind": "deterministic",
+    "collector": "runner",
+    "paid": false
+  },
+  "class": "technical",
+  "tier": "deterministic",
+  "checker": "timeline",
+  "fixture": "offsize.mp4",
+  "expect": {
+    "warns": true
+  },
+  "owningArtifact": "edit_timeline",
+  "correctiveAction": "refine-current"
+}

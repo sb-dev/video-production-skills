@@ -1,0 +1,33 @@
+{
+  "id": "pack-authoring",
+  "kind": "anchored",
+  "scale": {
+    "min": 0,
+    "max": 3,
+    "anchors": {
+      "0": "fails or contradicts the requirement",
+      "1": "material weakness; not production-ready",
+      "2": "acceptable production quality",
+      "3": "strong, deliberate execution"
+    }
+  },
+  "dimensions": [
+    { "id": "contract-completeness", "question": "Does the pack define format, genre, style, audience where relevant, and hard constraints separated from defaults?" },
+    { "id": "operational-specificity", "question": "Are style labels translated into materials, motion, camera, lighting, editing and evaluation behaviour?" },
+    { "id": "self-contained-packaging", "question": "Is the pack minimal and installable on its own, with no unnecessary files or provider architecture?" },
+    { "id": "showcase-quality", "question": "Does the canonical showcase demonstrate the pack's production language and its failure modes?" },
+    { "id": "generation-prompt-quality", "question": "Is the fenced ## Prompt exact, copy-ready and strong enough to expose pack adherence?" },
+    { "id": "eval-coverage", "question": "Do behavioural evals cover activation, application, refinement, final, precedence, non-activation and boundary behaviour?" },
+    { "id": "catalogue-integration", "question": "Is the pack registered only after validation, with cross-references that resolve?" },
+    { "id": "benchmark-integration", "question": "Does a benchmark case exist for the showcase?" }
+  ],
+  "gates": [
+    { "id": "necessity", "question": "Was a new pack the right decision? Existing pack fits → reuse. Existing pack plus one project-specific difference → project instruction or override. Stable reusable production profile → create. A structurally valid pack that an existing pack plus an instruction would have covered fails this gate." },
+    { "id": "voice-safety", "question": "Are voice references optional unless supplied, with no invented provider IDs and no imitation of an identifiable person?" },
+    { "id": "provider-boundary", "question": "Is no provider API reimplemented and no provider-specific fork introduced without a demonstrated requirement?" },
+    { "id": "project-boundary", "question": "Does the pack scope itself to relevant core commands rather than redefining the workflow?" },
+    { "id": "no-fabricated-evidence", "question": "Does the showcase avoid fabricated results, provenance, costs or scores?" }
+  ],
+  "hardGates": ["necessity", "voice-safety", "provider-boundary", "project-boundary", "no-fabricated-evidence"],
+  "readiness": "A repeat passes when necessity and every other applicable hard gate hold and every required scored dimension is 2 or higher. Package completeness never substitutes for necessity."
+}
