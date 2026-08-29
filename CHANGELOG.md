@@ -41,6 +41,12 @@ All notable changes to this project will be documented here.
 - `make-storyboard.ts` composing storyboard panels into a numbered, keylined board sheet, with defaults that produce the expected form and `--print-command` for hosts without ImageMagick.
 - Committed semantic transcripts under `tests/fixtures/defects/transcripts/`, with `--rescore` scoring them offline and `--print-prompts` showing exactly what the reviewer was asked. Re-scoring after a scorer change costs nothing, and a transcript recorded against a changed prompt, model or image set is refused rather than scored.
 - `--repeat N` sampling each semantic case several times: verdicts are the majority across repeats, the observed rate is recorded beside them, and a case that passes some repeats and fails others is reported `FLAKY` instead of failing the run as a regression.
+- Skill-local command contracts under `skills/*/commands/`: thirteen for `video-production`, six for `video-evaluate`, nine for `video-extension-pack-creator`. Each declares its purpose, inputs, outputs, preconditions, invariants (its preserve set), forbidden behaviour, failure routing and evaluation hooks, so a behaviour can be tested, diagnosed and benchmarked in isolation without introducing a command runtime.
+- Command-targeted eval cases and command coverage reporting: `run-evals.ts` accepts `--skill` and `--command`, validates a case's `command` against a real contract, and reports every command as `PASS`, `FAIL`, `MANUAL` or `UNCOVERED` so a command with no evidence cannot look green by implication. `npm run test:commands` runs each skill's suite on its own.
+- Command contract validation in `tools/validate-repo.ts`: required headings, heading order, frontmatter identity, and every skill-local or repository resource a contract names must exist.
+- `video-extension-pack-creator` Agent Skill for authoring, validating and cataloguing reusable extension packs, with `scripts/validate-pack.ts` for structural acceptance.
+- `docs/05-video-customisation-packs-spec.md` — the extension-pack contract: reusable production profiles distributed as installable Agent Skills, ranked strictly below user instructions and approved artifacts.
+- `docs/06-video-extension-pack-catalogue-spec.md` — the curated catalogue, its entry contract, and showcase requirements.
 
 ### Changed
 

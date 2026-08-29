@@ -39,7 +39,7 @@ The bootstrap must produce:
 - **Preserve approved work** — promote/refine approved artifacts rather than restart from the brief.
 - **Evals are product behaviour** — define quality before finalising skill contracts.
 - **Installability is part of the product** — a skill repository is incomplete if consumers cannot install it cleanly.
-- **Extract later** — cross-domain concepts go to `docs/2026-08-20-extraction-candidates.md` until proven reusable.
+- **Extract later** — cross-domain concepts go to `docs/research-logs/2026-08-20-extraction-candidates.md` until proven reusable.
 
 ## 4. Bootstrap Flow
 
@@ -347,7 +347,7 @@ Is this an extraction candidate?
 Potential overlap goes to:
 
 ```text
-docs/2026-08-20-extraction-candidates.md
+docs/research-logs/2026-08-20-extraction-candidates.md
 ```
 
 Do not extract automatically.

@@ -249,6 +249,12 @@ good shots, poor pace  → revise edit
 corrupt media          → fail technical QC
 ```
 
+### `video-extension-pack-creator`
+
+Author reusable extension packs — a format, genre, style, audience and optional voice casting held together as one production profile — and validate and catalogue them before they ship.
+
+A pack changes the quality target, not the requirement for quality. It ranks below explicit user instruction and approved artifacts.
+
 ## Execution
 
 The skills decide **what production work is needed**. Existing tools execute it.
@@ -294,30 +300,35 @@ Deterministic scripts are TypeScript and target **Node.js 24.12+**.
   - [Installation Expectations](docs/03-creative-skills-repository-and-contracts-spec.md#19-installation-expectations)
   - [Technical Acceptance Criteria](docs/03-creative-skills-repository-and-contracts-spec.md#26-technical-acceptance-criteria)
 - [Testing and Benchmark Specification](docs/04-testing-and-benchmark-spec.md)
-  - [Testing Layers](docs/04-testing-and-benchmark-spec.md#2-testing-layers)
-  - [Runbook](docs/04-testing-and-benchmark-spec.md#3-runbook)
-  - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#4-adding-coverage)
-  - [Measured Results and Known Blind Spots](docs/04-testing-and-benchmark-spec.md#5-measured-results-and-known-blind-spots)
-  - [Prior Art](docs/04-testing-and-benchmark-spec.md#6-prior-art)
+  - [Benchmark Scope and Capability Coverage](docs/04-testing-and-benchmark-spec.md#2-benchmark-scope-and-capability-coverage)
+  - [Testing Layers](docs/04-testing-and-benchmark-spec.md#3-testing-layers)
+  - [Runbook](docs/04-testing-and-benchmark-spec.md#4-runbook)
+  - [Adding Coverage](docs/04-testing-and-benchmark-spec.md#5-adding-coverage)
+  - [Extension-Pack and Pack-Creator Benchmark Cases](docs/04-testing-and-benchmark-spec.md#6-extension-pack-and-pack-creator-benchmark-cases)
+  - [Measured Results and Known Blind Spots](docs/04-testing-and-benchmark-spec.md#7-measured-results-and-known-blind-spots)
+  - [Prior Art](docs/04-testing-and-benchmark-spec.md#8-prior-art)
+- [Video Customisation Packs Specification](docs/05-video-customisation-packs-spec.md)
+- [Video Extension Pack Catalogue Specification](docs/06-video-extension-pack-catalogue-spec.md)
 
 ### Process and reports
 
-- [New Project Bootstrap Process](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md)
-  - [Governing Principles](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#3-governing-principles)
-  - [Bootstrap Flow](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#4-bootstrap-flow)
-  - [Generate the Three Canonical Specs](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#13-stage-9--generate-the-three-canonical-specs)
-  - [Canonical Installation Mechanism](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#17-canonical-installation-mechanism)
-  - [Scaffold Acceptance Gate](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#26-scaffold-acceptance-gate)
-  - [Publication Acceptance Gate](docs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#27-publication-acceptance-gate)
-- [Extraction Candidates](docs/2026-08-20-extraction-candidates.md)
-  - [Candidate Register](docs/2026-08-20-extraction-candidates.md#2-candidate-register)
-  - [Explicit Non-Candidates](docs/2026-08-20-extraction-candidates.md#3-explicit-non-candidates)
-  - [Review Trigger](docs/2026-08-20-extraction-candidates.md#4-review-trigger)
+- [New Project Bootstrap Process](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md)
+  - [Governing Principles](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#3-governing-principles)
+  - [Bootstrap Flow](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#4-bootstrap-flow)
+  - [Generate the Three Canonical Specs](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#13-stage-9--generate-the-three-canonical-specs)
+  - [Canonical Installation Mechanism](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#17-canonical-installation-mechanism)
+  - [Scaffold Acceptance Gate](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#26-scaffold-acceptance-gate)
+  - [Publication Acceptance Gate](docs/research-logs/2026-08-20-creative-production-skills-new-project-bootstrap-process.md#27-publication-acceptance-gate)
+- [Extraction Candidates](docs/research-logs/2026-08-20-extraction-candidates.md)
+  - [Candidate Register](docs/research-logs/2026-08-20-extraction-candidates.md#2-candidate-register)
+  - [Explicit Non-Candidates](docs/research-logs/2026-08-20-extraction-candidates.md#3-explicit-non-candidates)
+  - [Review Trigger](docs/research-logs/2026-08-20-extraction-candidates.md#4-review-trigger)
 
 ### Skills
 
 - [Video Production](skills/video-production/SKILL.md)
 - [Video Evaluate](skills/video-evaluate/SKILL.md)
+- [Video Extension Pack Creator](skills/video-extension-pack-creator/SKILL.md)
 
 ### Evals
 

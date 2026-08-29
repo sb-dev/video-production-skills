@@ -4,7 +4,7 @@
     {
       "id": "normal-three-shot",
       "class": "normal",
-      "given": "10\u201315 second three-shot character sequence with one supplied visual reference",
+      "given": "10–15 second three-shot character sequence with one supplied visual reference",
       "expect": [
         "plan before final motion generation",
         "create only useful intermediates",
@@ -21,6 +21,7 @@
     {
       "id": "draft-uncertain-direction",
       "class": "draft",
+      "command": "define-direction",
       "given": "ambiguous visual direction and multi-shot brief",
       "expect": [
         "use cheap decision artifacts first",
@@ -32,6 +33,7 @@
     {
       "id": "refine-reference-frame",
       "class": "refinement",
+      "command": "create-reference",
       "given": "approved reference frame; move product closer while preserving character, pose and lighting",
       "expect": [
         "start from approved parent",
@@ -44,6 +46,7 @@
     {
       "id": "final-locked-edit",
       "class": "final",
+      "command": "render-master",
       "given": "selected shots and locked edit timeline",
       "expect": [
         "use selected source shots",
@@ -56,6 +59,7 @@
     {
       "id": "boundary-ambiguous-camera",
       "class": "failure-boundary",
+      "command": "plan-shots",
       "given": "visually strong shot with wrong camera movement caused by ambiguous shot plan",
       "expect": [
         "diagnose shot-plan failure",
@@ -71,6 +75,7 @@
     {
       "id": "normal-conform-before-assembly",
       "class": "normal",
+      "command": "assemble-edit",
       "given": "a provider shot whose pixel aspect differs from the timeline render aspect",
       "expect": [
         "warn that the shot will be padded",
@@ -84,6 +89,7 @@
     {
       "id": "boundary-self-approved-direction",
       "class": "failure-boundary",
+      "command": "generate-shot",
       "given": "creative artifacts marked approved by the agent that produced them, with no approver recorded",
       "expect": [
         "treat approval as a human act",
@@ -99,6 +105,7 @@
     {
       "id": "boundary-retry-ceiling",
       "class": "failure-boundary",
+      "command": "generate-shot",
       "given": "repeated corrective attempts at one production layer without resolution",
       "expect": [
         "stop after the agreed attempt ceiling",
@@ -113,6 +120,7 @@
     {
       "id": "normal-storyboard-form",
       "class": "normal",
+      "command": "create-storyboard",
       "given": "a multi-shot sequence that needs a storyboard before motion generation",
       "expect": [
         "produce one composed board sheet with numbered panels",
@@ -127,6 +135,258 @@
         "ask an image model to lay out the grid"
       ],
       "check": "storyboard:composes-numbered-board"
+    },
+    {
+      "id": "draft-animatic-uncertain-timing",
+      "class": "draft",
+      "command": "create-animatic",
+      "given": "an approved storyboard whose dialogue timing and shot relationships are still uncertain",
+      "expect": [
+        "build the preview from storyboard panels, placeholder frames and guide audio",
+        "assemble the timeline deterministically",
+        "keep shot IDs addressable from storyboard through animatic",
+        "route each timing or sequence finding to its owning command",
+        "put the settled timing decisions to a human for approval"
+      ],
+      "forbid": [
+        "generate final motion to populate the animatic",
+        "promote an animatic frame to an approved reference frame",
+        "route an animatic finding to generate-shot"
+      ]
+    },
+    {
+      "id": "normal-animatic-skipped-when-timing-settled",
+      "class": "normal",
+      "command": "create-animatic",
+      "given": "a two-shot sequence whose durations and order are already settled and approved",
+      "expect": [
+        "skip the animatic and say why",
+        "proceed to reference and shot production"
+      ],
+      "forbid": [
+        "require an animatic for every production",
+        "spend on a preview that resolves nothing"
+      ]
+    },
+    {
+      "id": "draft-prototype-required-for-translation",
+      "class": "draft",
+      "command": "create-motion-prototype",
+      "given": "a shot in which the subject walks across frame and screen direction must hold",
+      "expect": [
+        "prototype the motion before commissioning the expensive take",
+        "run it at the lowest resolution that shows the motion",
+        "take the reference frame as the first-frame state",
+        "record seams, sliding, drift and any usable range",
+        "carry the usable-range findings into generate-shot"
+      ],
+      "forbid": [
+        "skip the prototype because the action is only walking",
+        "treat the prototype as a deliverable shot"
+      ]
+    },
+    {
+      "id": "boundary-prototype-motion-concept-wrong",
+      "class": "failure-boundary",
+      "command": "create-motion-prototype",
+      "given": "a prototype whose subject refuses to move from the supplied first-frame state",
+      "expect": [
+        "route the defect to create-reference as the owning decision",
+        "stop prototyping until the frame changes"
+      ],
+      "forbid": [
+        "polish the prototype instead of revising the owning decision",
+        "raise resolution or take length to fix the motion concept",
+        "a third attempt against an unchanged diagnosis"
+      ]
+    },
+    {
+      "id": "normal-static-shot-needs-no-prototype",
+      "class": "normal",
+      "command": "create-motion-prototype",
+      "given": "a locked-off shot with no subject translation, turn or gait change",
+      "expect": [
+        "skip the prototype and record why",
+        "proceed from the approved reference frame to shot production"
+      ],
+      "forbid": [
+        "prototype a shot that has no motion to test"
+      ]
+    },
+    {
+      "id": "boundary-reference-static-subject",
+      "class": "failure-boundary",
+      "command": "create-reference",
+      "given": "a shot that will not move, generated twice from a reference frame posing the subject feet flat and weight centred",
+      "expect": [
+        "own the defect in the reference frame",
+        "pose the subject mid-motion in the replacement frame",
+        "stop after two attempts carrying the same diagnosis"
+      ],
+      "forbid": [
+        "re-diagnose the failure as a prompt failure",
+        "spend a further generate-shot attempt against the unchanged frame"
+      ]
+    },
+    {
+      "id": "normal-shot-execution-provenance",
+      "class": "normal",
+      "command": "generate-shot",
+      "given": "an approved reference frame, shot plan entry and agreed attempt ceiling for one shot ID",
+      "expect": [
+        "delegate execution to the provider skills",
+        "compare temporal stability on a short test before committing to a model",
+        "record provider skill, model and execution facts in provenance",
+        "keep the shot ID stable across every candidate",
+        "retain losing candidates in the lineage"
+      ],
+      "forbid": [
+        "call a provider API directly or keep a model catalogue",
+        "mark a candidate selected, approved or locked",
+        "edit the shot plan to agree with what was generated"
+      ]
+    },
+    {
+      "id": "normal-select-on-motion-evidence",
+      "class": "normal",
+      "command": "select-shot",
+      "given": "three candidates for one shot ID, each with a temporal motion pass",
+      "expect": [
+        "select one candidate and record the selection reason",
+        "mark the remaining candidates rejected and keep them in the lineage",
+        "gate the choice on motion quality, not staging alone",
+        "keep the shot ID stable"
+      ],
+      "forbid": [
+        "select from a contact sheet without motion evidence",
+        "advance the selected candidate to approved or locked",
+        "sample frames at an interval near the artifact's period"
+      ]
+    },
+    {
+      "id": "boundary-shared-defect-not-a-selection",
+      "class": "failure-boundary",
+      "command": "select-shot",
+      "given": "every candidate for a shot stages the story well and slides the subject's feet",
+      "expect": [
+        "refuse to select a candidate with the defect",
+        "name the shared defect as a motion-concept failure",
+        "route it to create-motion-prototype"
+      ],
+      "forbid": [
+        "pick the least bad take to keep the edit moving",
+        "treat a defect shared by every candidate as a selection failure",
+        "silently edit the shot plan so it agrees with the chosen take"
+      ]
+    },
+    {
+      "id": "boundary-audio-balance-not-a-reshoot",
+      "class": "failure-boundary",
+      "command": "integrate-audio",
+      "given": "dialogue buried under effects in an otherwise approved cut",
+      "expect": [
+        "diagnose the defect as a balance problem and fix it in the mix",
+        "leave picture selection, order, in/out and duration as the timeline records them"
+      ],
+      "forbid": [
+        "regenerate or re-select a shot to make the audio problem disappear",
+        "re-cut picture to conceal a sync error the mix cannot fix"
+      ]
+    },
+    {
+      "id": "normal-supplied-music-balance",
+      "class": "normal",
+      "command": "integrate-audio",
+      "given": "a supplied music track to sit under dialogue and effects at picture lock",
+      "expect": [
+        "set the track's balance against dialogue and effects only",
+        "keep the supplied asset's own internal mix and master",
+        "record the progression from guide audio to final mix",
+        "record which specialist skill produced any generated speech or effect"
+      ],
+      "forbid": [
+        "re-master or re-compose the supplied track",
+        "rewrite dialogue wording",
+        "advance the mix to approved on the agent's own authority"
+      ]
+    },
+    {
+      "id": "boundary-delivery-crop-defect",
+      "class": "failure-boundary",
+      "command": "create-delivery",
+      "given": "a valid approved master whose vertical delivery crop cuts the subject's head",
+      "expect": [
+        "own the defect in the delivery variant",
+        "reframe the crop so the subject stays legible at the target ratio",
+        "record the source master and the adaptation applied"
+      ],
+      "forbid": [
+        "alter, re-render or re-approve the master",
+        "reshoot, regenerate or re-select shots because the crop is unflattering"
+      ]
+    },
+    {
+      "id": "normal-delivery-declared-target",
+      "class": "normal",
+      "command": "create-delivery",
+      "given": "one declared delivery target with stated aspect, resolution, frame rate and codec",
+      "expect": [
+        "produce one variant for the declared target",
+        "derive it from the approved master",
+        "verify the variant against the stated requirements",
+        "carry approved direction and finishing decisions through the adaptation"
+      ],
+      "forbid": [
+        "invent further targets, platforms or caption requirements",
+        "derive a variant from another variant while the master is available"
+      ]
+    },
+    {
+      "id": "refine-preserve-set-on-revision",
+      "class": "refinement",
+      "command": "refine",
+      "given": "an approved reference frame with one product to move closer and an otherwise intact preserve set",
+      "expect": [
+        "start from the approved parent",
+        "change only the named deficiency",
+        "carry character, pose and lighting through unchanged",
+        "retain lineage and keep the shot ID stable",
+        "verify that no material regression was introduced"
+      ],
+      "forbid": [
+        "restart from the brief when an approved artifact can drive the revision",
+        "rewrite unrelated approved work to make the symptom disappear"
+      ]
+    },
+    {
+      "id": "refine-pacing-routes-to-edit",
+      "class": "refinement",
+      "command": "refine",
+      "given": "a sequence that drags in the cut although every selected shot is sound",
+      "expect": [
+        "diagnose the defect as a pacing failure owned by assemble-edit",
+        "revise in/out points and ordering on the timeline"
+      ],
+      "forbid": [
+        "regenerate shots to fix pacing",
+        "raise spend to answer a structural failure",
+        "regenerate the sequence, edit or master to correct a defect one artifact owns"
+      ]
+    },
+    {
+      "id": "refine-delivery-crop-leaves-master",
+      "class": "refinement",
+      "command": "refine",
+      "given": "a delivery variant with a bad crop derived from an approved master that is itself correct",
+      "expect": [
+        "route the correction to create-delivery",
+        "revise the crop on the variant only",
+        "leave the master and its approvals untouched"
+      ],
+      "forbid": [
+        "re-render or re-approve the master",
+        "reopen the edit or the selected takes"
+      ]
     }
   ]
 }

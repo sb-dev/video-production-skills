@@ -13,7 +13,7 @@ A material change should answer:
 5. What example or fixture demonstrates it?
 6. Does it duplicate provider functionality or another Creative Production Skills project?
 
-If the last answer may be yes, record the overlap in `docs/2026-08-20-extraction-candidates.md`; do not extract it automatically.
+If the last answer may be yes, record the overlap in `docs/research-logs/2026-08-20-extraction-candidates.md`; do not extract it automatically.
 
 ## Keep the repository lean
 

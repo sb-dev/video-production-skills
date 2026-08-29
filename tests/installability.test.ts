@@ -7,14 +7,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SKILLS = ['video-production', 'video-evaluate'] as const;
+const SKILLS = ['video-production', 'video-evaluate', 'video-extension-pack-creator'] as const;
 const AGENTS = [
   { name: 'claude-code', skillsDir: '.claude/skills' },
   { name: 'codex', skillsDir: '.agents/skills' },
 ] as const;
 
 function referencedLocalResources(skillMarkdown: string): readonly string[] {
-  return [...skillMarkdown.matchAll(/`((?:references|scripts|evals)\/[^`]+)`/g)]
+  return [...skillMarkdown.matchAll(/`((?:references|scripts|evals|commands)\/[^`]+)`/g)]
     .map((match) => match[1])
     .filter((value): value is string => value !== undefined);
 }
@@ -40,7 +40,7 @@ for (const agent of AGENTS) {
         mkdirSync(dirname(targetRoot), { recursive: true });
         cpSync(join(ROOT, 'skills', skill), targetRoot, { recursive: true });
 
-        for (const required of ['SKILL.md', 'references', 'scripts', 'evals'] as const) {
+        for (const required of ['SKILL.md', 'commands', 'references', 'scripts', 'evals'] as const) {
           assert.ok(existsSync(join(targetRoot, required)), `missing installed resource: ${required}`);
         }
 

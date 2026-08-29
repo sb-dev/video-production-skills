@@ -88,6 +88,26 @@ Possible stages:
 
 Do not require every stage.
 
+## Commands
+
+Use the skill-local command contract that owns the current behaviour:
+
+- `commands/define-direction.md`
+- `commands/create-storyboard.md`
+- `commands/plan-shots.md`
+- `commands/create-animatic.md`
+- `commands/create-reference.md`
+- `commands/create-motion-prototype.md`
+- `commands/generate-shot.md`
+- `commands/select-shot.md`
+- `commands/assemble-edit.md`
+- `commands/integrate-audio.md`
+- `commands/render-master.md`
+- `commands/create-delivery.md`
+- `commands/refine.md`
+
+Do not treat commands as separate skills or require a command runtime. For a narrow request, execute only the relevant command plus necessary prerequisites. For an end-to-end production, orchestrate commands through their artifact outputs.
+
 ## State
 
 Track independently:

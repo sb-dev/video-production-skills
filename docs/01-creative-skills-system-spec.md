@@ -107,6 +107,25 @@ The project should not maintain model catalogues, provider SDKs, static pricing,
 
 Video-specific concepts remain local until another production domain independently implements substantially equivalent semantics.
 
+### 5.9 Decompose skills into testable commands
+
+Keep `video-production` and `video-evaluate` as the installable product surface, but decompose their internal behaviour into named command contracts.
+
+```text
+Skill
+→ user-facing capability
+
+Command
+→ independently testable behaviour inside the skill
+
+Script
+→ deterministic implementation where code is more reliable than prose
+```
+
+Commands are not separate Agent Skills and do not require a command runtime or proprietary dispatch framework.
+
+A command exists when a production behaviour is independently useful to reason about, test, diagnose, or benchmark. Do not create commands merely to mirror every artifact or internal step.
+
 ---
 
 ## 6. Scope
@@ -301,6 +320,67 @@ Responsibilities include:
 - recommend the smallest appropriate corrective action.
 
 `video-evaluate` must be independently usable on artifacts not created by `video-production`.
+
+### 9.3 Internal command model
+
+The initial command decomposition is:
+
+```text
+video-production
+├── define-direction
+├── create-storyboard
+├── plan-shots
+├── create-animatic
+├── create-reference
+├── create-motion-prototype
+├── generate-shot
+├── select-shot
+├── assemble-edit
+├── integrate-audio
+├── render-master
+├── create-delivery
+└── refine
+
+video-evaluate
+├── evaluate
+├── diagnose
+├── check-continuity
+├── check-motion
+├── check-fidelity
+└── qc
+```
+
+The command boundary makes the existing production workflow independently testable without multiplying installable skills.
+
+Each command must define:
+
+```text
+purpose
+inputs
+outputs
+preconditions
+invariants          # the preserve set
+forbidden behaviour
+failure routing
+evaluation hooks    # how the command is proved
+```
+
+A command may additionally state a `procedure` and the `external capabilities` it calls. `docs/03` §8.1 is the authoritative heading contract, and `npm run validate` enforces it.
+
+Commands may call deterministic scripts or existing provider skills. They must not create a new provider abstraction.
+
+`refine` and `diagnose` are routing-sensitive commands. They must identify the smallest affected artifact and the command or production layer that owns the correction.
+
+### 9.4 Extension packs
+
+A reusable production grammar — a format, genre, style, audience and optional voice casting, held together as one profile — is distributed as a separate installable Agent Skill called an extension pack. Packs are not a third core skill and not a plugin runtime.
+
+A pack specialises how the commands in §9.3 behave. It must not change what a command is for, what it consumes or what it produces. Its precedence is strictly below explicit user instruction and approved artifacts.
+
+`video-extension-pack-creator` authors packs; it does not run productions.
+
+- `docs/05` — the pack contract and pack-aware evaluation.
+- `docs/06` — the curated catalogue, its entry contract, and showcase requirements.
 
 ---
 
@@ -749,21 +829,25 @@ The recommended end-to-end scenario is a short three-shot character sequence wit
 Implement vertically.
 
 ```text
-1. video-production:
-   brief → visual direction → storyboard → shot plan
+1. define and test the core command contracts for `video-production`
 
-2. reference-frame production through default provider skills
+2. implement the first production slice:
+   define-direction → create-storyboard → plan-shots
 
-3. video-shot production and shot selection
+3. implement reference and shot production through default provider skills:
+   create-reference → generate-shot → select-shot
 
-4. simple edit timeline + FFmpeg master render
+4. implement editorial/mastering on a simple edit timeline and an FFmpeg master render:
+   assemble-edit → integrate-audio where required → render-master
 
-5. video-evaluate:
-   artifact readiness + technical QC + diagnosis
+5. define and test `video-evaluate` commands:
+   evaluate → diagnose → continuity / motion / fidelity / QC checks
 
-6. end-to-end core proof
+6. prove `refine` routes corrections to the smallest owning unit
 
-7. installability and external smoke test
+7. run the end-to-end core proof across command boundaries
+
+8. prove installability and external smoke test
 ```
 
 Do not implement specialist workflows before the core proof passes.
@@ -824,7 +908,7 @@ A deferred concept should be promoted only when concrete workflows prove that it
 Potential cross-domain abstractions belong in:
 
 ```text
-docs/2026-08-20-extraction-candidates.md
+docs/research-logs/2026-08-20-extraction-candidates.md
 ```
 
 A concept may move into Creative Production Skills only when:
@@ -870,8 +954,11 @@ The system is correctly designed when:
 16. cross-project composition happens through artifacts;
 17. the core proof reaches an actual edited video master rather than stopping at generated shots;
 18. deferred improvements remain deferred until production evidence justifies them;
-19. shared abstractions are extracted only after proven duplication.
+19. shared abstractions are extracted only after proven duplication;
+20. the two core skills are decomposed into skill-local command contracts without creating additional installable skills;
+21. each command is independently testable and has explicit inputs, outputs, preservation requirements, and failure behaviour;
+22. command decomposition does not introduce a workflow engine, command runtime, or provider abstraction.
 
 ---
 
-**Video Production Skills — Creative Skills System Specification v3**
+**Video Production Skills — Creative Skills System Specification v4**

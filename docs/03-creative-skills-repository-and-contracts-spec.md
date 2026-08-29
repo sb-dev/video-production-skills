@@ -26,18 +26,31 @@ video-production-skills/
 │   ├── 01-creative-skills-system-spec.md
 │   ├── 02-creative-skills-workflows-and-artifacts-spec.md
 │   ├── 03-creative-skills-repository-and-contracts-spec.md
-│   └── 2026-08-20-extraction-candidates.md
+│   ├── 04-testing-and-benchmark-spec.md
+│   ├── 05-video-customisation-packs-spec.md
+│   ├── 06-video-extension-pack-catalogue-spec.md
+│   └── research-logs/
 │
 ├── skills/
 │   ├── video-production/
 │   │   ├── SKILL.md
+│   │   ├── commands/
 │   │   ├── references/
 │   │   ├── scripts/
 │   │   └── evals/
 │   │       └── evals.json
 │   │
-│   └── video-evaluate/
+│   ├── video-evaluate/
+│   │   ├── SKILL.md
+│   │   ├── commands/
+│   │   ├── references/
+│   │   ├── scripts/
+│   │   └── evals/
+│   │       └── evals.json
+│   │
+│   └── video-extension-pack-creator/
 │       ├── SKILL.md
+│       ├── commands/
 │       ├── references/
 │       ├── scripts/
 │       └── evals/
@@ -48,6 +61,9 @@ video-production-skills/
 │
 ├── evals/
 │   └── end-to-end/
+│
+├── tests/
+├── tools/
 │
 └── .github/
     ├── ISSUE_TEMPLATE/
@@ -96,7 +112,10 @@ The initial repository contains:
 ```text
 video-production
 video-evaluate
+video-extension-pack-creator
 ```
+
+`video-production` and `video-evaluate` are the production surface. `video-extension-pack-creator` authors reusable extension packs and runs no production; its contract is `docs/05`.
 
 Do not retain the previous provider-shaped skill set:
 
@@ -127,11 +146,14 @@ Runtime resources required by that skill must live with it:
 
 ```text
 SKILL.md
+commands/   # named behavioural contracts, one file per independently testable behaviour
 references/
 scripts/
 assets/     # only when genuinely needed
 evals/
 ```
+
+Only `assets/` is optional. `commands/` ships with the skill and is asserted by the installation regression tests, because a command contract that does not survive installation is not part of the installed product.
 
 An installed skill must not depend on repository-level `docs/`, `examples/`, or another skill's private files.
 
@@ -258,6 +280,85 @@ Detailed methodology should move into `references/` only when it improves usabil
 
 Do not duplicate entire canonical specs inside skill references.
 
+### 8.1 Internal command contracts
+
+Commands decompose a skill into independently testable behaviours without creating additional installable skills.
+
+```text
+skills/<skill-name>/commands/<command-name>.md
+```
+
+A command file carries frontmatter declaring its `id` and owning `skill`, an `# <command-name>` heading, and these `##` sections in this order:
+
+```text
+Purpose
+Inputs
+Outputs
+Preconditions
+Invariants            # the preserve set
+Forbidden behaviour
+Failure routing
+Evaluation hooks      # how the command is proved
+```
+
+Two sections are optional, used only when the command genuinely has one:
+
+```text
+Procedure             # after Preconditions
+External capabilities # after Forbidden behaviour
+```
+
+The headings are the lightweight machine-checkable contract, and `npm run validate` enforces them: the required set must be present, the order must hold, and no other heading is permitted. `Invariants` is the preserve set — what must survive the command unchanged. `Evaluation hooks` names how the behaviour is falsified, which is the acceptance criterion in the form the eval runner can act on.
+
+Every skill-local resource and repository tool a command file names must exist. A contract that names a script nobody wrote is the defect this whole layer was built against.
+
+Do not add a command runtime, command registry service, workflow engine, or proprietary invocation API.
+
+`SKILL.md` remains the activation and orchestration surface. It should direct the agent to the relevant command contract when a task maps cleanly to one command.
+
+Commands may invoke:
+
+```text
+skill-local deterministic scripts
+existing peer Agent Skills
+approved production artifacts
+```
+
+They must not directly implement provider APIs.
+
+### 8.2 Initial `video-production` commands
+
+```text
+commands/
+├── define-direction.md
+├── create-storyboard.md
+├── plan-shots.md
+├── create-animatic.md
+├── create-reference.md
+├── create-motion-prototype.md
+├── generate-shot.md
+├── select-shot.md
+├── assemble-edit.md
+├── integrate-audio.md
+├── render-master.md
+├── create-delivery.md
+└── refine.md
+```
+
+### 8.3 Initial `video-evaluate` commands
+
+```text
+commands/
+├── evaluate.md
+├── diagnose.md
+├── check-continuity.md
+├── check-motion.md
+├── check-fidelity.md
+└── qc.md
+```
+
+Create only these initial commands. Add another command only when a distinct behaviour needs its own contract and benchmark coverage.
+
 ---
 
 # 9. `video-production/SKILL.md` Contract
@@ -321,6 +422,26 @@ Possible stages:
 - delivery adaptation.
 
 Do not require every stage.
+
+## Commands
+
+Use the skill-local command contract that owns the current behaviour:
+
+- `define-direction`
+- `create-storyboard`
+- `plan-shots`
+- `create-animatic`
+- `create-reference`
+- `create-motion-prototype`
+- `generate-shot`
+- `select-shot`
+- `assemble-edit`
+- `integrate-audio`
+- `render-master`
+- `create-delivery`
+- `refine`
+
+Do not treat commands as separate skills or require a command runtime. For a narrow request, execute only the relevant command plus necessary prerequisites. For an end-to-end production, orchestrate commands through their artifact outputs.
 
 ## State
 
@@ -617,6 +738,19 @@ Judge against the most specific available production expectations.
 
 Do not reduce evaluation to prompt compliance when more specific approved parents exist.
 
+## Commands
+
+Use the smallest evaluation command that answers the request:
+
+- `evaluate` — identify material production findings;
+- `diagnose` — identify owning layer, corrective action, and correction scope;
+- `check-continuity` — inspect cross-artifact spatial/identity/state continuity;
+- `check-motion` — inspect temporal integrity, action, camera behaviour, and usable range;
+- `check-fidelity` — compare character, product, prop, environment, or pack traits against approved references;
+- `qc` — run technical media and delivery checks.
+
+Commands may be composed for a full evaluation, but each remains independently testable.
+
 ## Evaluation principle
 
 Evaluate only the criteria relevant to the artifact's production role.
@@ -872,6 +1006,7 @@ Initial TypeScript scripts:
 inspect-media.ts
 render-timeline.ts
 make-contact-sheet.ts
+make-storyboard.ts
 ```
 
 Deterministic repository scripts are implemented in TypeScript and target Node.js 24.12 or later, where native TypeScript type stripping is stable. Installed skill scripts use erasable TypeScript syntax and require no npm runtime dependency.
@@ -891,6 +1026,9 @@ Initial TypeScript scripts:
 ```text
 inspect-video.ts
 sample-frames.ts
+detect-motion-artifacts.ts
+preflight.ts
+validate-continuity.ts
 ```
 
 Scripts may orchestrate FFmpeg/ffprobe/ImageMagick and validate structured output.
@@ -918,6 +1056,59 @@ failure / boundary
 ```
 
 Quality criteria must be domain-native.
+
+### 13.1 Command eval requirements
+
+Existing `evals/evals.json` remains the canonical eval file for each skill. Do not create one eval file per command.
+
+Command-targeted cases add a command identifier so the same runner can report component coverage:
+
+```json
+{
+  "id": "create-reference-preserves-approved-character",
+  "class": "refinement",
+  "command": "create-reference",
+  "given": "an approved storyboard frame and a locked character reference",
+  "expect": [
+    "uses approved storyboard frame and character reference",
+    "preserves locked identity"
+  ],
+  "forbid": [
+    "restarts from the brief",
+    "changes unrelated approved properties"
+  ]
+}
+```
+
+`command` is optional; a case without one is a skill-level case. A case naming a command that has no contract file is refused, not ignored.
+
+The eval runner supports:
+
+```bash
+node tools/run-evals.ts --skill video-production
+node tools/run-evals.ts --skill video-production --command create-reference
+node tools/run-evals.ts --skill video-evaluate --command diagnose
+```
+
+`npm run test:commands` runs each skill's suite on its own, so a skill's evals must stand up without its siblings installed.
+
+A command is covered only when at least one executable or explicitly semantic case targets it. Manual prose examples do not count as executable coverage. Every command is reported by name in one of four states:
+
+```text
+PASS       every executable case targeting it passed
+FAIL       at least one executable case targeting it failed
+MANUAL     it has cases, none of them executable
+UNCOVERED  no case targets it at all
+```
+
+`UNCOVERED` is reported, not suppressed and not treated as a pass. A command that nobody has written a case for must be visible as such.
+
+Critical routing commands require both defect and clean/control cases:
+
+```text
+video-production/refine
+video-evaluate/diagnose
+```
 
 ---
 
@@ -1394,6 +1585,8 @@ Installation smoke tests must run in clean temporary consumer projects and use `
 
 Live provider generation remains optional, explicitly gated, or scheduled separately because it incurs external cost and credentials.
 
+---
+
 ## 22. Extraction Candidate Register
 
 Maintain:
@@ -1532,7 +1725,12 @@ The repository contract is correct when:
 24. local skill discovery and individual installation succeed;
 25. CI installs pinned development dependencies with `npm ci` and runs type-checking, tests, repository validation, and installation checks;
 26. specialist follow-up skills remain deferred until proven;
-27. cross-domain reuse is tracked as extraction candidates rather than prematurely shared code.
+27. cross-domain reuse is tracked as extraction candidates rather than prematurely shared code;
+28. `video-production` and `video-evaluate` expose their independently testable behaviour through skill-local `commands/*.md`;
+29. every initial command has a complete lightweight contract, and its eval coverage is reported per command — a command with no targeted case reports `UNCOVERED` rather than passing by implication;
+30. `SKILL.md` remains the user-facing orchestration surface and commands do not become separately installable skills;
+31. no command runtime, workflow engine, or proprietary skill-to-command API is introduced;
+32. benchmark reporting can attribute failures to commands rather than only to whole skills.
 
 ---
 

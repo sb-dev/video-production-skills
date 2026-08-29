@@ -73,6 +73,99 @@ Continuity, selection, approval, locking, and provenance cross the entire workfl
 
 Not every production requires every stage.
 
+### 2.1 Command-to-workflow mapping
+
+Commands are testable behaviour boundaries inside the two core skills. They do not replace production artifacts or introduce another lifecycle.
+
+```text
+video-production
+
+define-direction
+brief + upstream constraints
+→ visual_direction
+
+create-storyboard
+brief + visual_direction
+→ storyboard
+
+plan-shots
+approved storyboard + visual_direction
+→ shot_plan
+
+create-animatic
+storyboard + shot_plan
+→ animatic
+
+create-reference
+storyboard_frame + shot_plan + approved character/product references
+→ reference_frame candidate(s) + selection
+→ scene_sheet, scene_manifest, object_sheet where the environment or a prop must be declared
+
+create-motion-prototype
+reference_frame + shot_plan
+→ motion_prototype
+
+generate-shot
+approved reference + shot_plan
+→ video_shot candidate(s)
+
+select-shot
+video_shot candidates
+→ selected video_shot
+
+assemble-edit
+selected shots
+→ edit_timeline
+
+integrate-audio
+edit_timeline + supplied/generated audio
+→ audio_mix / updated edit timing
+
+render-master
+locked edit_timeline + approved finishing/audio
+→ video_master
+
+create-delivery
+video_master + delivery requirements
+→ delivery_variant
+
+refine
+artifact + evaluation_report + preserve set
+→ smallest justified revision
+```
+
+```text
+video-evaluate
+
+evaluate
+artifact + production context
+→ evaluation_report observations
+
+diagnose
+observations + lineage + production context
+→ owning layer + corrective action + correction scope
+
+check-continuity
+artifact set + continuity constraints
+→ continuity findings
+
+check-motion
+video_shot / motion_prototype
+→ motion findings + usable range where measurable
+
+check-fidelity
+artifact + approved identity/product/style references
+→ fidelity findings
+
+qc
+media artifact + technical requirements
+→ qc_report
+```
+
+A command may consume or update more than one artifact where the production semantics require it. Do not invent new first-class artifacts merely to make command boundaries symmetrical.
+
+An installed extension pack may specialise how these commands behave — the defaults they assume, the traits they preserve, and what their evaluation treats as intentional. It must not change a command's inputs, outputs or purpose, and it ranks below explicit user instruction and approved artifacts. See `docs/05`.
+
 ---
 
 ## 3. State Model
@@ -948,6 +1041,40 @@ wrong delivery crop
 → regenerate one delivery variant
 ```
 
+### 24.1 Command-level refinement routing
+
+`refine` is the production-side routing command.
+
+It should use evaluation evidence and artifact lineage to select the smallest owning command:
+
+```text
+reference composition defect
+→ create-reference
+
+camera/action design defect
+→ plan-shots or create-motion-prototype
+
+execution-only shot defect
+→ generate-shot
+
+wrong selected take
+→ select-shot
+
+pacing / ordering defect
+→ assemble-edit
+
+audio balance or sync defect
+→ integrate-audio
+
+master encode defect
+→ render-master
+
+delivery crop / format defect
+→ create-delivery
+```
+
+The correction target is part of the expected result. A refinement that fixes the visible symptom by rewriting unrelated approved work is still a failure.
+
 ---
 
 ## 25. Provenance
@@ -1421,8 +1548,11 @@ The workflow model is correct when:
 22. provenance remains lightweight;
 23. approved work is preserved downstream;
 24. cross-project inputs enter through artifacts rather than runtime coupling;
-25. deferred specialisations remain outside the core until production evidence justifies them.
+25. deferred specialisations remain outside the core until production evidence justifies them;
+26. command boundaries map cleanly onto existing artifact transitions without replacing the artifact model;
+27. command-level refinement routes defects to the smallest owning behaviour;
+28. commands do not create a parallel lifecycle or require a workflow runtime.
 
 ---
 
-**Video Production Skills — Creative Skills Workflows and Artifacts Specification v3**
+**Video Production Skills — Creative Skills Workflows and Artifacts Specification v4**

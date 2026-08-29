@@ -48,7 +48,7 @@ Optimise for:
 A production run was made and failed. It self-declared **ACCEPT / QC PASS** and shipped a sequence
 carrying visible generation seams, a pillar present in one approved reference frame and in no other
 shot, and creative direction nobody had approved. The run is not kept here.
-`docs/2026-08-23-missed-connection-postmortem.md` records the failure chain, and
+`docs/research-logs/2026-08-23-missed-connection-postmortem.md` records the failure chain, and
 `docs/04-testing-and-benchmark-spec.md` specifies the testing layers it produced.
 
 The brief above is unchanged and still open.
