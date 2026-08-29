@@ -373,6 +373,7 @@ test('a diagnostic result with the wrong corrective target is not a strict pass'
   assert.ok(isRecord(repeat));
   assert.equal(repeat.ready, false);
   assert.match(String(JSON.stringify(repeat.reasons)), /routing expected edit_timeline\/revise-edit/);
+  assert.match(String(JSON.stringify(repeat.reasons)), /scope not recorded/);
   assert.equal(repeat.precision, false, 'precision is reported beside the verdict');
 
   writeFileSync(
@@ -380,7 +381,7 @@ test('a diagnostic result with the wrong corrective target is not a strict pass'
     JSON.stringify({
       schema: 'vps-benchmark-result/1',
       caseId: 'routing-pacing-to-edit',
-      repeats: [{ index: 0, axes, routing: { owningArtifact: 'edit_timeline', correctiveAction: 'revise-edit' } }],
+      repeats: [{ index: 0, axes, routing: { owningArtifact: 'edit_timeline', correctiveAction: 'revise-edit', scope: 'the edit timeline only' } }],
     }),
   );
   assert.equal(runScript(SCRIPT, ['--score', path]).status, 0, 'the right route with imprecision is still a strict pass');
