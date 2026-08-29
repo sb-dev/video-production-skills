@@ -12,6 +12,7 @@ import test from 'node:test';
 import {
   canonicalJson, extractFencedPrompt, fingerprintCase, hasPromptHeading, loadCatalogue, validateBenchmark,
 } from '../tools/benchmark/manifest.ts';
+import type { BenchmarkCase, Rubric } from '../tools/benchmark/manifest.ts';
 import { scoreRepeat } from '../tools/benchmark/score.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -222,6 +223,36 @@ test('scoreRepeat treats a missing hard gate as a failure and never sums dimensi
   assert.equal(verdict.ready, false);
   assert.ok(verdict.reasons.some((reason) => reason === 'gate approved-decision-preservation unscored'));
   assert.equal(verdict.dimensions['instruction-adherence'], 3);
+});
+
+const ALL_AXES = { detection: true, evidence: true, routing: true, scope: true, preservation: true, boundary: true, precision: true } as const;
+
+function diagnosticFixture(): { rubric: Rubric; entry: BenchmarkCase } {
+  const catalogue = loadCatalogue(ROOT);
+  const rubric = catalogue.rubrics.get('diagnostic');
+  const entry = catalogue.cases.find((candidate) => candidate.id === 'scope-single-failing-shot');
+  assert.ok(rubric !== undefined && entry !== undefined);
+  return { rubric, entry };
+}
+
+test('a case that declares expectedRouting fails when the result records no route, whatever the reviewer said', () => {
+  const { rubric, entry } = diagnosticFixture();
+  const verdict = scoreRepeat(rubric, entry, { index: 0, axes: ALL_AXES });
+  assert.equal(verdict.ready, false);
+  assert.ok(verdict.reasons.some((reason) => /routing not recorded/.test(reason)), verdict.reasons.join('\n'));
+});
+
+test('maxScope is scored: an absent or wider recorded scope fails, a matching one passes', () => {
+  const { rubric, entry } = diagnosticFixture();
+  const route = { owningArtifact: 'video_shot', correctiveAction: 'retry-execution' };
+  const absent = scoreRepeat(rubric, entry, { index: 0, axes: ALL_AXES, routing: route });
+  assert.equal(absent.ready, false);
+  assert.ok(absent.reasons.some((reason) => /scope not recorded/.test(reason)), absent.reasons.join('\n'));
+  const wider = scoreRepeat(rubric, entry, { index: 0, axes: ALL_AXES, routing: { ...route, scope: 'the whole production' } });
+  assert.equal(wider.ready, false);
+  assert.ok(wider.reasons.some((reason) => /scope expected "SH02 only"/.test(reason)), wider.reasons.join('\n'));
+  const exact = scoreRepeat(rubric, entry, { index: 0, axes: ALL_AXES, routing: { ...route, scope: ' sh02  only ' } });
+  assert.equal(exact.ready, true, exact.reasons.join('\n'));
 });
 
 // --------------------------------------------------------------- committed

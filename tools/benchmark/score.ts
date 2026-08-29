@@ -19,7 +19,7 @@ export interface RepeatResult {
   readonly gates?: Readonly<Record<string, GateValue>>;
   readonly dimensions?: Readonly<Record<string, Score>>;
   readonly axes?: Readonly<Record<string, GateValue>>;
-  readonly routing?: { readonly owningArtifact?: string; readonly correctiveAction?: string };
+  readonly routing?: { readonly owningArtifact?: string; readonly correctiveAction?: string; readonly scope?: string };
   readonly notes?: string;
 }
 
@@ -124,6 +124,7 @@ export function parseRecordedResult(value: unknown): RecordedResult {
       routing = {
         ...(typeof item.routing.owningArtifact === 'string' ? { owningArtifact: item.routing.owningArtifact } : {}),
         ...(typeof item.routing.correctiveAction === 'string' ? { correctiveAction: item.routing.correctiveAction } : {}),
+        ...(typeof item.routing.scope === 'string' ? { scope: item.routing.scope } : {}),
       };
     }
     return {
@@ -147,6 +148,10 @@ export function parseRecordedResult(value: unknown): RecordedResult {
 
 // ----------------------------------------------------------------- scoring
 
+function normaliseScope(text: string): string {
+  return text.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 /** Scores one repeat. Pure: the same inputs always produce the same verdict. */
 export function scoreRepeat(rubric: Rubric, entry: BenchmarkCase, repeat: RepeatResult): RepeatVerdict {
   const reasons: string[] = [];
@@ -154,20 +159,44 @@ export function scoreRepeat(rubric: Rubric, entry: BenchmarkCase, repeat: Repeat
 
   if (rubric.kind === 'axes') {
     const axes = { ...(repeat.axes ?? {}) };
-    // Routing is mechanical when the case declares its expected route: a
-    // correct diagnosis with the wrong corrective target is not a strict pass.
-    if (entry.expectedRouting !== undefined && repeat.routing !== undefined) {
-      const { owningArtifact, correctiveAction } = entry.expectedRouting;
-      const matched = repeat.routing.owningArtifact === owningArtifact && repeat.routing.correctiveAction === correctiveAction;
-      axes.routing = matched;
-      if (!matched) {
-        reasons.push(
-          `routing expected ${owningArtifact}/${correctiveAction}, recorded ` +
-          `${repeat.routing.owningArtifact ?? '?'}/${repeat.routing.correctiveAction ?? '?'}`,
-        );
+    // Routing and scope are mechanical whenever the case declares them. The
+    // recorded route decides the axis; a reviewer boolean never overrides it,
+    // and an absent route is a failure, not a pass by omission.
+    const explained = new Set<string>();
+    if (entry.expectedRouting !== undefined) {
+      const { owningArtifact, correctiveAction, maxScope } = entry.expectedRouting;
+      const recorded = repeat.routing;
+      if (recorded === undefined) {
+        axes.routing = false;
+        explained.add('routing');
+        reasons.push(`routing not recorded; case declares expectedRouting ${owningArtifact}/${correctiveAction}`);
+      } else {
+        const matched = recorded.owningArtifact === owningArtifact && recorded.correctiveAction === correctiveAction;
+        axes.routing = matched;
+        if (!matched) {
+          explained.add('routing');
+          reasons.push(
+            `routing expected ${owningArtifact}/${correctiveAction}, recorded ` +
+            `${recorded.owningArtifact ?? '?'}/${recorded.correctiveAction ?? '?'}`,
+          );
+        }
+      }
+      if (maxScope !== undefined) {
+        const scope = recorded?.scope;
+        if (scope === undefined) {
+          axes.scope = false;
+          explained.add('scope');
+          reasons.push(`scope not recorded; case declares maxScope "${maxScope}"`);
+        } else {
+          const matched = normaliseScope(scope) === normaliseScope(maxScope);
+          axes.scope = matched;
+          if (!matched) {
+            explained.add('scope');
+            reasons.push(`scope expected "${maxScope}", recorded "${scope}"`);
+          }
+        }
       }
     }
-    const explained = new Set(reasons.length > 0 ? ['routing'] : []);
     for (const axis of hardGates) {
       const value = axes[axis];
       if (value === undefined) reasons.push(`axis ${axis} unscored`);

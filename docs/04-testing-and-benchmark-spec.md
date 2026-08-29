@@ -776,9 +776,13 @@ host agent through `--prepare` and scored through `--score`; the runner never sp
 
 A strict pass requires every applicable hard axis — all but precision — to pass. Precision is
 reported beside the verdict and never decides it: a second finding that may also be genuine does
-not invalidate a correct diagnosis. When a case declares `expectedRouting` and the result records
-the route chosen, the `routing` axis is computed by exact match on owning artifact and corrective
-action. A correct diagnosis with the wrong corrective target is not a strict pass.
+not invalidate a correct diagnosis. When a case declares `expectedRouting`, the result must record
+the route chosen; the `routing` axis is computed by exact match on owning artifact and corrective
+action, and an absent route fails it. When the case also declares `maxScope`, the result must record
+`routing.scope`; the `scope` axis is computed by comparing it with `maxScope` (case and whitespace
+ignored), and an absent or wider scope fails it. The reviewer's own `routing` and `scope` booleans
+never override these checks. A correct diagnosis with the wrong corrective target is not a strict
+pass.
 
 Routing examples the cases hold:
 

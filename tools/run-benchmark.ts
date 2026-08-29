@@ -855,7 +855,13 @@ function prepareCase(catalogue: Catalogue, entry: BenchmarkCase): number {
   const template: Record<string, unknown> = { index: 0 };
   if (rubric.kind === 'axes') {
     template.axes = Object.fromEntries(rubric.dimensions.map((item) => [item.id, null]));
-    if (entry.expectedRouting !== undefined) template.routing = { owningArtifact: null, correctiveAction: null };
+    if (entry.expectedRouting !== undefined) {
+      template.routing = {
+        owningArtifact: null,
+        correctiveAction: null,
+        ...(entry.expectedRouting.maxScope === undefined ? {} : { scope: null }),
+      };
+    }
   } else {
     template.gates = Object.fromEntries(hardGates.map((gate) => [gate, null]));
     template.dimensions = Object.fromEntries((entry.requiredDimensions ?? []).map((dimension) => [dimension, null]));

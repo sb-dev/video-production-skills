@@ -50,7 +50,7 @@ node tools/run-benchmark.ts --prepare routing-pacing-to-edit > bundle.json
 
 The bundle carries the exact prompt, the rubric, the hard gates, the fingerprint, and a `resultTemplate`. Hand the prompt to the agent or reviewer, record what was observed in the template's shape, and keep the fingerprint. Repeat at least three times before calling anything a baseline.
 
-Diagnostic results record `axes` (`true`, `false` or `"na"`) and, where the case declares `expectedRouting`, the `routing` the agent chose. Anchored results record `gates` and `dimensions` scored 0–3.
+Diagnostic results record `axes` (`true`, `false` or `"na"`) and, where the case declares `expectedRouting`, the `routing` the agent chose: `owningArtifact`, `correctiveAction` and, where the case declares `maxScope`, `scope`. Record the case's `maxScope` label verbatim when the proposed correction fits inside it; otherwise record the scope actually proposed. The scorer decides the `routing` and `scope` axes from these fields; a missing `routing` or `scope` fails the axis regardless of the reviewer's boolean. Anchored results record `gates` and `dimensions` scored 0–3.
 
 ## Score recorded evidence
 
